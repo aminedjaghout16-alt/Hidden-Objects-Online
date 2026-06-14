@@ -209,6 +209,16 @@
         }
       }, [phase, room?.hideEndsAt]);
 
+      // The in-game overlay (GameView) only renders under the Play tab.
+      // If a game starts/continues while the user is on a different tab
+      // (e.g. a private room created from the Custom tab), jump them to
+      // Play so the countdown / hunting / results screen is visible.
+      useEffect(() => {
+        if (room && (phase === 'hiding' || phase === 'hunting' || phase === 'ended') && activeTab !== 'play') {
+          setActiveTab('play');
+        }
+      }, [room, phase, activeTab]);
+
       // ── Host-side phase transition watchers ─────────────────────────────────
       // Hiding → Hunting, once the timer expires (any client can do this safely
       // via transaction, but we let only the host attempt it to avoid spam).
