@@ -79,17 +79,25 @@
     const MAPS = ['Office Complex', 'Warehouse', 'Library', 'Shopping Mall'];
 
     // ─── 2D Game World ──────────────────────────────────────────────────────────
-    // World is a fixed coordinate space (units), rendered via <canvas>, scaled
-    // responsively. Layout: a 3x2 grid of rooms connected by doorway gaps.
-    const WORLD_W = 1000;
-    const WORLD_H = 700;
+    // World is a fixed coordinate space (units), rendered via <canvas> with a
+    // camera that follows the local player (zoomed in — the whole map is never
+    // visible at once). Layout: a 4x3 grid of rooms connected by doorway gaps.
+    const GRID_COLS = 4;
+    const GRID_ROWS = 3;
+    const ROOM_SIZE = 460; // each room is ROOM_SIZE x ROOM_SIZE units
+    const WORLD_W = GRID_COLS * ROOM_SIZE;
+    const WORLD_H = GRID_ROWS * ROOM_SIZE;
     const PLAYER_RADIUS = 14;
     const MOVE_SPEED = 220; // units per second
 
-    // Outer border + interior cross-walls forming a 3x2 grid of rooms with
-    // doorway gaps roughly centered on each wall segment.
+    // Camera: how much world-space is visible vertically. Horizontal extent is
+    // derived from the canvas aspect ratio. Smaller = more zoomed in.
+    const CAMERA_VIEW_H = 620;
+
+    // Outer border + interior cross-walls forming an NxM grid of rooms with
+    // doorway gaps centered on each shared wall segment.
     const WALL_THICKNESS = 14;
-    const DOOR_GAP = 90;
+    const DOOR_GAP = 100;
 
     function buildWalls() {
       const walls = [];
@@ -101,38 +109,40 @@
       walls.push({ x: 0, y: 0, w: t, h: h });               // left
       walls.push({ x: w - t, y: 0, w: t, h: h });           // right
 
-      // Vertical divider walls at 1/3 and 2/3 width, each split into segments
-      // with a doorway gap centered on each of the two rows.
-      const vXs = [w / 3, (2 * w) / 3];
-      const rowH = h / 2;
-      vXs.forEach(vx => {
-        [0, 1].forEach(row => {
-          const rowTop = row * rowH;
+      const colW = w / GRID_COLS;
+      const rowH = h / GRID_ROWS;
+
+      // Vertical divider walls between columns, one segment per row with a
+      // doorway gap centered on that row.
+      for (let c = 1; c < GRID_COLS; c++) {
+        const vx = c * colW;
+        for (let r = 0; r < GRID_ROWS; r++) {
+          const rowTop = r * rowH;
           const gapStart = rowTop + rowH / 2 - DOOR_GAP / 2;
           const gapEnd = gapStart + DOOR_GAP;
-          // segment above gap
           if (gapStart > rowTop) {
             walls.push({ x: vx - t / 2, y: rowTop, w: t, h: gapStart - rowTop });
           }
-          // segment below gap
           if (rowTop + rowH > gapEnd) {
             walls.push({ x: vx - t / 2, y: gapEnd, w: t, h: (rowTop + rowH) - gapEnd });
           }
-        });
-      });
-
-      // Horizontal divider wall at half height, split into 3 segments (columns)
-      // each with a doorway gap centered on the column.
-      const colW = w / 3;
-      for (let col = 0; col < 3; col++) {
-        const colLeft = col * colW;
-        const gapStart = colLeft + colW / 2 - DOOR_GAP / 2;
-        const gapEnd = gapStart + DOOR_GAP;
-        if (gapStart > colLeft) {
-          walls.push({ x: colLeft, y: h / 2 - t / 2, w: gapStart - colLeft, h: t });
         }
-        if (colLeft + colW > gapEnd) {
-          walls.push({ x: gapEnd, y: h / 2 - t / 2, w: (colLeft + colW) - gapEnd, h: t });
+      }
+
+      // Horizontal divider walls between rows, one segment per column with a
+      // doorway gap centered on that column.
+      for (let r = 1; r < GRID_ROWS; r++) {
+        const hy = r * rowH;
+        for (let c = 0; c < GRID_COLS; c++) {
+          const colLeft = c * colW;
+          const gapStart = colLeft + colW / 2 - DOOR_GAP / 2;
+          const gapEnd = gapStart + DOOR_GAP;
+          if (gapStart > colLeft) {
+            walls.push({ x: colLeft, y: hy - t / 2, w: gapStart - colLeft, h: t });
+          }
+          if (colLeft + colW > gapEnd) {
+            walls.push({ x: gapEnd, y: hy - t / 2, w: (colLeft + colW) - gapEnd, h: t });
+          }
         }
       }
 
@@ -153,6 +163,10 @@
       { x: WORLD_W / 2, y: 70 },
       { x: 70, y: WORLD_H / 2 },
       { x: WORLD_W / 2, y: WORLD_H / 2 },
+      { x: WORLD_W * 0.25, y: WORLD_H * 0.75 },
+      { x: WORLD_W * 0.75, y: WORLD_H * 0.25 },
+      { x: WORLD_W * 0.25, y: WORLD_H * 0.25 + 40 },
+      { x: WORLD_W * 0.75, y: WORLD_H * 0.75 - 40 },
     ];
 
     function spawnFor(role, index) {
@@ -197,16 +211,63 @@
     }
 
     // ─── Props (disguise targets) ───────────────────────────────────────────────
-    // One prop per room in the 3x2 grid, placed away from doorways/walls so
-    // they're easy to walk up to and click on.
+    // Multiple props per room, scattered across the 4x3 grid, placed away from
+    // doorways/walls so they're easy to walk up to and click on.
     const PROP_RADIUS = 22; // click/interaction radius
+
+    // Helper: world-space center of room (col, row), with an (ox, oy) offset
+    // in units from that center.
+    function roomPos(col, row, ox = 0, oy = 0) {
+      return { x: (col + 0.5) * ROOM_SIZE + ox, y: (row + 0.5) * ROOM_SIZE + oy };
+    }
+
     const PROPS = [
-      { id: 'plant',   type: 'plant',    x: WORLD_W * (1/6), y: WORLD_H * (1/4) },
-      { id: 'lamp',    type: 'lamp',     x: WORLD_W * (3/6), y: WORLD_H * (1/4) },
-      { id: 'tv',      type: 'tv',       x: WORLD_W * (5/6), y: WORLD_H * (1/4) },
-      { id: 'crate',   type: 'crate',    x: WORLD_W * (1/6), y: WORLD_H * (3/4) },
-      { id: 'trash',   type: 'trash',    x: WORLD_W * (3/6), y: WORLD_H * (3/4) },
-      { id: 'plant2',  type: 'plant',    x: WORLD_W * (5/6), y: WORLD_H * (3/4) },
+      // Room (0,0)
+      { id: 'plant_00',  type: 'plant',   ...roomPos(0, 0, -130, -110) },
+      { id: 'crate_00',  type: 'crate',   ...roomPos(0, 0, 120, 100) },
+      // Room (1,0)
+      { id: 'lamp_10',   type: 'lamp',    ...roomPos(1, 0, -120, -90) },
+      { id: 'chair_10',  type: 'chair',   ...roomPos(1, 0, 110, 110) },
+      { id: 'barrel_10', type: 'barrel',  ...roomPos(1, 0, 130, -120) },
+      // Room (2,0)
+      { id: 'tv_20',     type: 'tv',      ...roomPos(2, 0, -100, -100) },
+      { id: 'shelf_20',  type: 'shelf',   ...roomPos(2, 0, 120, 90) },
+      // Room (3,0)
+      { id: 'trash_30',  type: 'trash',   ...roomPos(3, 0, -110, 100) },
+      { id: 'vending_30',type: 'vending', ...roomPos(3, 0, 110, -100) },
+      { id: 'plant_30',  type: 'plant',   ...roomPos(3, 0, -120, -110) },
+
+      // Room (0,1)
+      { id: 'locker_01', type: 'locker',  ...roomPos(0, 1, -110, -100) },
+      { id: 'box_01',    type: 'box',     ...roomPos(0, 1, 120, 110) },
+      { id: 'barrel_01', type: 'barrel',  ...roomPos(0, 1, 110, -110) },
+      // Room (1,1)
+      { id: 'crate_11',  type: 'crate',   ...roomPos(1, 1, -110, 100) },
+      { id: 'chair_11',  type: 'chair',   ...roomPos(1, 1, 120, -100) },
+      // Room (2,1)
+      { id: 'plant_21',  type: 'plant',   ...roomPos(2, 1, -120, -100) },
+      { id: 'shelf_21',  type: 'shelf',   ...roomPos(2, 1, 110, 100) },
+      { id: 'box_21',    type: 'box',     ...roomPos(2, 1, -100, 110) },
+      // Room (3,1)
+      { id: 'lamp_31',   type: 'lamp',    ...roomPos(3, 1, -110, -90) },
+      { id: 'tv_31',     type: 'tv',      ...roomPos(3, 1, 100, 100) },
+
+      // Room (0,2)
+      { id: 'trash_02',  type: 'trash',   ...roomPos(0, 2, -110, -100) },
+      { id: 'crate_02',  type: 'crate',   ...roomPos(0, 2, 110, 110) },
+      { id: 'plant_02',  type: 'plant',   ...roomPos(0, 2, 110, -110) },
+      // Room (1,2)
+      { id: 'vending_12',type: 'vending', ...roomPos(1, 2, -100, -100) },
+      { id: 'box_12',    type: 'box',     ...roomPos(1, 2, 120, 100) },
+      // Room (2,2)
+      { id: 'locker_22', type: 'locker',  ...roomPos(2, 2, -110, -90) },
+      { id: 'chair_22',  type: 'chair',   ...roomPos(2, 2, 110, 110) },
+      { id: 'barrel_22', type: 'barrel',  ...roomPos(2, 2, -110, 110) },
+      // Room (3,2)
+      { id: 'shelf_32',  type: 'shelf',   ...roomPos(3, 2, -110, -100) },
+      { id: 'lamp_32',   type: 'lamp',    ...roomPos(3, 2, 110, -90) },
+      { id: 'plant_32',  type: 'plant',   ...roomPos(3, 2, 100, 110) },
+      { id: 'trash_32b', type: 'trash',   ...roomPos(3, 2, -100, 110) },
     ];
 
     const DISGUISE_RANGE = 50;     // how close a hider must be to click-disguise a prop
@@ -1432,6 +1493,7 @@
       // Ground shadow shared by all props
       const shadowSizes = {
         plant: [22, 9], lamp: [16, 7], tv: [24, 9], crate: [20, 9], trash: [14, 7],
+        chair: [16, 8], barrel: [16, 8], shelf: [24, 9], vending: [20, 10], locker: [16, 9], box: [18, 8],
       };
       const [sx, sy] = shadowSizes[type] || [16, 7];
       drawGroundShadow(ctx, x, y + sy * 1.4, sx, sy, 0.32 * alpha);
@@ -1587,6 +1649,142 @@
           ctx.fillRect(-17, -20, 34, 2);
           break;
         }
+        case 'chair': {
+          // Seat
+          const seatGrad = ctx.createLinearGradient(-14, -2, 14, 10);
+          seatGrad.addColorStop(0, '#a78bfa');
+          seatGrad.addColorStop(1, '#7c3aed');
+          ctx.fillStyle = seatGrad;
+          ctx.fillRect(-14, -2, 28, 8);
+          // Backrest
+          ctx.fillStyle = '#7c3aed';
+          ctx.fillRect(-14, -22, 6, 22);
+          ctx.fillStyle = 'rgba(255,255,255,0.15)';
+          ctx.fillRect(-14, -22, 6, 6);
+          // Legs
+          ctx.fillStyle = '#3f3f46';
+          ctx.fillRect(-12, 6, 3, 14);
+          ctx.fillRect(9, 6, 3, 14);
+          ctx.fillRect(-12, -2, 3, 8);
+          ctx.fillRect(9, -2, 3, 8);
+          break;
+        }
+        case 'barrel': {
+          const barrelGrad = ctx.createLinearGradient(-14, -18, 14, 18);
+          barrelGrad.addColorStop(0, '#fb923c');
+          barrelGrad.addColorStop(1, '#c2410c');
+          ctx.fillStyle = barrelGrad;
+          ctx.beginPath();
+          ctx.moveTo(-14, -18); ctx.lineTo(14, -18);
+          ctx.quadraticCurveTo(17, 0, 14, 18);
+          ctx.lineTo(-14, 18);
+          ctx.quadraticCurveTo(-17, 0, -14, -18);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = '#7c2d12';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          // metal bands
+          ctx.fillStyle = 'rgba(0,0,0,0.25)';
+          ctx.fillRect(-17, -10, 34, 4);
+          ctx.fillRect(-17, 6, 34, 4);
+          // highlight
+          ctx.fillStyle = 'rgba(255,255,255,0.2)';
+          ctx.fillRect(-9, -16, 4, 30);
+          break;
+        }
+        case 'shelf': {
+          // Frame
+          ctx.fillStyle = '#92633a';
+          ctx.fillRect(-24, -24, 48, 48);
+          ctx.fillStyle = '#6b4423';
+          ctx.fillRect(-24, -24, 48, 4);
+          ctx.fillRect(-24, -2, 48, 4);
+          ctx.fillRect(-24, 20, 48, 4);
+          // Items on shelves
+          const itemColors = ['#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '#f97316'];
+          let ci = 0;
+          for (const sy of [-20, 2]) {
+            for (let i = -2; i <= 1; i++) {
+              ctx.fillStyle = itemColors[ci % itemColors.length];
+              ctx.fillRect(-20 + (i + 2) * 11, sy, 8, 14);
+              ci++;
+            }
+          }
+          ctx.strokeStyle = '#4b2e15';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(-24, -24, 48, 48);
+          break;
+        }
+        case 'vending': {
+          const vendGrad = ctx.createLinearGradient(-18, -30, 18, 20);
+          vendGrad.addColorStop(0, '#ef4444');
+          vendGrad.addColorStop(1, '#991b1b');
+          ctx.fillStyle = vendGrad;
+          ctx.fillRect(-18, -30, 36, 50);
+          // glass front
+          ctx.fillStyle = 'rgba(125,211,252,0.35)';
+          ctx.fillRect(-14, -26, 28, 30);
+          // product rows
+          ctx.fillStyle = 'rgba(255,255,255,0.4)';
+          for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 3; col++) {
+              ctx.fillRect(-12 + col * 9, -24 + row * 9, 6, 7);
+            }
+          }
+          // buttons / keypad
+          ctx.fillStyle = '#fde047';
+          ctx.fillRect(4, 6, 10, 10);
+          ctx.fillStyle = 'rgba(255,255,255,0.15)';
+          ctx.fillRect(-18, -30, 36, 3);
+          break;
+        }
+        case 'locker': {
+          const lockerGrad = ctx.createLinearGradient(-14, -28, 14, 26);
+          lockerGrad.addColorStop(0, '#60a5fa');
+          lockerGrad.addColorStop(1, '#1d4ed8');
+          ctx.fillStyle = lockerGrad;
+          ctx.fillRect(-14, -28, 28, 54);
+          // vertical vents
+          ctx.fillStyle = 'rgba(0,0,0,0.2)';
+          for (let i = -1; i <= 1; i++) {
+            ctx.fillRect(-2 + i * 5, -24, 1.5, 16);
+          }
+          // handle
+          ctx.fillStyle = '#1e3a8a';
+          ctx.fillRect(8, -4, 4, 8);
+          ctx.strokeStyle = '#1e40af';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(-14, -28, 28, 54);
+          ctx.fillStyle = 'rgba(255,255,255,0.15)';
+          ctx.fillRect(-14, -28, 28, 4);
+          break;
+        }
+        case 'box': {
+          // Stack of two boxes
+          const boxGrad1 = ctx.createLinearGradient(-16, -2, 16, 18);
+          boxGrad1.addColorStop(0, '#d4a35a');
+          boxGrad1.addColorStop(1, '#a9763a');
+          ctx.fillStyle = boxGrad1;
+          ctx.fillRect(-16, -2, 32, 20);
+          ctx.strokeStyle = '#7c5424';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(-16, -2, 32, 20);
+
+          const boxGrad2 = ctx.createLinearGradient(-12, -20, 10, -2);
+          boxGrad2.addColorStop(0, '#e8c084');
+          boxGrad2.addColorStop(1, '#c0935a');
+          ctx.fillStyle = boxGrad2;
+          ctx.fillRect(-11, -20, 22, 18);
+          ctx.strokeStyle = '#7c5424';
+          ctx.strokeRect(-11, -20, 22, 18);
+
+          // tape lines
+          ctx.fillStyle = 'rgba(255,255,255,0.3)';
+          ctx.fillRect(-1, -20, 2, 18);
+          ctx.fillRect(-1, -2, 2, 20);
+          break;
+        }
         default: {
           ctx.fillStyle = '#6b7280';
           ctx.fillRect(-14, -14, 28, 28);
@@ -1717,13 +1915,29 @@
       }, []);
 
       // ── Helpers: world <-> screen coordinate transform ───────────────────────
+      // The camera follows the local player at a fixed zoom (CAMERA_VIEW_H world
+      // units visible vertically), clamped so it never shows past the world edges.
       const getTransform = useCallback(() => {
         const canvas = canvasRef.current;
         if (!canvas || canvas.width === 0 || canvas.height === 0) return null;
-        const scale = Math.min(canvas.width / WORLD_W, canvas.height / WORLD_H);
-        const offX = (canvas.width - WORLD_W * scale) / 2;
-        const offY = (canvas.height - WORLD_H * scale) / 2;
-        return { scale, offX, offY };
+        const scale = canvas.height / CAMERA_VIEW_H;
+        const viewW = canvas.width / scale;
+        const viewH = CAMERA_VIEW_H;
+
+        let camX = posRef.current.x;
+        let camY = posRef.current.y;
+
+        // Clamp camera so the view stays within the world bounds (or centers
+        // the world if the world is smaller than the view on that axis).
+        if (viewW >= WORLD_W) camX = WORLD_W / 2;
+        else camX = Math.max(viewW / 2, Math.min(WORLD_W - viewW / 2, camX));
+
+        if (viewH >= WORLD_H) camY = WORLD_H / 2;
+        else camY = Math.max(viewH / 2, Math.min(WORLD_H - viewH / 2, camY));
+
+        const offX = canvas.width / 2 - camX * scale;
+        const offY = canvas.height / 2 - camY * scale;
+        return { scale, offX, offY, viewW, viewH, camX, camY };
       }, []);
 
       const screenToWorld = useCallback((clientX, clientY) => {
@@ -1902,9 +2116,14 @@
 
         const render = (ctx, canvas) => {
           if (canvas.width === 0 || canvas.height === 0) return;
-          const scale = Math.min(canvas.width / WORLD_W, canvas.height / WORLD_H);
-          const offX = (canvas.width - WORLD_W * scale) / 2;
-          const offY = (canvas.height - WORLD_H * scale) / 2;
+          const t = getTransform();
+          if (!t) return;
+          const { scale, offX, offY, viewW, viewH, camX, camY } = t;
+
+          // Visible world-space bounds (with a small margin) for culling
+          const vx0 = camX - viewW / 2 - 40, vx1 = camX + viewW / 2 + 40;
+          const vy0 = camY - viewH / 2 - 40, vy1 = camY + viewH / 2 + 40;
+          const inView = (x, y, pad = 40) => x > vx0 - pad && x < vx1 + pad && y > vy0 - pad && y < vy1 + pad;
 
           ctx.save();
           ctx.fillStyle = '#0a0a0f';
@@ -1915,40 +2134,37 @@
 
           // Floor base
           ctx.fillStyle = '#15151f';
-          ctx.fillRect(0, 0, WORLD_W, WORLD_H);
+          ctx.fillRect(vx0, vy0, vx1 - vx0, vy1 - vy0);
 
-          // Per-room subtle color tint (3x2 grid) for visual variety
+          // Per-room subtle color tint (4x3 grid) for visual variety
           const roomColors = [
-            'rgba(245,158,11,0.035)', 'rgba(34,211,238,0.03)', 'rgba(168,85,247,0.03)',
-            'rgba(34,197,94,0.03)',   'rgba(248,113,113,0.03)', 'rgba(250,204,21,0.03)',
+            'rgba(245,158,11,0.035)', 'rgba(34,211,238,0.03)', 'rgba(168,85,247,0.03)', 'rgba(34,197,94,0.03)',
+            'rgba(248,113,113,0.03)','rgba(250,204,21,0.03)','rgba(96,165,250,0.03)',  'rgba(244,114,182,0.03)',
+            'rgba(251,146,60,0.03)', 'rgba(74,222,128,0.03)','rgba(192,132,252,0.03)', 'rgba(94,234,212,0.03)',
           ];
-          const colW = WORLD_W / 3, rowH = WORLD_H / 2;
-          for (let row = 0; row < 2; row++) {
-            for (let col = 0; col < 3; col++) {
-              ctx.fillStyle = roomColors[row * 3 + col];
-              ctx.fillRect(col * colW, row * rowH, colW, rowH);
+          for (let row = 0; row < GRID_ROWS; row++) {
+            for (let col = 0; col < GRID_COLS; col++) {
+              const rx = col * ROOM_SIZE, ry = row * ROOM_SIZE;
+              if (!inView(rx + ROOM_SIZE / 2, ry + ROOM_SIZE / 2, ROOM_SIZE)) continue;
+              ctx.fillStyle = roomColors[(row * GRID_COLS + col) % roomColors.length];
+              ctx.fillRect(rx, ry, ROOM_SIZE, ROOM_SIZE);
             }
           }
 
           // Floor tile grid
           ctx.strokeStyle = 'rgba(255,255,255,0.035)';
           ctx.lineWidth = 1;
-          for (let x = 0; x <= WORLD_W; x += 50) {
-            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, WORLD_H); ctx.stroke();
+          const gridStart = (v) => Math.floor(v / 50) * 50;
+          for (let x = gridStart(vx0); x <= vx1; x += 50) {
+            ctx.beginPath(); ctx.moveTo(x, vy0); ctx.lineTo(x, vy1); ctx.stroke();
           }
-          for (let y = 0; y <= WORLD_H; y += 50) {
-            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WORLD_W, y); ctx.stroke();
+          for (let y = gridStart(vy0); y <= vy1; y += 50) {
+            ctx.beginPath(); ctx.moveTo(vx0, y); ctx.lineTo(vx1, y); ctx.stroke();
           }
-
-          // Subtle vignette to focus attention toward center
-          const vignette = ctx.createRadialGradient(WORLD_W / 2, WORLD_H / 2, WORLD_H * 0.25, WORLD_W / 2, WORLD_H / 2, WORLD_H * 0.85);
-          vignette.addColorStop(0, 'rgba(0,0,0,0)');
-          vignette.addColorStop(1, 'rgba(0,0,0,0.35)');
-          ctx.fillStyle = vignette;
-          ctx.fillRect(0, 0, WORLD_W, WORLD_H);
 
           // Walls — top-down blocks with depth shading and amber edge glow
           for (const w of WALLS) {
+            if (!inView(w.x + w.w / 2, w.y + w.h / 2, Math.max(w.w, w.h))) continue;
             // drop shadow
             ctx.fillStyle = 'rgba(0,0,0,0.35)';
             ctx.fillRect(w.x + 3, w.y + 3, w.w, w.h);
@@ -1972,6 +2188,7 @@
           // Props (highlight ones the local hider can interact with)
           const canInteract = myRole === 'hider' && myAlive !== false && !disguiseRef.current;
           for (const prop of PROPS) {
+            if (!inView(prop.x, prop.y, 60)) continue;
             drawProp(ctx, prop.x, prop.y, prop.type);
             if (canInteract) {
               const d = Math.hypot(prop.x - posRef.current.x, prop.y - posRef.current.y);
@@ -2008,6 +2225,8 @@
               disguise = p.disguise || null;
             }
 
+            if (!isMe && !inView(px, py, 60)) continue;
+
             const isDead = p.alive === false;
             const color = isDead ? '#9ca3af'
               : p.role === 'hunter' ? '#f87171'
@@ -2040,6 +2259,7 @@
 
           // Bullets — glowing tracer with trail
           for (const b of bulletsRef.current) {
+            if (!inView(b.x, b.y, 30)) continue;
             ctx.save();
             ctx.beginPath();
             ctx.moveTo(b.x, b.y);
@@ -2072,8 +2292,71 @@
             ctx.stroke();
           }
 
+          // Subtle vignette overlay (screen space) to focus attention toward center
+          ctx.restore();
+          const vignette = ctx.createRadialGradient(
+            canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) * 0.25,
+            canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height) * 0.75
+          );
+          vignette.addColorStop(0, 'rgba(0,0,0,0)');
+          vignette.addColorStop(1, 'rgba(0,0,0,0.4)');
+          ctx.fillStyle = vignette;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          // ── Minimap (top-right) ─────────────────────────────────────────────
+          const mmW = Math.min(140, canvas.width * 0.22);
+          const mmH = mmW * (WORLD_H / WORLD_W);
+          const mmX = canvas.width - mmW - 12;
+          const mmY = 12;
+          const mmScale = mmW / WORLD_W;
+
+          ctx.save();
+          ctx.fillStyle = 'rgba(10,10,15,0.7)';
+          ctx.fillRect(mmX, mmY, mmW, mmH);
+          ctx.strokeStyle = 'rgba(245,158,11,0.4)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(mmX, mmY, mmW, mmH);
+
+          // Room grid
+          ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+          for (let c = 1; c < GRID_COLS; c++) {
+            const x = mmX + c * ROOM_SIZE * mmScale;
+            ctx.beginPath(); ctx.moveTo(x, mmY); ctx.lineTo(x, mmY + mmH); ctx.stroke();
+          }
+          for (let r = 1; r < GRID_ROWS; r++) {
+            const y = mmY + r * ROOM_SIZE * mmScale;
+            ctx.beginPath(); ctx.moveTo(mmX, y); ctx.lineTo(mmX + mmW, y); ctx.stroke();
+          }
+
+          // Players on minimap
+          for (const p of players) {
+            const isMe = p.id === player.id;
+            const px = isMe ? posRef.current.x : p.x;
+            const py = isMe ? posRef.current.y : p.y;
+            if (typeof px !== 'number' || typeof py !== 'number') continue;
+            // Only show hunters their own dot; hiders see everyone (their team) —
+            // simplest: show "me" always, and same-role teammates.
+            if (!isMe && p.role !== myRole) continue;
+            if (p.alive === false && !isMe) continue;
+            const dotX = mmX + px * mmScale;
+            const dotY = mmY + py * mmScale;
+            ctx.beginPath();
+            ctx.arc(dotX, dotY, isMe ? 3 : 2, 0, Math.PI * 2);
+            ctx.fillStyle = isMe ? '#f59e0b' : (p.role === 'hunter' ? '#f87171' : '#22d3ee');
+            ctx.fill();
+          }
+
+          // Camera viewport indicator
+          const vpX = mmX + (camX - viewW / 2) * mmScale;
+          const vpY = mmY + (camY - viewH / 2) * mmScale;
+          const vpW = viewW * mmScale;
+          const vpH = viewH * mmScale;
+          ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(vpX, vpY, vpW, vpH);
           ctx.restore();
         };
+
 
         rafRef.current = requestAnimationFrame(frame);
         return () => {
