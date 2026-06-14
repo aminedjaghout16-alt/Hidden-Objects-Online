@@ -121,7 +121,7 @@
         auth.signInAnonymously().catch(err => {
           console.error('Auth error:', err);
           setConn('offline');
-          notify('Failed to connect to server', 'red');
+          notify(`Auth failed: ${err.code || err.message || 'unknown error'}`, 'red');
         });
 
         return () => unsub();
