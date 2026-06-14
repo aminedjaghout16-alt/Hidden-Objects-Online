@@ -197,6 +197,28 @@
       return false;
     }
 
+    // ─── Props (disguise targets) ───────────────────────────────────────────────
+    // One prop per room in the 3x2 grid, placed away from doorways/walls so
+    // they're easy to walk up to and click on.
+    const PROP_RADIUS = 22; // click/interaction radius
+    const PROPS = [
+      { id: 'plant',   type: 'plant',    x: WORLD_W * (1/6), y: WORLD_H * (1/4) },
+      { id: 'lamp',    type: 'lamp',     x: WORLD_W * (3/6), y: WORLD_H * (1/4) },
+      { id: 'tv',      type: 'tv',       x: WORLD_W * (5/6), y: WORLD_H * (1/4) },
+      { id: 'crate',   type: 'crate',    x: WORLD_W * (1/6), y: WORLD_H * (3/4) },
+      { id: 'trash',   type: 'trash',    x: WORLD_W * (3/6), y: WORLD_H * (3/4) },
+      { id: 'plant2',  type: 'plant',    x: WORLD_W * (5/6), y: WORLD_H * (3/4) },
+    ];
+
+    const DISGUISE_RANGE = 50;     // how close a hider must be to click-disguise a prop
+    const DISGUISE_MOVE_MULT = 0.4; // disguised hiders move at 40% speed
+
+    // ─── Hunter weapon ──────────────────────────────────────────────────────────
+    const MAX_AMMO = 6;
+    const AMMO_REGEN_MS = 4000; // one bullet regenerates every 4s
+    const BULLET_SPEED = 600;   // units per second
+    const BULLET_HIT_RADIUS = 16;
+
     // ─── Main App ───────────────────────────────────────────────────────────────
     function PropHuntLobby() {
       const [activeTab, setActiveTab]   = useState('play');
@@ -810,6 +832,13 @@
         db.ref(`rooms/${code}/players/${player.id}`).update({ x, y });
       }, [player.id]);
 
+      // ── Disguise sync ─────────────────────────────────────────────────────────
+      const setDisguise = useCallback((propType) => {
+        const code = roomCodeRef.current;
+        if (!code || !player.id) return;
+        db.ref(`rooms/${code}/players/${player.id}/disguise`).set(propType || null);
+      }, [player.id]);
+
       const myRole = room?.players.find(p => p.id === player.id)?.role;
       const myAlive = room?.players.find(p => p.id === player.id)?.alive !== false;
       const xpPct = Math.round((player.xp / player.xpToNext) * 100);
@@ -924,7 +953,7 @@
                       chatMessages={chatMessages} chatInput={chatInput}
                       setChatInput={setChatInput} sendChat={sendChat}
                       eliminate={eliminate} leaveRoom={leaveRoom} chatRef={chatRef}
-                      updatePosition={updatePosition}
+                      updatePosition={updatePosition} setDisguise={setDisguise}
                     />
                   )}
 
@@ -1205,7 +1234,7 @@
     }
 
     // ─── In-game View ─────────────────────────────────────────────────────────
-    function GameView({ room, phase, winner, myRole, myAlive, player, countdown, chatMessages, chatInput, setChatInput, sendChat, eliminate, leaveRoom, chatRef, updatePosition }) {
+    function GameView({ room, phase, winner, myRole, myAlive, player, countdown, chatMessages, chatInput, setChatInput, sendChat, eliminate, leaveRoom, chatRef, updatePosition, setDisguise }) {
       const showMap = (phase === 'hiding' && myRole === 'hider') || phase === 'hunting';
       const hunterLocked = phase === 'hiding' && myRole === 'hunter';
 
@@ -1221,7 +1250,7 @@
                 <div className="font-['Chakra_Petch'] text-2xl font-bold text-cyan-400">HIDING PHASE</div>
                 <div className="font-['JetBrains_Mono'] text-4xl font-bold text-white mt-1">{countdown ?? '...'}</div>
                 <div className="font-['JetBrains_Mono'] text-xs text-gray-400 mt-1">
-                  {myRole === 'hider' ? 'Find a hiding spot! Move with WASD/arrows or the joystick.' : 'Hunters are locked out — wait for the hunt to begin...'}
+                  {myRole === 'hider' ? 'Find a hiding spot! Move with WASD/arrows or the joystick, then click a nearby prop to disguise.' : 'Hunters are locked out — wait for the hunt to begin...'}
                 </div>
               </div>
             )}
@@ -1231,7 +1260,8 @@
                 <div className="font-['JetBrains_Mono'] text-xs text-gray-400 mt-1">
                   You are a <span className={myRole === 'hunter' ? 'text-red-400' : 'text-cyan-400'}>{myRole?.toUpperCase()}</span>
                   {!myAlive && <span className="text-red-500 ml-2">— ELIMINATED</span>}
-                  {myRole === 'hunter' && ' — get close to a hider to eliminate them automatically.'}
+                  {myRole === 'hunter' && ' — aim and click/tap to shoot. Ammo regenerates slowly.'}
+                  {myRole === 'hider' && ' — click a nearby prop to disguise yourself.'}
                 </div>
               </div>
             )}
@@ -1252,6 +1282,7 @@
             <GameMap
               room={room} player={player} myRole={myRole} myAlive={myAlive}
               phase={phase} updatePosition={updatePosition} eliminate={eliminate}
+              setDisguise={setDisguise}
             />
           )}
           {hunterLocked && (
@@ -1283,8 +1314,166 @@
       );
     }
 
+    // ─── Canvas drawing helpers ─────────────────────────────────────────────────
+    // Among Us-style bean character: body, visor, optional legs (walk cycle).
+    function drawCharacter(ctx, x, y, color, opts = {}) {
+      const { facing = 1, walking = false, walkPhase = 0, alpha = 1, highlight = false } = opts;
+      const r = PLAYER_RADIUS;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(x, y);
+      ctx.scale(facing, 1); // mirror horizontally based on facing direction
+
+      // Legs (simple walk-cycle bob)
+      if (walking) {
+        const legOffset = Math.sin(walkPhase) * (r * 0.35);
+        ctx.fillStyle = shadeColor(color, -30);
+        ctx.fillRect(-r * 0.5, r * 0.55, r * 0.32, r * 0.6 + legOffset);
+        ctx.fillRect(r * 0.18, r * 0.55, r * 0.32, r * 0.6 - legOffset);
+      } else {
+        ctx.fillStyle = shadeColor(color, -30);
+        ctx.fillRect(-r * 0.5, r * 0.55, r * 0.32, r * 0.55);
+        ctx.fillRect(r * 0.18, r * 0.55, r * 0.32, r * 0.55);
+      }
+
+      // Body (bean shape)
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.95, r * 0.65);
+      ctx.lineTo(-r * 0.95, -r * 0.1);
+      ctx.quadraticCurveTo(-r * 0.95, -r * 1.05, 0, -r * 1.05);
+      ctx.quadraticCurveTo(r * 0.95, -r * 1.05, r * 0.95, -r * 0.1);
+      ctx.lineTo(r * 0.95, r * 0.65);
+      ctx.quadraticCurveTo(r * 0.95, r * 1.0, r * 0.45, r * 1.0);
+      ctx.lineTo(-r * 0.45, r * 1.0);
+      ctx.quadraticCurveTo(-r * 0.95, r * 1.0, -r * 0.95, r * 0.65);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = shadeColor(color, -40);
+      ctx.stroke();
+
+      // Backpack hint
+      ctx.beginPath();
+      ctx.ellipse(-r * 0.85, r * 0.05, r * 0.22, r * 0.4, 0, 0, Math.PI * 2);
+      ctx.fillStyle = shadeColor(color, -20);
+      ctx.fill();
+
+      // Visor
+      ctx.beginPath();
+      ctx.ellipse(r * 0.15, -r * 0.25, r * 0.55, r * 0.38, -0.15, 0, Math.PI * 2);
+      ctx.fillStyle = '#bfe9ff';
+      ctx.fill();
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#5b8fae';
+      ctx.stroke();
+      // visor shine
+      ctx.beginPath();
+      ctx.ellipse(r * 0.05, -r * 0.38, r * 0.18, r * 0.08, -0.3, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.fill();
+
+      if (highlight) {
+        ctx.beginPath();
+        ctx.ellipse(0, 0, r * 1.35, r * 1.35, 0, 0, Math.PI * 2);
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function shadeColor(hex, percent) {
+      const num = parseInt(hex.replace('#', ''), 16);
+      let r = (num >> 16) + Math.round(2.55 * percent);
+      let g = ((num >> 8) & 0x00FF) + Math.round(2.55 * percent);
+      let b = (num & 0x0000FF) + Math.round(2.55 * percent);
+      r = Math.max(0, Math.min(255, r));
+      g = Math.max(0, Math.min(255, g));
+      b = Math.max(0, Math.min(255, b));
+      return `rgb(${r},${g},${b})`;
+    }
+
+    // Draw a prop icon (plant, lamp, tv, crate, trash) at the given world position.
+    function drawProp(ctx, x, y, type, alpha = 1) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(x, y);
+      switch (type) {
+        case 'plant': {
+          ctx.fillStyle = '#7a5230';
+          ctx.fillRect(-12, 6, 24, 16);
+          ctx.fillStyle = '#22c55e';
+          for (let i = -2; i <= 2; i++) {
+            ctx.beginPath();
+            ctx.ellipse(i * 7, -6 + Math.abs(i) * 3, 9, 16, i * 0.3, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          break;
+        }
+        case 'lamp': {
+          ctx.fillStyle = '#52525b';
+          ctx.fillRect(-3, 0, 6, 26);
+          ctx.beginPath();
+          ctx.moveTo(-16, 0);
+          ctx.lineTo(16, 0);
+          ctx.lineTo(10, -22);
+          ctx.lineTo(-10, -22);
+          ctx.closePath();
+          ctx.fillStyle = '#fde68a';
+          ctx.fill();
+          ctx.strokeStyle = '#a16207';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          break;
+        }
+        case 'tv': {
+          ctx.fillStyle = '#18181b';
+          ctx.fillRect(-22, -16, 44, 28);
+          ctx.fillStyle = '#38bdf8';
+          ctx.globalAlpha = alpha * 0.7;
+          ctx.fillRect(-18, -12, 36, 20);
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle = '#3f3f46';
+          ctx.fillRect(-6, 12, 12, 6);
+          break;
+        }
+        case 'crate': {
+          ctx.fillStyle = '#a16207';
+          ctx.fillRect(-18, -18, 36, 36);
+          ctx.strokeStyle = '#713f12';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(-18, -18, 36, 36);
+          ctx.beginPath();
+          ctx.moveTo(-18, -18); ctx.lineTo(18, 18);
+          ctx.moveTo(18, -18); ctx.lineTo(-18, 18);
+          ctx.stroke();
+          break;
+        }
+        case 'trash': {
+          ctx.fillStyle = '#52525b';
+          ctx.beginPath();
+          ctx.moveTo(-14, -16);
+          ctx.lineTo(14, -16);
+          ctx.lineTo(11, 18);
+          ctx.lineTo(-11, 18);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = '#71717a';
+          ctx.fillRect(-17, -20, 34, 6);
+          break;
+        }
+        default: {
+          ctx.fillStyle = '#6b7280';
+          ctx.fillRect(-14, -14, 28, 28);
+        }
+      }
+      ctx.restore();
+    }
+
     // ─── 2D Game Map (canvas) ───────────────────────────────────────────────────
-    function GameMap({ room, player, myRole, myAlive, phase, updatePosition, eliminate }) {
+    function GameMap({ room, player, myRole, myAlive, phase, updatePosition, eliminate, setDisguise }) {
       const canvasRef    = useRef(null);
       const wrapRef      = useRef(null);
       const posRef       = useRef({ x: WORLD_W / 2, y: WORLD_H / 2 });
@@ -1294,23 +1483,53 @@
       const eliminatedRef = useRef(new Set());
       const rafRef       = useRef(null);
       const lastTsRef    = useRef(null);
+      const facingRef    = useRef(1);       // 1 = right, -1 = left
+      const walkPhaseRef = useRef(0);
+      const disguiseRef  = useRef(null);    // prop type string or null
+      const aimRef       = useRef({ x: WORLD_W / 2, y: WORLD_H / 2 }); // world coords
+      const bulletsRef   = useRef([]);      // local + remote bullets for rendering
+      const ammoRef      = useRef(MAX_AMMO);
+      const ammoTimerRef = useRef(Date.now());
+      const shotsSeenRef = useRef(new Set());
+      const [ammoDisplay, setAmmoDisplay] = useState(MAX_AMMO);
+      const [disguiseDisplay, setDisguiseDisplay] = useState(null);
+
+      const code = room.code;
 
       // Keep latest players list (for remote rendering + eliminate checks)
       // without re-triggering the animation loop on every Firebase tick.
       useEffect(() => { playersRef.current = room.players; }, [room.players]);
 
-      // Initialize local position from server once when this player first
-      // gets a position (e.g. on spawn / role assignment).
+      // Initialize local position + disguise from server once when this
+      // player first gets a position (e.g. on spawn / role assignment).
       const initedRef = useRef(false);
       useEffect(() => {
-        if (initedRef.current) return;
         const me = room.players.find(p => p.id === player.id);
-        if (me && typeof me.x === 'number' && typeof me.y === 'number') {
+        if (!initedRef.current && me && typeof me.x === 'number' && typeof me.y === 'number') {
           posRef.current = { x: me.x, y: me.y };
           initedRef.current = true;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [room.players]);
+
+      // ── Listen for shot events broadcast by hunters (cosmetic bullets) ───────
+      useEffect(() => {
+        if (!code) return;
+        const shotsRef = db.ref(`rooms/${code}/shots`);
+        const cb = shotsRef.limitToLast(20).on('child_added', snap => {
+          const shot = snap.val();
+          const id = snap.key;
+          if (!shot || shotsSeenRef.current.has(id)) return;
+          shotsSeenRef.current.add(id);
+          // Don't double-render the shooter's own bullet (already added locally on fire)
+          if (shot.shooterId === player.id) return;
+          if (Date.now() - shot.ts > 1500) return; // stale, skip
+          bulletsRef.current.push({
+            x: shot.x, y: shot.y, dx: shot.dx, dy: shot.dy, traveled: 0, shooterId: shot.shooterId,
+          });
+        });
+        return () => shotsRef.off('child_added', cb);
+      }, [code, player.id]);
 
       // ── Keyboard controls ──────────────────────────────────────────────────
       useEffect(() => {
@@ -1374,6 +1593,94 @@
         };
       }, []);
 
+      // ── Helpers: world <-> screen coordinate transform ───────────────────────
+      const getTransform = useCallback(() => {
+        const canvas = canvasRef.current;
+        if (!canvas || canvas.width === 0 || canvas.height === 0) return null;
+        const scale = Math.min(canvas.width / WORLD_W, canvas.height / WORLD_H);
+        const offX = (canvas.width - WORLD_W * scale) / 2;
+        const offY = (canvas.height - WORLD_H * scale) / 2;
+        return { scale, offX, offY };
+      }, []);
+
+      const screenToWorld = useCallback((clientX, clientY) => {
+        const canvas = canvasRef.current;
+        const t = getTransform();
+        if (!canvas || !t) return null;
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        const cx = (clientX - rect.left) * dpr;
+        const cy = (clientY - rect.top) * dpr;
+        return {
+          x: (cx - t.offX) / t.scale,
+          y: (cy - t.offY) / t.scale,
+        };
+      }, [getTransform]);
+
+      // ── Fire a bullet (hunters) ──────────────────────────────────────────────
+      const fireBullet = useCallback((worldPt) => {
+        if (myRole !== 'hunter' || phase !== 'hunting' || myAlive === false) return;
+        if (ammoRef.current < 1) return;
+        const px = posRef.current.x, py = posRef.current.y;
+        const dx = worldPt.x - px, dy = worldPt.y - py;
+        const len = Math.hypot(dx, dy) || 1;
+        const ndx = dx / len, ndy = dy / len;
+
+        ammoRef.current -= 1;
+        setAmmoDisplay(ammoRef.current);
+
+        bulletsRef.current.push({ x: px, y: py, dx: ndx, dy: ndy, traveled: 0, shooterId: player.id });
+
+        if (code) {
+          db.ref(`rooms/${code}/shots`).push({
+            shooterId: player.id, x: px, y: py, dx: ndx, dy: ndy, ts: Date.now(),
+          }).then(ref => {
+            // Auto-clean shot record after it's done traveling
+            setTimeout(() => ref.remove().catch(() => {}), 2000);
+          }).catch(() => {});
+        }
+      }, [myRole, phase, myAlive, player.id, code]);
+
+      // ── Disguise toggle (hiders) ─────────────────────────────────────────────
+      const tryDisguise = useCallback((worldPt) => {
+        if (myRole !== 'hider' || myAlive === false) return;
+        if (disguiseRef.current) {
+          // Already disguised — revert
+          disguiseRef.current = null;
+          setDisguiseDisplay(null);
+          setDisguise(null);
+          return;
+        }
+        // Find a prop within range of both the player and the click point
+        for (const prop of PROPS) {
+          const dPlayer = Math.hypot(prop.x - posRef.current.x, prop.y - posRef.current.y);
+          const dClick = Math.hypot(prop.x - worldPt.x, prop.y - worldPt.y);
+          if (dPlayer <= DISGUISE_RANGE && dClick <= PROP_RADIUS) {
+            disguiseRef.current = prop.type;
+            setDisguiseDisplay(prop.type);
+            setDisguise(prop.type);
+            return;
+          }
+        }
+      }, [myRole, myAlive, setDisguise]);
+
+      // ── Pointer handling on canvas (aim for hunters, disguise for hiders) ────
+      const onCanvasPointerMove = useCallback((e) => {
+        const pt = screenToWorld(e.clientX, e.clientY);
+        if (pt) aimRef.current = pt;
+      }, [screenToWorld]);
+
+      const onCanvasPointerDown = useCallback((e) => {
+        const pt = screenToWorld(e.clientX, e.clientY);
+        if (!pt) return;
+        aimRef.current = pt;
+        if (myRole === 'hunter' && phase === 'hunting') {
+          fireBullet(pt);
+        } else if (myRole === 'hider') {
+          tryDisguise(pt);
+        }
+      }, [myRole, phase, fireBullet, tryDisguise]);
+
       // ── Main loop: movement + render ─────────────────────────────────────────
       useEffect(() => {
         const canvas = canvasRef.current;
@@ -1386,6 +1693,17 @@
           const dt = Math.min(0.05, (ts - lastTsRef.current) / 1000);
           lastTsRef.current = ts;
 
+          // ── Ammo regeneration (hunters) ──────────────────────────────────
+          if (myRole === 'hunter') {
+            const now = Date.now();
+            while (ammoRef.current < MAX_AMMO && now - ammoTimerRef.current >= AMMO_REGEN_MS) {
+              ammoRef.current += 1;
+              ammoTimerRef.current += AMMO_REGEN_MS;
+              setAmmoDisplay(ammoRef.current);
+            }
+            if (ammoRef.current >= MAX_AMMO) ammoTimerRef.current = now;
+          }
+
           // ── Compute movement vector from keyboard + joystick ──────────────
           let dx = 0, dy = 0;
           const k = keysRef.current;
@@ -1396,25 +1714,61 @@
           const j = joyRef.current;
           if (j.active) { dx += j.dx; dy += j.dy; }
 
-          if (canMove && (dx !== 0 || dy !== 0)) {
+          const moving = dx !== 0 || dy !== 0;
+          if (canMove && moving) {
+            const speedMult = disguiseRef.current ? DISGUISE_MOVE_MULT : 1;
             const len = Math.hypot(dx, dy) || 1;
-            const normX = (dx / len) * MOVE_SPEED * dt;
-            const normY = (dy / len) * MOVE_SPEED * dt;
+            const normX = (dx / len) * MOVE_SPEED * speedMult * dt;
+            const normY = (dy / len) * MOVE_SPEED * speedMult * dt;
             const resolved = resolveMove(posRef.current.x, posRef.current.y, normX, normY, WALLS, PLAYER_RADIUS);
             posRef.current = resolved;
-            updatePosition(resolved.x, resolved.y);
+            updatePosition(resolved.x, resolved.y, disguiseRef.current);
+            if (normX > 0.01) facingRef.current = 1;
+            else if (normX < -0.01) facingRef.current = -1;
+            walkPhaseRef.current += dt * 12;
           }
 
-          // ── Proximity-based auto-elimination (hunters only, hunting phase) ──
-          if (phase === 'hunting' && myRole === 'hunter' && canMove) {
-            for (const p of playersRef.current) {
-              if (p.role !== 'hider' || p.alive === false) continue;
-              if (eliminatedRef.current.has(p.id)) continue;
-              if (typeof p.x !== 'number' || typeof p.y !== 'number') continue;
-              const d = Math.hypot(p.x - posRef.current.x, p.y - posRef.current.y);
-              if (d < ELIMINATE_RADIUS) {
-                eliminatedRef.current.add(p.id);
-                eliminate(p.id);
+          // ── Update bullets (movement + collision) ──────────────────────────
+          const bullets = bulletsRef.current;
+          for (let i = bullets.length - 1; i >= 0; i--) {
+            const b = bullets[i];
+            const step = BULLET_SPEED * dt;
+            const nx = b.x + b.dx * step;
+            const ny = b.y + b.dy * step;
+            b.traveled += step;
+
+            // Wall collision
+            if (collides(nx, ny, WALLS, 2)) {
+              bullets.splice(i, 1);
+              continue;
+            }
+            // Out of bounds / max range
+            if (nx < 0 || nx > WORLD_W || ny < 0 || ny > WORLD_H || b.traveled > 1400) {
+              bullets.splice(i, 1);
+              continue;
+            }
+            b.x = nx; b.y = ny;
+
+            // Hit detection — only the shooter's own client resolves eliminations
+            if (b.shooterId === player.id) {
+              let hit = false;
+              for (const p of playersRef.current) {
+                if (p.id === player.id) continue;
+                if (p.role !== 'hider' || p.alive === false) continue;
+                if (eliminatedRef.current.has(p.id)) continue;
+                const ppx = p.id === player.id ? posRef.current.x : p.x;
+                const ppy = p.id === player.id ? posRef.current.y : p.y;
+                if (typeof ppx !== 'number' || typeof ppy !== 'number') continue;
+                const d = Math.hypot(ppx - b.x, ppy - b.y);
+                if (d < BULLET_HIT_RADIUS) {
+                  eliminatedRef.current.add(p.id);
+                  eliminate(p.id);
+                  hit = true;
+                  break;
+                }
+              }
+              if (hit) {
+                bullets.splice(i, 1);
               }
             }
           }
@@ -1425,7 +1779,6 @@
 
         const render = (ctx, canvas) => {
           if (canvas.width === 0 || canvas.height === 0) return;
-          const dpr = window.devicePixelRatio || 1;
           const scale = Math.min(canvas.width / WORLD_W, canvas.height / WORLD_H);
           const offX = (canvas.width - WORLD_W * scale) / 2;
           const offY = (canvas.height - WORLD_H * scale) / 2;
@@ -1460,45 +1813,95 @@
             ctx.strokeRect(w.x, w.y, w.w, w.h);
           }
 
+          // Props (highlight ones the local hider can interact with)
+          const canInteract = myRole === 'hider' && myAlive !== false && !disguiseRef.current;
+          for (const prop of PROPS) {
+            drawProp(ctx, prop.x, prop.y, prop.type);
+            if (canInteract) {
+              const d = Math.hypot(prop.x - posRef.current.x, prop.y - posRef.current.y);
+              if (d <= DISGUISE_RANGE) {
+                ctx.beginPath();
+                ctx.arc(prop.x, prop.y, PROP_RADIUS + 4, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(34,211,238,0.7)';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([4, 3]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+              }
+            }
+          }
+
           // Players
           const players = playersRef.current;
           for (const p of players) {
-            let px, py;
-            if (p.id === player.id) {
+            const isMe = p.id === player.id;
+            let px, py, facing, walking, walkPhase, disguise;
+
+            if (isMe) {
               px = posRef.current.x; py = posRef.current.y;
+              facing = facingRef.current;
+              walking = (keysRef.current.up || keysRef.current.down || keysRef.current.left || keysRef.current.right || joyRef.current.active) && myAlive !== false;
+              walkPhase = walkPhaseRef.current;
+              disguise = disguiseRef.current;
             } else {
               if (typeof p.x !== 'number' || typeof p.y !== 'number') continue;
               px = p.x; py = p.y;
+              facing = 1;
+              walking = false;
+              walkPhase = 0;
+              disguise = p.disguise || null;
             }
 
             const isDead = p.alive === false;
-            const color = isDead ? '#4b5563'
+            const color = isDead ? '#9ca3af'
               : p.role === 'hunter' ? '#f87171'
               : '#22d3ee';
+            const alpha = isDead ? 0.35 : 1;
 
-            ctx.globalAlpha = isDead ? 0.35 : 1;
-
-            // outer ring for "me"
-            if (p.id === player.id) {
-              ctx.beginPath();
-              ctx.arc(px, py, PLAYER_RADIUS + 5, 0, Math.PI * 2);
-              ctx.strokeStyle = '#f59e0b';
-              ctx.lineWidth = 2;
-              ctx.stroke();
+            if (disguise && !isDead) {
+              // Render as the disguised prop instead of a character.
+              drawProp(ctx, px, py, disguise, alpha);
+              // subtle highlight ring for "me" so I can find myself
+              if (isMe) {
+                ctx.beginPath();
+                ctx.arc(px, py, PROP_RADIUS + 6, 0, Math.PI * 2);
+                ctx.strokeStyle = '#f59e0b';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+              }
+            } else {
+              drawCharacter(ctx, px, py, color, { facing, walking, walkPhase, alpha, highlight: isMe });
             }
-
-            ctx.beginPath();
-            ctx.arc(px, py, PLAYER_RADIUS, 0, Math.PI * 2);
-            ctx.fillStyle = color;
-            ctx.fill();
 
             // name label
             ctx.globalAlpha = isDead ? 0.5 : 1;
             ctx.fillStyle = '#e2e8f0';
             ctx.font = '11px "JetBrains Mono", monospace';
             ctx.textAlign = 'center';
-            ctx.fillText(p.name, px, py - PLAYER_RADIUS - 6);
+            ctx.fillText(p.name, px, py - PLAYER_RADIUS - 10);
             ctx.globalAlpha = 1;
+          }
+
+          // Bullets
+          ctx.fillStyle = '#fde047';
+          for (const b of bulletsRef.current) {
+            ctx.beginPath();
+            ctx.arc(b.x, b.y, 4, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          // Aim line for hunter (me)
+          if (myRole === 'hunter' && phase === 'hunting' && myAlive !== false) {
+            const a = aimRef.current;
+            const dx = a.x - posRef.current.x, dy = a.y - posRef.current.y;
+            const len = Math.hypot(dx, dy) || 1;
+            const ndx = dx / len, ndy = dy / len;
+            ctx.beginPath();
+            ctx.moveTo(posRef.current.x + ndx * (PLAYER_RADIUS + 4), posRef.current.y + ndy * (PLAYER_RADIUS + 4));
+            ctx.lineTo(posRef.current.x + ndx * (PLAYER_RADIUS + 40), posRef.current.y + ndy * (PLAYER_RADIUS + 40));
+            ctx.strokeStyle = 'rgba(248,113,113,0.6)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
           }
 
           ctx.restore();
@@ -1550,15 +1953,40 @@
         setJoyKnob({ x: dx, y: dy });
       };
 
+      const ammoPct = Math.round((ammoDisplay / MAX_AMMO) * 100);
+
       return (
         <div ref={wrapRef} className="relative h-64 md:h-96 bg-black border border-white/10 overflow-hidden" style={{ touchAction: 'none' }}>
-          <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
+          <canvas
+            ref={canvasRef} className="absolute inset-0 w-full h-full"
+            onPointerMove={onCanvasPointerMove}
+            onPointerDown={onCanvasPointerDown}
+          />
 
           {/* Legend */}
           <div className="absolute top-2 left-2 flex items-center gap-3 px-2 py-1 bg-black/60 border border-white/10 font-['JetBrains_Mono'] text-[10px] text-gray-300">
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-cyan-400 inline-block"></span>Hider</span>
             <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400 inline-block"></span>Hunter</span>
           </div>
+
+          {/* Ammo HUD (hunters, hunting phase) */}
+          {myRole === 'hunter' && phase === 'hunting' && myAlive !== false && (
+            <div className="absolute top-2 right-2 px-2 py-1 bg-black/60 border border-white/10 font-['JetBrains_Mono'] text-[10px] text-gray-300">
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <span>AMMO</span><span className="text-amber-400">{ammoDisplay}/{MAX_AMMO}</span>
+              </div>
+              <div className="h-1.5 w-20 bg-white/10 rounded-sm overflow-hidden">
+                <div className="h-full bg-amber-500 transition-all" style={{ width: `${ammoPct}%` }} />
+              </div>
+            </div>
+          )}
+
+          {/* Disguise indicator (hiders) */}
+          {myRole === 'hider' && myAlive !== false && (
+            <div className="absolute top-2 right-2 px-2 py-1 bg-black/60 border border-white/10 font-['JetBrains_Mono'] text-[10px] text-gray-300">
+              {disguiseDisplay ? `DISGUISED: ${disguiseDisplay.toUpperCase()} (click to revert)` : 'Click a glowing prop to disguise'}
+            </div>
+          )}
 
           {/* On-screen joystick (touch) */}
           {myAlive !== false && (
