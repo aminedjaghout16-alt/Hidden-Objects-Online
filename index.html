@@ -85,7 +85,6 @@
     const WORLD_H = 700;
     const PLAYER_RADIUS = 14;
     const MOVE_SPEED = 220; // units per second
-    const ELIMINATE_RADIUS = 36; // proximity distance for auto-elimination
 
     // Outer border + interior cross-walls forming a 3x2 grid of rooms with
     // doorway gaps roughly centered on each wall segment.
@@ -1315,10 +1314,25 @@
     }
 
     // ─── Canvas drawing helpers ─────────────────────────────────────────────────
+    // Ground shadow used under characters and props for depth.
+    function drawGroundShadow(ctx, x, y, rx, ry, alpha = 0.35) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.beginPath();
+      ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+      ctx.fillStyle = '#000000';
+      ctx.fill();
+      ctx.restore();
+    }
+
     // Among Us-style bean character: body, visor, optional legs (walk cycle).
     function drawCharacter(ctx, x, y, color, opts = {}) {
       const { facing = 1, walking = false, walkPhase = 0, alpha = 1, highlight = false } = opts;
       const r = PLAYER_RADIUS;
+
+      // Soft ground shadow beneath the character
+      drawGroundShadow(ctx, x, y + r * 1.05, r * 0.9, r * 0.32, 0.35 * alpha);
+
       ctx.save();
       ctx.globalAlpha = alpha;
       ctx.translate(x, y);
@@ -1327,11 +1341,11 @@
       // Legs (simple walk-cycle bob)
       if (walking) {
         const legOffset = Math.sin(walkPhase) * (r * 0.35);
-        ctx.fillStyle = shadeColor(color, -30);
+        ctx.fillStyle = shadeColor(color, -35);
         ctx.fillRect(-r * 0.5, r * 0.55, r * 0.32, r * 0.6 + legOffset);
         ctx.fillRect(r * 0.18, r * 0.55, r * 0.32, r * 0.6 - legOffset);
       } else {
-        ctx.fillStyle = shadeColor(color, -30);
+        ctx.fillStyle = shadeColor(color, -35);
         ctx.fillRect(-r * 0.5, r * 0.55, r * 0.32, r * 0.55);
         ctx.fillRect(r * 0.18, r * 0.55, r * 0.32, r * 0.55);
       }
@@ -1347,30 +1361,45 @@
       ctx.lineTo(-r * 0.45, r * 1.0);
       ctx.quadraticCurveTo(-r * 0.95, r * 1.0, -r * 0.95, r * 0.65);
       ctx.closePath();
-      ctx.fillStyle = color;
+
+      // Glossy vertical gradient fill for a rounder, more 3D look
+      const bodyGrad = ctx.createLinearGradient(0, -r * 1.05, 0, r * 1.0);
+      bodyGrad.addColorStop(0, shadeColor(color, 22));
+      bodyGrad.addColorStop(0.45, color);
+      bodyGrad.addColorStop(1, shadeColor(color, -18));
+      ctx.fillStyle = bodyGrad;
       ctx.fill();
       ctx.lineWidth = 1.5;
-      ctx.strokeStyle = shadeColor(color, -40);
+      ctx.strokeStyle = shadeColor(color, -45);
       ctx.stroke();
 
       // Backpack hint
       ctx.beginPath();
       ctx.ellipse(-r * 0.85, r * 0.05, r * 0.22, r * 0.4, 0, 0, Math.PI * 2);
-      ctx.fillStyle = shadeColor(color, -20);
+      ctx.fillStyle = shadeColor(color, -22);
+      ctx.fill();
+
+      // Top highlight sheen (matte plastic look)
+      ctx.beginPath();
+      ctx.ellipse(-r * 0.15, -r * 0.7, r * 0.6, r * 0.28, -0.2, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.18)';
       ctx.fill();
 
       // Visor
       ctx.beginPath();
       ctx.ellipse(r * 0.15, -r * 0.25, r * 0.55, r * 0.38, -0.15, 0, Math.PI * 2);
-      ctx.fillStyle = '#bfe9ff';
+      const visorGrad = ctx.createLinearGradient(r * 0.15 - r * 0.55, -r * 0.25 - r * 0.38, r * 0.15 + r * 0.55, -r * 0.25 + r * 0.38);
+      visorGrad.addColorStop(0, '#d8f3ff');
+      visorGrad.addColorStop(1, '#7fb8d9');
+      ctx.fillStyle = visorGrad;
       ctx.fill();
       ctx.lineWidth = 1.5;
-      ctx.strokeStyle = '#5b8fae';
+      ctx.strokeStyle = '#4a7a99';
       ctx.stroke();
       // visor shine
       ctx.beginPath();
       ctx.ellipse(r * 0.05, -r * 0.38, r * 0.18, r * 0.08, -0.3, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.fillStyle = 'rgba(255,255,255,0.75)';
       ctx.fill();
 
       if (highlight) {
@@ -1378,7 +1407,10 @@
         ctx.ellipse(0, 0, r * 1.35, r * 1.35, 0, 0, Math.PI * 2);
         ctx.strokeStyle = '#f59e0b';
         ctx.lineWidth = 2;
+        ctx.shadowColor = 'rgba(245,158,11,0.6)';
+        ctx.shadowBlur = 6;
         ctx.stroke();
+        ctx.shadowBlur = 0;
       }
 
       ctx.restore();
@@ -1397,62 +1429,141 @@
 
     // Draw a prop icon (plant, lamp, tv, crate, trash) at the given world position.
     function drawProp(ctx, x, y, type, alpha = 1) {
+      // Ground shadow shared by all props
+      const shadowSizes = {
+        plant: [22, 9], lamp: [16, 7], tv: [24, 9], crate: [20, 9], trash: [14, 7],
+      };
+      const [sx, sy] = shadowSizes[type] || [16, 7];
+      drawGroundShadow(ctx, x, y + sy * 1.4, sx, sy, 0.32 * alpha);
+
       ctx.save();
       ctx.globalAlpha = alpha;
       ctx.translate(x, y);
       switch (type) {
         case 'plant': {
+          // Pot with gradient + rim
+          const potGrad = ctx.createLinearGradient(0, 6, 0, 22);
+          potGrad.addColorStop(0, '#9a6b3f');
+          potGrad.addColorStop(1, '#6b4423');
+          ctx.fillStyle = potGrad;
+          ctx.beginPath();
+          ctx.moveTo(-13, 6); ctx.lineTo(13, 6); ctx.lineTo(10, 22); ctx.lineTo(-10, 22);
+          ctx.closePath();
+          ctx.fill();
           ctx.fillStyle = '#7a5230';
-          ctx.fillRect(-12, 6, 24, 16);
-          ctx.fillStyle = '#22c55e';
+          ctx.fillRect(-14, 3, 28, 5);
+
+          // Leaves — layered ellipses with two-tone green
           for (let i = -2; i <= 2; i++) {
             ctx.beginPath();
             ctx.ellipse(i * 7, -6 + Math.abs(i) * 3, 9, 16, i * 0.3, 0, Math.PI * 2);
+            ctx.fillStyle = i % 2 === 0 ? '#22c55e' : '#16a34a';
+            ctx.fill();
+            // leaf vein highlight
+            ctx.beginPath();
+            ctx.ellipse(i * 7 - 2, -10 + Math.abs(i) * 3, 3, 9, i * 0.3, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.15)';
             ctx.fill();
           }
           break;
         }
         case 'lamp': {
-          ctx.fillStyle = '#52525b';
+          // Pole
+          const poleGrad = ctx.createLinearGradient(-3, 0, 3, 0);
+          poleGrad.addColorStop(0, '#3f3f46');
+          poleGrad.addColorStop(0.5, '#71717a');
+          poleGrad.addColorStop(1, '#3f3f46');
+          ctx.fillStyle = poleGrad;
           ctx.fillRect(-3, 0, 6, 26);
+          // base
+          ctx.fillStyle = '#27272a';
+          ctx.beginPath();
+          ctx.ellipse(0, 26, 10, 3.5, 0, 0, Math.PI * 2);
+          ctx.fill();
+          // shade
           ctx.beginPath();
           ctx.moveTo(-16, 0);
           ctx.lineTo(16, 0);
           ctx.lineTo(10, -22);
           ctx.lineTo(-10, -22);
           ctx.closePath();
-          ctx.fillStyle = '#fde68a';
+          const shadeGrad = ctx.createLinearGradient(0, -22, 0, 0);
+          shadeGrad.addColorStop(0, '#fff3c4');
+          shadeGrad.addColorStop(1, '#fbbf24');
+          ctx.fillStyle = shadeGrad;
           ctx.fill();
           ctx.strokeStyle = '#a16207';
           ctx.lineWidth = 1.5;
           ctx.stroke();
+          // glow
+          ctx.beginPath();
+          ctx.ellipse(0, -11, 18, 18, 0, 0, Math.PI * 2);
+          const glowGrad = ctx.createRadialGradient(0, -11, 2, 0, -11, 18);
+          glowGrad.addColorStop(0, 'rgba(253,224,71,0.5)');
+          glowGrad.addColorStop(1, 'rgba(253,224,71,0)');
+          ctx.fillStyle = glowGrad;
+          ctx.fill();
           break;
         }
         case 'tv': {
+          // Stand
+          ctx.fillStyle = '#27272a';
+          ctx.fillRect(-7, 12, 14, 6);
           ctx.fillStyle = '#18181b';
+          ctx.beginPath();
+          ctx.ellipse(0, 19, 14, 3, 0, 0, Math.PI * 2);
+          ctx.fill();
+          // Body with gradient
+          const tvGrad = ctx.createLinearGradient(0, -16, 0, 12);
+          tvGrad.addColorStop(0, '#3f3f46');
+          tvGrad.addColorStop(1, '#0f0f12');
+          ctx.fillStyle = tvGrad;
           ctx.fillRect(-22, -16, 44, 28);
-          ctx.fillStyle = '#38bdf8';
-          ctx.globalAlpha = alpha * 0.7;
+          // Screen with glow gradient
+          const screenGrad = ctx.createLinearGradient(-18, -12, 18, 8);
+          screenGrad.addColorStop(0, '#7dd3fc');
+          screenGrad.addColorStop(0.5, '#38bdf8');
+          screenGrad.addColorStop(1, '#0ea5e9');
+          ctx.fillStyle = screenGrad;
+          ctx.globalAlpha = alpha * 0.85;
           ctx.fillRect(-18, -12, 36, 20);
           ctx.globalAlpha = alpha;
-          ctx.fillStyle = '#3f3f46';
-          ctx.fillRect(-6, 12, 12, 6);
+          // screen scanline
+          ctx.fillStyle = 'rgba(255,255,255,0.25)';
+          ctx.fillRect(-18, -12, 36, 3);
+          // bezel highlight
+          ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(-22, -16, 44, 28);
           break;
         }
         case 'crate': {
-          ctx.fillStyle = '#a16207';
+          const crateGrad = ctx.createLinearGradient(-18, -18, 18, 18);
+          crateGrad.addColorStop(0, '#c98b2e');
+          crateGrad.addColorStop(1, '#8a5a18');
+          ctx.fillStyle = crateGrad;
           ctx.fillRect(-18, -18, 36, 36);
-          ctx.strokeStyle = '#713f12';
+          ctx.strokeStyle = '#5c3b10';
           ctx.lineWidth = 2;
           ctx.strokeRect(-18, -18, 36, 36);
+          // diagonal planks
           ctx.beginPath();
           ctx.moveTo(-18, -18); ctx.lineTo(18, 18);
           ctx.moveTo(18, -18); ctx.lineTo(-18, 18);
           ctx.stroke();
+          // metal corner brackets
+          ctx.fillStyle = 'rgba(255,255,255,0.18)';
+          ctx.fillRect(-18, -18, 8, 3);
+          ctx.fillRect(-18, -18, 3, 8);
+          ctx.fillRect(10, 15, 8, 3);
+          ctx.fillRect(15, 10, 3, 8);
           break;
         }
         case 'trash': {
-          ctx.fillStyle = '#52525b';
+          const trashGrad = ctx.createLinearGradient(-14, -16, 14, 18);
+          trashGrad.addColorStop(0, '#71717a');
+          trashGrad.addColorStop(1, '#3f3f46');
+          ctx.fillStyle = trashGrad;
           ctx.beginPath();
           ctx.moveTo(-14, -16);
           ctx.lineTo(14, -16);
@@ -1460,8 +1571,20 @@
           ctx.lineTo(-11, 18);
           ctx.closePath();
           ctx.fill();
-          ctx.fillStyle = '#71717a';
+          // vertical ribs
+          ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+          ctx.lineWidth = 1;
+          for (let i = -1; i <= 1; i++) {
+            ctx.beginPath();
+            ctx.moveTo(i * 7, -14);
+            ctx.lineTo(i * 6, 16);
+            ctx.stroke();
+          }
+          // lid
+          ctx.fillStyle = '#a1a1aa';
           ctx.fillRect(-17, -20, 34, 6);
+          ctx.fillStyle = 'rgba(255,255,255,0.25)';
+          ctx.fillRect(-17, -20, 34, 2);
           break;
         }
         default: {
@@ -1790,12 +1913,25 @@
           ctx.translate(offX, offY);
           ctx.scale(scale, scale);
 
-          // Floor
-          ctx.fillStyle = '#13131c';
+          // Floor base
+          ctx.fillStyle = '#15151f';
           ctx.fillRect(0, 0, WORLD_W, WORLD_H);
 
-          // Floor grid
-          ctx.strokeStyle = 'rgba(245,158,11,0.05)';
+          // Per-room subtle color tint (3x2 grid) for visual variety
+          const roomColors = [
+            'rgba(245,158,11,0.035)', 'rgba(34,211,238,0.03)', 'rgba(168,85,247,0.03)',
+            'rgba(34,197,94,0.03)',   'rgba(248,113,113,0.03)', 'rgba(250,204,21,0.03)',
+          ];
+          const colW = WORLD_W / 3, rowH = WORLD_H / 2;
+          for (let row = 0; row < 2; row++) {
+            for (let col = 0; col < 3; col++) {
+              ctx.fillStyle = roomColors[row * 3 + col];
+              ctx.fillRect(col * colW, row * rowH, colW, rowH);
+            }
+          }
+
+          // Floor tile grid
+          ctx.strokeStyle = 'rgba(255,255,255,0.035)';
           ctx.lineWidth = 1;
           for (let x = 0; x <= WORLD_W; x += 50) {
             ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, WORLD_H); ctx.stroke();
@@ -1804,13 +1940,33 @@
             ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WORLD_W, y); ctx.stroke();
           }
 
-          // Walls
-          ctx.fillStyle = '#3f3f4d';
-          ctx.strokeStyle = 'rgba(245,158,11,0.25)';
-          ctx.lineWidth = 1;
+          // Subtle vignette to focus attention toward center
+          const vignette = ctx.createRadialGradient(WORLD_W / 2, WORLD_H / 2, WORLD_H * 0.25, WORLD_W / 2, WORLD_H / 2, WORLD_H * 0.85);
+          vignette.addColorStop(0, 'rgba(0,0,0,0)');
+          vignette.addColorStop(1, 'rgba(0,0,0,0.35)');
+          ctx.fillStyle = vignette;
+          ctx.fillRect(0, 0, WORLD_W, WORLD_H);
+
+          // Walls — top-down blocks with depth shading and amber edge glow
           for (const w of WALLS) {
+            // drop shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.35)';
+            ctx.fillRect(w.x + 3, w.y + 3, w.w, w.h);
+
+            const wallGrad = ctx.createLinearGradient(w.x, w.y, w.x, w.y + w.h);
+            wallGrad.addColorStop(0, '#4b4b5c');
+            wallGrad.addColorStop(1, '#34343f');
+            ctx.fillStyle = wallGrad;
             ctx.fillRect(w.x, w.y, w.w, w.h);
-            ctx.strokeRect(w.x, w.y, w.w, w.h);
+
+            // top highlight edge
+            ctx.fillStyle = 'rgba(255,255,255,0.08)';
+            ctx.fillRect(w.x, w.y, w.w, Math.min(2, w.h));
+
+            // amber outline
+            ctx.strokeStyle = 'rgba(245,158,11,0.22)';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(w.x + 0.5, w.y + 0.5, w.w - 1, w.h - 1);
           }
 
           // Props (highlight ones the local hider can interact with)
@@ -1882,12 +2038,24 @@
             ctx.globalAlpha = 1;
           }
 
-          // Bullets
-          ctx.fillStyle = '#fde047';
+          // Bullets — glowing tracer with trail
           for (const b of bulletsRef.current) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(b.x, b.y);
+            ctx.lineTo(b.x - b.dx * 14, b.y - b.dy * 14);
+            ctx.strokeStyle = 'rgba(253,224,71,0.4)';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
             ctx.beginPath();
             ctx.arc(b.x, b.y, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#fde047';
+            ctx.shadowColor = 'rgba(253,224,71,0.9)';
+            ctx.shadowBlur = 8;
             ctx.fill();
+            ctx.restore();
           }
 
           // Aim line for hunter (me)
