@@ -188,6 +188,16 @@
         if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
       }, [chatMessages]);
 
+      // Switch to the PLAY tab whenever the game leaves the lobby phase, so
+      // players who created/joined from the Private Operation tab still see
+      // the GameView (hiding/hunting/ended) instead of being stuck on a tab
+      // that only renders the lobby.
+      useEffect(() => {
+        if (room && phase !== 'lobby') {
+          setActiveTab('play');
+        }
+      }, [phase, room]);
+
       // Countdown timer for hiding phase
       useEffect(() => {
         if (phase === 'hiding' && room?.hideEndsAt) {
@@ -418,13 +428,20 @@
             .map(([id, v]) => ({ id, ts: v.ts }))
             .sort((a, b) => a.ts - b.ts);
 
+          console.log('[queue] snapshot', entries.map(e => ({ id: e.id.slice(0,6), ts: e.ts })));
+
           const myIndex = entries.findIndex(e => e.id === player.id);
           if (myIndex === -1) return; // we've left the queue
           setQueuePos(myIndex + 1);
 
           // The earliest-queued player acts as matchmaker once 2+ are present
           if (myIndex === 0 && entries.length >= 2) {
-            await tryMakeMatch(entries);
+            console.log('[queue] attempting match as matchmaker', player.id.slice(0,6));
+            try {
+              await tryMakeMatch(entries);
+            } catch (e) {
+              console.error('[queue] tryMakeMatch failed:', e);
+            }
           }
         });
 
@@ -438,12 +455,14 @@
         // Take up to 8 earliest players (including self) and form a match.
         const group = entries.slice(0, Math.min(8, entries.length));
         const ids = group.map(e => e.id);
+        console.log('[match] group', ids.map(i => i.slice(0,6)));
 
         // Use a transaction that aborts (returns undefined) if this slot was
         // already claimed/removed by another matchmaker — only a successful
         // claim (existing value -> null) counts as "committed".
         const lockRef = db.ref(`queue/${ids[0]}`);
         const lockResult = await lockRef.transaction(v => (v ? null : undefined));
+        console.log('[match] lock result', lockResult.committed);
         if (!lockResult.committed) {
           // someone else already claimed/removed this slot
           return;
@@ -454,6 +473,7 @@
         if (Object.keys(restRemovals).length) {
           await db.ref().update(restRemovals);
         }
+        console.log('[match] removed rest from queue');
 
         // Fetch player profiles for role assignment + display
         const profiles = await Promise.all(ids.map(async id => {
@@ -461,6 +481,7 @@
           const d = s.val() || {};
           return { id, name: d.name || 'Agent', level: d.level || 1 };
         }));
+        console.log('[match] profiles fetched', profiles.length);
 
         // Assign roles: ~1/4 hunters (min 1), rest hiders
         const shuffled = [...profiles].sort(() => Math.random() - 0.5);
@@ -489,19 +510,23 @@
         };
 
         await db.ref(`rooms/${code}`).set(roomData);
+        console.log('[match] room created', code);
 
         // Point each matched player at the new room via a per-player pointer
         const pointerUpdates = {};
         ids.forEach(id => { pointerUpdates[`matchPointers/${id}`] = code; });
         await db.ref().update(pointerUpdates);
+        console.log('[match] pointers set', pointerUpdates);
       }
 
       // Watch for a match pointer being set for us while in queue
       useEffect(() => {
         if (phase !== 'queue' || !player.id) return;
         const ptrRef = db.ref(`matchPointers/${player.id}`);
+        console.log('[match] listening for pointer', player.id.slice(0,6));
         const cb = ptrRef.on('value', async snap => {
           const code = snap.val();
+          console.log('[match] pointer snapshot', code);
           if (!code) return;
           await ptrRef.remove();
           subscribeToRoom(code);
