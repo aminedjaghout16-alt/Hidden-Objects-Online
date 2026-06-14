@@ -35,15 +35,43 @@
 <body>
   <div id="root"></div>
 
+  <!-- Firebase (compat SDK — works with Babel standalone, no bundler needed) -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+
   <script type="text/babel">
     const { useState, useEffect, useRef, useCallback } = React;
 
-    // ─── WebSocket URL ──────────────────────────────────────────────────────────
-    // After deploying to Railway, replace this with your Railway URL:
-    // const WS_URL = 'wss://your-app.railway.app';
-    const WS_URL = window.location.hostname === 'localhost'
-      ? 'ws://localhost:8080'
-      : 'wss://YOUR_RAILWAY_URL_HERE';  // ← replace after Step 3
+    // ─── Firebase setup ─────────────────────────────────────────────────────────
+    const firebaseConfig = {
+      apiKey: "AIzaSyBaO0G1A-GN-uIRbSBTuBOIID11anNYL5o",
+      authDomain: "prop-hunt-protocol.firebaseapp.com",
+      databaseURL: "https://prop-hunt-protocol-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "prop-hunt-protocol",
+      storageBucket: "prop-hunt-protocol.firebasestorage.app",
+      messagingSenderId: "599873832331",
+      appId: "1:599873832331:web:2529e8fee1c1353e285b8e"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db   = firebase.database();
+
+    const LEVEL_XP = 1000; // xp needed per level (flat, simple curve)
+    const HIDE_SECONDS = 30;
+
+    function genRoomCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let code = '';
+      for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+      return code;
+    }
+
+    function randomName() {
+      return 'Agent-' + Math.floor(1000 + Math.random() * 9000);
+    }
+
+    const MAPS = ['Office Complex', 'Warehouse', 'Library', 'Shopping Mall'];
 
     // ─── Main App ───────────────────────────────────────────────────────────────
     function PropHuntLobby() {
@@ -51,7 +79,7 @@
       const [conn, setConn]             = useState('connecting'); // connecting | online | offline
       const [player, setPlayer]         = useState({
         id: null, name: 'Connecting...', level: 1,
-        xp: 0, xpToNext: 1000, wins: 0, losses: 0,
+        xp: 0, xpToNext: LEVEL_XP, wins: 0, losses: 0,
       });
       const [room, setRoom]             = useState(null);
       const [phase, setPhase]           = useState('lobby'); // lobby|queue|hiding|hunting|ended
@@ -66,8 +94,14 @@
         map: 'Office Complex', timeLimit: 180, maxPlayers: 8
       });
       const [countdown, setCountdown]   = useState(null);
-      const wsRef  = useRef(null);
-      const chatRef = useRef(null);
+
+      const uidRef        = useRef(null);
+      const roomCodeRef   = useRef(null);
+      const chatRef       = useRef(null);
+      const roomRef       = useRef(null);   // current room DB ref (for listeners/cleanup)
+      const queueRef      = useRef(null);   // queue DB ref
+      const handledEndRef = useRef(false);  // guards GAME_ENDED stats write
+      const lastRoomRef   = useRef(null);   // last room snapshot for diffing join/leave
 
       // ── Notification helper ─────────────────────────────────────────────────
       const notify = useCallback((msg, color = 'amber') => {
@@ -75,25 +109,78 @@
         setTimeout(() => setNotif(null), 3500);
       }, []);
 
-      // ── WebSocket setup ──────────────────────────────────────────────────────
+      // ── Auth + player profile ────────────────────────────────────────────────
       useEffect(() => {
-        function connect() {
-          const ws = new WebSocket(WS_URL);
-          wsRef.current = ws;
+        const unsub = auth.onAuthStateChanged(user => {
+          if (user) {
+            uidRef.current = user.uid;
+            initPlayer(user.uid);
+          }
+        });
 
-          ws.onopen = () => setConn('online');
-          ws.onclose = () => {
-            setConn('offline');
-            setTimeout(connect, 3000);
-          };
+        auth.signInAnonymously().catch(err => {
+          console.error('Auth error:', err);
+          setConn('offline');
+          notify('Failed to connect to server', 'red');
+        });
 
-          ws.onmessage = (e) => {
-            const msg = JSON.parse(e.data);
-            handleMessage(msg);
+        return () => unsub();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, []);
+
+      async function initPlayer(uid) {
+        const ref = db.ref(`players/${uid}`);
+        const snap = await ref.get();
+        let data;
+        if (!snap.exists()) {
+          data = {
+            name: randomName(), level: 1, xp: 0,
+            wins: 0, losses: 0, createdAt: firebase.database.ServerValue.TIMESTAMP,
           };
+          await ref.set(data);
+        } else {
+          data = snap.val();
         }
-        connect();
-        return () => wsRef.current?.close();
+
+        setPlayer(p => ({
+          ...p, id: uid,
+          name: data.name || randomName(),
+          level: data.level || 1,
+          xp: data.xp || 0,
+          xpToNext: (data.level || 1) * LEVEL_XP,
+          wins: data.wins || 0,
+          losses: data.losses || 0,
+        }));
+        setConn('online');
+
+        // Live-sync player profile (in case stats change e.g. from another tab)
+        ref.on('value', s => {
+          const d = s.val();
+          if (!d) return;
+          setPlayer(p => ({
+            ...p,
+            name: d.name || p.name,
+            level: d.level || 1,
+            xp: d.xp || 0,
+            xpToNext: (d.level || 1) * LEVEL_XP,
+            wins: d.wins || 0,
+            losses: d.losses || 0,
+          }));
+        });
+      }
+
+      // ── Connection state monitoring ─────────────────────────────────────────
+      useEffect(() => {
+        const connectedRef = db.ref('.info/connected');
+        const cb = (snap) => {
+          if (snap.val() === true) {
+            setConn('online');
+          } else {
+            setConn('offline');
+          }
+        };
+        connectedRef.on('value', cb);
+        return () => connectedRef.off('value', cb);
       }, []);
 
       // Auto-scroll chat
@@ -103,134 +190,452 @@
 
       // Countdown timer for hiding phase
       useEffect(() => {
-        if (phase === 'hiding') {
-          setCountdown(30);
-          const iv = setInterval(() => setCountdown(c => {
-            if (c <= 1) { clearInterval(iv); return null; }
-            return c - 1;
-          }), 1000);
+        if (phase === 'hiding' && room?.hideEndsAt) {
+          const tick = () => {
+            const remaining = Math.ceil((room.hideEndsAt - Date.now()) / 1000);
+            setCountdown(Math.max(0, remaining));
+          };
+          tick();
+          const iv = setInterval(tick, 1000);
           return () => clearInterval(iv);
+        } else if (phase !== 'hiding') {
+          setCountdown(null);
         }
+      }, [phase, room?.hideEndsAt]);
+
+      // ── Host-side phase transition watchers ─────────────────────────────────
+      // Hiding → Hunting, once the timer expires (any client can do this safely
+      // via transaction, but we let only the host attempt it to avoid spam).
+      useEffect(() => {
+        if (!room || phase !== 'hiding' || !room.hideEndsAt) return;
+        const isHost = room.hostId === player.id;
+        if (!isHost) return;
+
+        const remaining = room.hideEndsAt - Date.now();
+        if (remaining <= 0) {
+          transitionToHunting();
+          return;
+        }
+        const t = setTimeout(transitionToHunting, remaining + 50);
+        return () => clearTimeout(t);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [room?.hideEndsAt, phase, room?.hostId, player.id]);
+
+      async function transitionToHunting() {
+        const code = roomCodeRef.current;
+        if (!code) return;
+        const ref = db.ref(`rooms/${code}`);
+        await ref.transaction(r => {
+          if (!r) return r;
+          if (r.phase !== 'hiding') return r; // already transitioned
+          r.phase = 'hunting';
+          r.huntEndsAt = Date.now() + (r.timeLimit || 180) * 1000;
+          return r;
+        });
+      }
+
+      // Hunting → Ended, when timer expires (hiders win) — host-driven.
+      useEffect(() => {
+        if (!room || phase !== 'hunting' || !room.huntEndsAt) return;
+        const isHost = room.hostId === player.id;
+        if (!isHost) return;
+
+        const remaining = room.huntEndsAt - Date.now();
+        if (remaining <= 0) {
+          endGame('hiders');
+          return;
+        }
+        const t = setTimeout(() => endGame('hiders'), remaining + 50);
+        return () => clearTimeout(t);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [room?.huntEndsAt, phase, room?.hostId, player.id]);
+
+      // Check win condition whenever players change (all hiders eliminated → hunters win)
+      useEffect(() => {
+        if (!room || phase !== 'hunting') return;
+        const isHost = room.hostId === player.id;
+        if (!isHost) return;
+
+        const playersArr = room.players || [];
+        const hiders = playersArr.filter(p => p.role === 'hider');
+        if (hiders.length > 0 && hiders.every(p => p.alive === false)) {
+          endGame('hunters');
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [room?.players, phase, room?.hostId, player.id]);
+
+      async function endGame(winnerSide) {
+        const code = roomCodeRef.current;
+        if (!code) return;
+        const ref = db.ref(`rooms/${code}`);
+        await ref.transaction(r => {
+          if (!r) return r;
+          if (r.phase === 'ended') return r;
+          r.phase = 'ended';
+          r.winner = winnerSide;
+          return r;
+        });
+      }
+
+      // ── Award XP / stats once game ends (each client updates own record) ────
+      useEffect(() => {
+        if (phase !== 'ended' || !room || handledEndRef.current) return;
+        handledEndRef.current = true;
+
+        const me = (room.players || []).find(p => p.id === player.id);
+        if (!me) return;
+        const won = (room.winner === 'hunters' && me.role === 'hunter')
+                 || (room.winner === 'hiders'  && me.role === 'hider');
+
+        const xpGained = won ? 250 : 75;
+
+        const ref = db.ref(`players/${player.id}`);
+        ref.transaction(p => {
+          if (!p) p = { name: player.name, level: 1, xp: 0, wins: 0, losses: 0 };
+          p.xp = (p.xp || 0) + xpGained;
+          p.level = p.level || 1;
+          while (p.xp >= p.level * LEVEL_XP) {
+            p.xp -= p.level * LEVEL_XP;
+            p.level += 1;
+          }
+          if (won) p.wins = (p.wins || 0) + 1;
+          else p.losses = (p.losses || 0) + 1;
+          return p;
+        });
+
+        setXpPopup({ xpGained, won });
+        setTimeout(() => setXpPopup(null), 4000);
+      }, [phase, room, player.id, player.name]);
+
+      // Reset the "handled end" guard whenever we leave the ended phase / room
+      useEffect(() => {
+        if (phase !== 'ended') handledEndRef.current = false;
       }, [phase]);
 
-      function send(type, payload = {}) {
-        if (wsRef.current?.readyState === WebSocket.OPEN) {
-          wsRef.current.send(JSON.stringify({ type, payload }));
-        }
-      }
+      // ── Room subscription ───────────────────────────────────────────────────
+      function subscribeToRoom(code) {
+        unsubscribeFromRoom();
+        roomCodeRef.current = code;
+        const ref = db.ref(`rooms/${code}`);
+        roomRef.current = ref;
 
-      function handleMessage(msg) {
-        switch (msg.type) {
-          case 'CONNECTED':
-            setPlayer(p => ({ ...p, ...msg }));
-            setConn('online');
-            break;
+        ref.on('value', snap => {
+          const data = snap.val();
+          if (!data) {
+            // room was deleted (e.g. host left / emptied)
+            notify('Room closed', 'red');
+            leaveRoomCleanup();
+            return;
+          }
 
-          case 'NAME_SET':
-            setPlayer(p => ({ ...p, name: msg.name }));
-            break;
+          const players = data.players || {};
+          const playersArr = Object.values(players).sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0));
+          const newRoom = { ...data, code, players: playersArr };
 
-          case 'IN_QUEUE':
-            setPhase('queue');
-            setQueuePos(msg.position);
-            break;
+          // Detect join/leave/phase changes for notifications
+          const prev = lastRoomRef.current;
+          if (prev) {
+            const prevIds = new Set((prev.players || []).map(p => p.id));
+            const newIds  = new Set(playersArr.map(p => p.id));
 
-          case 'LEFT_QUEUE':
-            setPhase('lobby');
-            break;
-
-          case 'MATCH_FOUND':
-            setRoom(msg.room);
-            setPhase('lobby');
-            notify('Match found! Game starting in 5s...', 'cyan');
-            break;
-
-          case 'ROOM_CREATED':
-            setRoom(msg.room);
-            setPhase('lobby');
-            notify(`Room created: ${msg.room.code}`, 'amber');
-            break;
-
-          case 'ROOM_JOINED':
-            setRoom(msg.room);
-            setPhase('lobby');
-            setChatMsgs([]);
-            notify(`Joined room ${msg.room.code}`, 'cyan');
-            break;
-
-          case 'PLAYER_JOINED':
-            setRoom(msg.room);
-            notify(`${msg.room.players.at(-1)?.name} joined`, 'cyan');
-            break;
-
-          case 'PLAYER_LEFT':
-            setRoom(msg.room);
-            notify('A player left the room', 'red');
-            break;
-
-          case 'LEFT_ROOM':
-            setRoom(null);
-            setPhase('lobby');
-            setChatMsgs([]);
-            break;
-
-          case 'GAME_STARTED':
-            setRoom(msg.room);
-            setPhase('hiding');
-            notify('Game started! HIDE NOW!', 'amber');
-            break;
-
-          case 'HUNTING_STARTED':
-            setRoom(msg.room);
-            setPhase('hunting');
-            setCountdown(null);
-            notify('Hunting phase begins!', 'red');
-            break;
-
-          case 'PLAYER_ELIMINATED':
-            setRoom(msg.room);
-            if (msg.playerId === wsRef.current?._playerId) {
-              notify('You were eliminated!', 'red');
-            } else {
-              notify('A hider was eliminated!', 'amber');
+            for (const p of playersArr) {
+              if (!prevIds.has(p.id) && p.id !== player.id) {
+                notify(`${p.name} joined`, 'cyan');
+              }
             }
-            break;
+            for (const p of (prev.players || [])) {
+              if (!newIds.has(p.id) && p.id !== player.id) {
+                notify('A player left the room', 'red');
+              }
+            }
 
-          case 'GAME_ENDED':
-            setRoom(msg.room);
-            setPhase('ended');
-            setWinner(msg.winner);
-            break;
+            if (prev.phase !== newRoom.phase) {
+              if (newRoom.phase === 'hiding') notify('Game started! HIDE NOW!', 'amber');
+              if (newRoom.phase === 'hunting') notify('Hunting phase begins!', 'red');
+            }
 
-          case 'STATS_UPDATED':
-            setPlayer(p => ({ ...p, ...msg }));
-            setXpPopup({ xpGained: msg.xpGained, won: msg.won });
-            setTimeout(() => setXpPopup(null), 4000);
-            break;
+            // Eliminations
+            if (newRoom.phase === 'hunting') {
+              for (const p of playersArr) {
+                const prevP = (prev.players || []).find(pp => pp.id === p.id);
+                if (prevP && prevP.alive !== false && p.alive === false) {
+                  if (p.id === player.id) notify('You were eliminated!', 'red');
+                  else notify(`${p.name} was eliminated!`, 'amber');
+                }
+              }
+            }
+          }
 
-          case 'CHAT_MESSAGE':
-            setChatMsgs(prev => [...prev.slice(-99), msg]);
-            break;
+          lastRoomRef.current = newRoom;
+          setRoom(newRoom);
+          setPhase(newRoom.phase || 'lobby');
+          setWinner(newRoom.winner || null);
+        });
 
-          case 'ERROR':
-            notify(msg.message, 'red');
-            break;
+        // Chat subscription
+        ref.child('chat').limitToLast(100).on('value', snap => {
+          const data = snap.val() || {};
+          const msgs = Object.values(data).sort((a, b) => (a.ts || 0) - (b.ts || 0));
+          setChatMsgs(msgs);
+        });
+
+        // Remove player from room if they disconnect unexpectedly
+        if (uidRef.current) {
+          ref.child(`players/${uidRef.current}`).onDisconnect().remove();
         }
       }
+
+      function unsubscribeFromRoom() {
+        if (roomRef.current) {
+          roomRef.current.off();
+          roomRef.current.child('chat').off();
+          if (uidRef.current) roomRef.current.child(`players/${uidRef.current}`).onDisconnect().cancel();
+          roomRef.current = null;
+        }
+        roomCodeRef.current = null;
+        lastRoomRef.current = null;
+      }
+
+      function leaveRoomCleanup() {
+        unsubscribeFromRoom();
+        setRoom(null);
+        setPhase('lobby');
+        setWinner(null);
+        setChatMsgs([]);
+        handledEndRef.current = false;
+      }
+
+      // ── Queue subscription / matchmaking ────────────────────────────────────
+      useEffect(() => {
+        if (phase !== 'queue' || !player.id) return;
+
+        const qRef = db.ref('queue');
+        queueRef.current = qRef;
+
+        const cb = qRef.on('value', async snap => {
+          const data = snap.val() || {};
+          const entries = Object.entries(data)
+            .map(([id, v]) => ({ id, ts: v.ts }))
+            .sort((a, b) => a.ts - b.ts);
+
+          const myIndex = entries.findIndex(e => e.id === player.id);
+          if (myIndex === -1) return; // we've left the queue
+          setQueuePos(myIndex + 1);
+
+          // The earliest-queued player acts as matchmaker once 2+ are present
+          if (myIndex === 0 && entries.length >= 2) {
+            await tryMakeMatch(entries);
+          }
+        });
+
+        return () => {
+          db.ref('queue').off('value', cb);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [phase, player.id]);
+
+      async function tryMakeMatch(entries) {
+        // Take up to 8 earliest players (including self) and form a match.
+        const group = entries.slice(0, Math.min(8, entries.length));
+        const ids = group.map(e => e.id);
+
+        // Use a transaction that aborts (returns undefined) if this slot was
+        // already claimed/removed by another matchmaker — only a successful
+        // claim (existing value -> null) counts as "committed".
+        const lockRef = db.ref(`queue/${ids[0]}`);
+        const lockResult = await lockRef.transaction(v => (v ? null : undefined));
+        if (!lockResult.committed) {
+          // someone else already claimed/removed this slot
+          return;
+        }
+        // We own the role of matchmaker. Remove the rest of the group from queue.
+        const restRemovals = {};
+        ids.slice(1).forEach(id => { restRemovals[`queue/${id}`] = null; });
+        if (Object.keys(restRemovals).length) {
+          await db.ref().update(restRemovals);
+        }
+
+        // Fetch player profiles for role assignment + display
+        const profiles = await Promise.all(ids.map(async id => {
+          const s = await db.ref(`players/${id}`).get();
+          const d = s.val() || {};
+          return { id, name: d.name || 'Agent', level: d.level || 1 };
+        }));
+
+        // Assign roles: ~1/4 hunters (min 1), rest hiders
+        const shuffled = [...profiles].sort(() => Math.random() - 0.5);
+        const hunterCount = Math.max(1, Math.floor(shuffled.length / 4));
+        const roomPlayers = {};
+        shuffled.forEach((p, i) => {
+          roomPlayers[p.id] = {
+            id: p.id, name: p.name, level: p.level,
+            role: i < hunterCount ? 'hunter' : 'hider',
+            alive: true,
+            joinedAt: Date.now() + i, // preserve a stable order
+          };
+        });
+
+        const code = genRoomCode();
+        const roomData = {
+          code, hostId: ids[0],
+          map: MAPS[Math.floor(Math.random() * MAPS.length)],
+          maxPlayers: shuffled.length,
+          timeLimit: 180,
+          phase: 'hiding',
+          hideEndsAt: Date.now() + HIDE_SECONDS * 1000,
+          createdAt: firebase.database.ServerValue.TIMESTAMP,
+          players: roomPlayers,
+          matched: true,
+        };
+
+        await db.ref(`rooms/${code}`).set(roomData);
+
+        // Point each matched player at the new room via a per-player pointer
+        const pointerUpdates = {};
+        ids.forEach(id => { pointerUpdates[`matchPointers/${id}`] = code; });
+        await db.ref().update(pointerUpdates);
+      }
+
+      // Watch for a match pointer being set for us while in queue
+      useEffect(() => {
+        if (phase !== 'queue' || !player.id) return;
+        const ptrRef = db.ref(`matchPointers/${player.id}`);
+        const cb = ptrRef.on('value', async snap => {
+          const code = snap.val();
+          if (!code) return;
+          await ptrRef.remove();
+          subscribeToRoom(code);
+          notify('Match found! Game starting...', 'cyan');
+        });
+        return () => ptrRef.off('value', cb);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [phase, player.id]);
 
       // ── Actions ─────────────────────────────────────────────────────────────
-      const joinQueue    = () => send('JOIN_QUEUE');
-      const leaveQueue   = () => send('LEAVE_QUEUE');
-      const createRoom   = () => send('CREATE_ROOM', roomSettings);
-      const joinRoom     = () => { if (roomCodeInput.length === 6) send('JOIN_ROOM', { code: roomCodeInput }); };
-      const leaveRoom    = () => send('LEAVE_ROOM');
-      const startGame    = () => send('START_GAME');
-      const sendChat     = () => {
-        if (!chatInput.trim()) return;
-        send('CHAT', { text: chatInput });
+      const joinQueue = async () => {
+        if (!player.id) return;
+        await db.ref(`queue/${player.id}`).set({ ts: firebase.database.ServerValue.TIMESTAMP });
+        setPhase('queue');
+        setQueuePos(1);
+      };
+
+      const leaveQueue = async () => {
+        if (!player.id) return;
+        await db.ref(`queue/${player.id}`).remove();
+        await db.ref(`matchPointers/${player.id}`).remove();
+        setPhase('lobby');
+        setQueuePos(0);
+      };
+
+      const createRoom = async () => {
+        if (!player.id) return;
+        const code = genRoomCode();
+        const roomData = {
+          code, hostId: player.id,
+          map: roomSettings.map,
+          maxPlayers: roomSettings.maxPlayers,
+          timeLimit: roomSettings.timeLimit,
+          phase: 'lobby',
+          createdAt: firebase.database.ServerValue.TIMESTAMP,
+          players: {
+            [player.id]: {
+              id: player.id, name: player.name, level: player.level,
+              role: null, alive: true, joinedAt: Date.now(),
+            }
+          },
+        };
+        await db.ref(`rooms/${code}`).set(roomData);
+        subscribeToRoom(code);
+        notify(`Room created: ${code}`, 'amber');
+      };
+
+      const joinRoom = async () => {
+        if (roomCodeInput.length !== 6 || !player.id) return;
+        const code = roomCodeInput;
+        const ref = db.ref(`rooms/${code}`);
+        const snap = await ref.get();
+        if (!snap.exists()) {
+          notify('Room not found', 'red');
+          return;
+        }
+        const data = snap.val();
+        if (data.phase !== 'lobby') {
+          notify('Match already in progress', 'red');
+          return;
+        }
+        const players = data.players || {};
+        if (Object.keys(players).length >= (data.maxPlayers || 8)) {
+          notify('Room is full', 'red');
+          return;
+        }
+        await ref.child(`players/${player.id}`).set({
+          id: player.id, name: player.name, level: player.level,
+          role: null, alive: true, joinedAt: Date.now(),
+        });
+        subscribeToRoom(code);
+        notify(`Joined room ${code}`, 'cyan');
+      };
+
+      const leaveRoom = async () => {
+        const code = roomCodeRef.current;
+        if (code && player.id) {
+          const ref = db.ref(`rooms/${code}`);
+          const snap = await ref.get();
+          const data = snap.val();
+          if (data) {
+            const players = data.players || {};
+            delete players[player.id];
+            if (Object.keys(players).length === 0) {
+              await ref.remove();
+            } else {
+              const updates = { [`players/${player.id}`]: null };
+              // Reassign host if the host left
+              if (data.hostId === player.id) {
+                const nextHost = Object.values(players).sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0))[0];
+                if (nextHost) updates['hostId'] = nextHost.id;
+              }
+              await ref.update(updates);
+            }
+          }
+        }
+        leaveRoomCleanup();
+      };
+
+      const startGame = async () => {
+        const code = roomCodeRef.current;
+        if (!code || !room) return;
+        const playersArr = room.players;
+        if (playersArr.length < 2) return;
+
+        // Assign roles: ~1/4 hunters (min 1), rest hiders
+        const shuffled = [...playersArr].sort(() => Math.random() - 0.5);
+        const hunterCount = Math.max(1, Math.floor(shuffled.length / 4));
+        const updates = {};
+        shuffled.forEach((p, i) => {
+          updates[`players/${p.id}/role`] = i < hunterCount ? 'hunter' : 'hider';
+          updates[`players/${p.id}/alive`] = true;
+        });
+        updates['phase'] = 'hiding';
+        updates['hideEndsAt'] = Date.now() + HIDE_SECONDS * 1000;
+
+        await db.ref(`rooms/${code}`).update(updates);
+      };
+
+      const sendChat = () => {
+        if (!chatInput.trim() || !player.id) return;
+        const code = roomCodeRef.current;
+        if (!code) return;
+        db.ref(`rooms/${code}/chat`).push({
+          from: player.name, text: chatInput.trim(), ts: Date.now(),
+        });
         setChatInput('');
       };
-      const eliminate    = (targetId) => send('ELIMINATE', { targetId });
+
+      const eliminate = (targetId) => {
+        const code = roomCodeRef.current;
+        if (!code) return;
+        db.ref(`rooms/${code}/players/${targetId}/alive`).set(false);
+      };
 
       const myRole = room?.players.find(p => p.id === player.id)?.role;
       const myAlive = room?.players.find(p => p.id === player.id)?.alive !== false;
@@ -575,7 +980,7 @@
 
     // ─── Room Lobby Component ─────────────────────────────────────────────────
     function RoomLobby({ room, player, startGame, leaveRoom, chatMessages, chatInput, setChatInput, sendChat, chatRef }) {
-      const isHost = room.hostId === player.id || room.players[0]?.id === player.id;
+      const isHost = room.hostId === player.id;
       return (
         <div className="space-y-6 animate-in">
           <div className="bg-black/40 border border-amber-500/30 p-6">
