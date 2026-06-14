@@ -60,6 +60,11 @@
     const LEVEL_XP = 1000; // xp needed per level (flat, simple curve)
     const HIDE_SECONDS = 30;
 
+    // Matchmaking: just like PUBG/Free Fire battle royale queues, a match
+    // only starts once the lobby is completely full. Players queue and
+    // wait — however long that takes — until TARGET_PLAYERS is reached.
+    const TARGET_PLAYERS = 10;
+
     function genRoomCode() {
       const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
       let code = '';
@@ -85,6 +90,7 @@
       const [phase, setPhase]           = useState('lobby'); // lobby|queue|hiding|hunting|ended
       const [winner, setWinner]         = useState(null);
       const [queuePos, setQueuePos]     = useState(0);
+      const [queueCount, setQueueCount] = useState(0);
       const [notification, setNotif]    = useState(null);
       const [chatMessages, setChatMsgs] = useState([]);
       const [chatInput, setChatInput]   = useState('');
@@ -412,7 +418,7 @@
         const qRef = db.ref('queue');
         queueRef.current = qRef;
 
-        const cb = qRef.on('value', async snap => {
+        const cb = qRef.on('value', snap => {
           const data = snap.val() || {};
           const entries = Object.entries(data)
             .map(([id, v]) => ({ id, ts: v.ts }))
@@ -421,16 +427,18 @@
           const myIndex = entries.findIndex(e => e.id === player.id);
           if (myIndex === -1) return; // we've left the queue
           setQueuePos(myIndex + 1);
+          setQueueCount(entries.length);
 
-          // Any queued player can attempt to form a match once 2+ are
-          // present. The transaction-based lock on entries[0] in
-          // tryMakeMatch ensures only one attempt actually commits, so
-          // this is safe even if multiple clients race. Crucially, this
-          // also means a live player can claim/evict a stale ("ghost")
-          // entries[0] left behind by a disconnected client, instead of
-          // deadlocking forever waiting for that ghost to act as matchmaker.
-          if (entries.length >= 2) {
-            await tryMakeMatch(entries);
+          // Only start once the lobby is completely full. Any queued
+          // player can attempt to form the match. The transaction-based
+          // lock on entries[0] in tryMakeMatch ensures only one attempt
+          // actually commits, so this is safe even if multiple clients
+          // race. Crucially, this also means a live player can
+          // claim/evict a stale ("ghost") entries[0] left behind by a
+          // disconnected client, instead of deadlocking forever waiting
+          // for that ghost to act as matchmaker.
+          if (entries.length >= TARGET_PLAYERS) {
+            tryMakeMatch(entries);
           }
         });
 
@@ -441,8 +449,8 @@
       }, [phase, player.id]);
 
       async function tryMakeMatch(entries) {
-        // Take up to 8 earliest players (including self) and form a match.
-        const group = entries.slice(0, Math.min(8, entries.length));
+        // Take up to TARGET_PLAYERS earliest players (including self) and form a match.
+        const group = entries.slice(0, Math.min(TARGET_PLAYERS, entries.length));
         const ids = group.map(e => e.id);
 
         // Use a transaction that aborts (returns undefined) if this slot was
@@ -541,6 +549,7 @@
         await db.ref(`matchPointers/${player.id}`).remove();
         setPhase('lobby');
         setQueuePos(0);
+        setQueueCount(0);
       };
 
       const createRoom = async () => {
@@ -798,7 +807,7 @@
                               {phase === 'queue' ? 'IN QUEUE...' : 'RAPID DEPLOYMENT'}
                             </h3>
                             <p className="font-['JetBrains_Mono'] text-xs text-gray-400">
-                              {phase === 'queue' ? `Searching for players — position #${queuePos}` : 'Public Matchmaking • Auto Map'}
+                              {phase === 'queue' ? `Filling lobby — ${queueCount}/${TARGET_PLAYERS} players (#${queuePos})` : 'Public Matchmaking • Auto Map'}
                             </p>
                           </div>
                           <div className="relative z-10 font-['JetBrains_Mono'] text-xs text-amber-500 flex items-center gap-2 group-hover:gap-4 transition-all">
