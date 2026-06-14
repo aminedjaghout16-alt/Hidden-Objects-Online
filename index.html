@@ -5,7 +5,1644 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prop Hunt Protocol - Lobby</title>
   <style id="tw">*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0}.-bottom-1{bottom:-.25rem}.-right-1{right:-.25rem}.right-4{right:1rem}.top-16{top:4rem}.top-4{top:1rem}.z-0{z-index:0}.z-10{z-index:10}.z-50{z-index:50}.mx-4{margin-left:1rem;margin-right:1rem}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:.25rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.ml-2{margin-left:.5rem}.mt-1{margin-top:.25rem}.mt-12{margin-top:3rem}.mt-3{margin-top:.75rem}.mt-6{margin-top:1.5rem}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.aspect-square{aspect-ratio:1/1}.h-1\.5{height:.375rem}.h-12{height:3rem}.h-16{height:4rem}.h-2{height:.5rem}.h-3{height:.75rem}.h-40{height:10rem}.h-5{height:1.25rem}.h-6{height:1.5rem}.h-64{height:16rem}.h-full{height:100%}.h-screen{height:100vh}.max-h-screen{max-height:100vh}.min-h-screen{min-height:100vh}.w-12{width:3rem}.w-16{width:4rem}.w-2{width:.5rem}.w-3{width:.75rem}.w-5{width:1.25rem}.w-6{width:1.5rem}.w-full{width:100%}.min-w-0{min-width:0}.max-w-2xl{max-width:42rem}.max-w-3xl{max-width:48rem}.max-w-4xl{max-width:56rem}.max-w-lg{max-width:32rem}.flex-1{flex:1 1 0%}.flex-shrink-0{flex-shrink:0}.flex-grow{flex-grow:1}.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@keyframes ping{75%,to{transform:scale(2);opacity:0}}.animate-ping{animation:ping 1s cubic-bezier(0,0,.2,1) infinite}.cursor-pointer{cursor:pointer}.appearance-none{-webkit-appearance:none;-moz-appearance:none;appearance:none}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.flex-col{flex-direction:column}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.space-y-1>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.25rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.25rem*var(--tw-space-y-reverse))}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.5rem*var(--tw-space-y-reverse))}.space-y-4>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem*var(--tw-space-y-reverse))}.space-y-6>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem*var(--tw-space-y-reverse))}.space-y-8>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2rem*var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rounded-full{border-radius:9999px}.rounded-sm{border-radius:.125rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-l-2{border-left-width:2px}.border-r{border-right-width:1px}.border-t{border-top-width:1px}.border-amber-500{--tw-border-opacity:1;border-color:rgb(245 158 11/var(--tw-border-opacity,1))}.border-amber-500\/30{border-color:rgba(245,158,11,.3)}.border-amber-500\/50{border-color:rgba(245,158,11,.5)}.border-cyan-500\/20{border-color:rgba(6,182,212,.2)}.border-cyan-500\/50{border-color:rgba(6,182,212,.5)}.border-purple-500\/50{border-color:rgba(168,85,247,.5)}.border-red-500\/30{border-color:rgba(239,68,68,.3)}.border-red-500\/50{border-color:rgba(239,68,68,.5)}.border-transparent{border-color:transparent}.border-white\/10{border-color:hsla(0,0%,100%,.1)}.border-white\/5{border-color:hsla(0,0%,100%,.05)}.bg-\[\#0a0a0f\]{--tw-bg-opacity:1;background-color:rgb(10 10 15/var(--tw-bg-opacity,1))}.bg-amber-500{--tw-bg-opacity:1;background-color:rgb(245 158 11/var(--tw-bg-opacity,1))}.bg-amber-500\/10{background-color:rgba(245,158,11,.1)}.bg-amber-500\/20{background-color:rgba(245,158,11,.2)}.bg-amber-500\/30{background-color:rgba(245,158,11,.3)}.bg-amber-600{--tw-bg-opacity:1;background-color:rgb(217 119 6/var(--tw-bg-opacity,1))}.bg-amber-900\/80{background-color:rgba(120,53,15,.8)}.bg-black\/30{background-color:rgba(0,0,0,.3)}.bg-black\/40{background-color:rgba(0,0,0,.4)}.bg-black\/50{background-color:rgba(0,0,0,.5)}.bg-black\/90{background-color:rgba(0,0,0,.9)}.bg-cyan-400{--tw-bg-opacity:1;background-color:rgb(34 211 238/var(--tw-bg-opacity,1))}.bg-cyan-500{--tw-bg-opacity:1;background-color:rgb(6 182 212/var(--tw-bg-opacity,1))}.bg-cyan-900\/20{background-color:rgba(22,78,99,.2)}.bg-cyan-900\/80{background-color:rgba(22,78,99,.8)}.bg-gray-600{--tw-bg-opacity:1;background-color:rgb(75 85 99/var(--tw-bg-opacity,1))}.bg-purple-900\/20{background-color:rgba(88,28,135,.2)}.bg-red-400{--tw-bg-opacity:1;background-color:rgb(248 113 113/var(--tw-bg-opacity,1))}.bg-red-500{--tw-bg-opacity:1;background-color:rgb(239 68 68/var(--tw-bg-opacity,1))}.bg-red-600{--tw-bg-opacity:1;background-color:rgb(220 38 38/var(--tw-bg-opacity,1))}.bg-red-900\/20{background-color:rgba(127,29,29,.2)}.bg-red-900\/80{background-color:rgba(127,29,29,.8)}.bg-white\/5{background-color:hsla(0,0%,100%,.05)}.bg-yellow-400{--tw-bg-opacity:1;background-color:rgb(250 204 21/var(--tw-bg-opacity,1))}.bg-yellow-500{--tw-bg-opacity:1;background-color:rgb(234 179 8/var(--tw-bg-opacity,1))}.bg-\[linear-gradient\(rgba\(18\2c 16\2c 16\2c 0\)_50\%\2c rgba\(0\2c 0\2c 0\2c 0\.25\)_50\%\)\2c linear-gradient\(90deg\2c rgba\(255\2c 0\2c 0\2c 0\.06\)\2c rgba\(0\2c 255\2c 0\2c 0\.02\)\2c rgba\(0\2c 0\2c 255\2c 0\.06\)\)\]{background-image:linear-gradient(hsla(0,6%,7%,0) 50%,rgba(0,0,0,.25) 0),linear-gradient(90deg,rgba(255,0,0,.06),rgba(0,255,0,.02),rgba(0,0,255,.06))}.bg-\[radial-gradient\(circle_at_center\2c transparent_0\%\2c \#0a0a0f_90\%\)\]{background-image:radial-gradient(circle at center,transparent 0,#0a0a0f 90%)}.bg-gradient-to-br{background-image:linear-gradient(to bottom right,var(--tw-gradient-stops))}.bg-gradient-to-r{background-image:linear-gradient(to right,var(--tw-gradient-stops))}.from-amber-500{--tw-gradient-from:#f59e0b var(--tw-gradient-from-position);--tw-gradient-to:rgba(245,158,11,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-amber-500\/10{--tw-gradient-from:rgba(245,158,11,.1) var(--tw-gradient-from-position);--tw-gradient-to:rgba(245,158,11,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-amber-600{--tw-gradient-from:#d97706 var(--tw-gradient-from-position);--tw-gradient-to:rgba(217,119,6,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-cyan-900\/20{--tw-gradient-from:rgba(22,78,99,.2) var(--tw-gradient-from-position);--tw-gradient-to:rgba(22,78,99,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.to-amber-400{--tw-gradient-to:#fbbf24 var(--tw-gradient-to-position)}.to-amber-700{--tw-gradient-to:#b45309 var(--tw-gradient-to-position)}.to-blue-900\/20{--tw-gradient-to:rgba(30,58,138,.2) var(--tw-gradient-to-position)}.to-transparent{--tw-gradient-to:transparent var(--tw-gradient-to-position)}.bg-\[length\:100\%_4px\2c 3px_100\%\]{background-size:100% 4px,3px 100%}.p-2{padding:.5rem}.p-3{padding:.75rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-2{padding-left:.5rem;padding-right:.5rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.px-8{padding-left:2rem;padding-right:2rem}.py-0\.5{padding-top:.125rem;padding-bottom:.125rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.py-4{padding-top:1rem;padding-bottom:1rem}.pb-6{padding-bottom:1.5rem}.pt-4{padding-top:1rem}.text-left{text-align:left}.text-center{text-align:center}.font-\[\'Chakra_Petch\'\]{font-family:Chakra Petch}.font-\[\'JetBrains_Mono\'\]{font-family:JetBrains Mono}.font-sans{font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-5xl{font-size:3rem;line-height:1}.text-\[10px\]{font-size:10px}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:.75rem;line-height:1rem}.font-bold{font-weight:700}.uppercase{text-transform:uppercase}.tracking-\[0\.5em\]{letter-spacing:.5em}.tracking-tighter{letter-spacing:-.05em}.tracking-wider{letter-spacing:.05em}.tracking-widest{letter-spacing:.1em}.text-\[\#e2e8f0\]{--tw-text-opacity:1;color:rgb(226 232 240/var(--tw-text-opacity,1))}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77/var(--tw-text-opacity,1))}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36/var(--tw-text-opacity,1))}.text-amber-500{--tw-text-opacity:1;color:rgb(245 158 11/var(--tw-text-opacity,1))}.text-black{--tw-text-opacity:1;color:rgb(0 0 0/var(--tw-text-opacity,1))}.text-cyan-300{--tw-text-opacity:1;color:rgb(103 232 249/var(--tw-text-opacity,1))}.text-cyan-400{--tw-text-opacity:1;color:rgb(34 211 238/var(--tw-text-opacity,1))}.text-gray-300{--tw-text-opacity:1;color:rgb(209 213 219/var(--tw-text-opacity,1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175/var(--tw-text-opacity,1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128/var(--tw-text-opacity,1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99/var(--tw-text-opacity,1))}.text-green-400{--tw-text-opacity:1;color:rgb(74 222 128/var(--tw-text-opacity,1))}.text-red-300{--tw-text-opacity:1;color:rgb(252 165 165/var(--tw-text-opacity,1))}.text-red-400{--tw-text-opacity:1;color:rgb(248 113 113/var(--tw-text-opacity,1))}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.placeholder-gray-700::-moz-placeholder{--tw-placeholder-opacity:1;color:rgb(55 65 81/var(--tw-placeholder-opacity,1))}.placeholder-gray-700::placeholder{--tw-placeholder-opacity:1;color:rgb(55 65 81/var(--tw-placeholder-opacity,1))}.opacity-0{opacity:0}.opacity-40{opacity:.4}.opacity-75{opacity:.75}.opacity-\[0\.03\]{opacity:.03}.shadow-\[0_0_10px_rgba\(245\2c 158\2c 11\2c 0\.5\)\]{--tw-shadow:0 0 10px rgba(245,158,11,.5);--tw-shadow-colored:0 0 10px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-\[0_0_10px_rgba\(6\2c 182\2c 212\2c 0\.5\)\]{--tw-shadow:0 0 10px rgba(6,182,212,.5);--tw-shadow-colored:0 0 10px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-\[0_0_15px_rgba\(245\2c 158\2c 11\2c 0\.4\)\]{--tw-shadow:0 0 15px rgba(245,158,11,.4);--tw-shadow-colored:0 0 15px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-\[0_0_20px_rgba\(245\2c 158\2c 11\2c 0\.3\)\]{--tw-shadow:0 0 20px rgba(245,158,11,.3);--tw-shadow-colored:0 0 20px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-\[inset_10px_0_20px_-10px_rgba\(245\2c 158\2c 11\2c 0\.2\)\]{--tw-shadow:inset 10px 0 20px -10px rgba(245,158,11,.2);--tw-shadow-colored:inset 10px 0 20px -10px var(--tw-shadow-color)}.shadow-\[inset_10px_0_20px_-10px_rgba\(245\2c 158\2c 11\2c 0\.2\)\],.shadow-lg{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color)}.grayscale{--tw-grayscale:grayscale(100%);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-colors{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.duration-1000{transition-duration:1s}.duration-200{transition-duration:.2s}.duration-300{transition-duration:.3s}.duration-500{transition-duration:.5s}.ease-in-out{transition-timing-function:cubic-bezier(.4,0,.2,1)}.ease-out{transition-timing-function:cubic-bezier(0,0,.2,1)}.hover\:border-amber-500\/50:hover{border-color:rgba(245,158,11,.5)}.hover\:border-cyan-500\/50:hover{border-color:rgba(6,182,212,.5)}.hover\:bg-amber-500:hover{--tw-bg-opacity:1;background-color:rgb(245 158 11/var(--tw-bg-opacity,1))}.hover\:bg-amber-500\/20:hover{background-color:rgba(245,158,11,.2)}.hover\:bg-red-500:hover{--tw-bg-opacity:1;background-color:rgb(239 68 68/var(--tw-bg-opacity,1))}.hover\:bg-red-500\/10:hover{background-color:rgba(239,68,68,.1)}.hover\:bg-white\/10:hover{background-color:hsla(0,0%,100%,.1)}.hover\:bg-white\/5:hover{background-color:hsla(0,0%,100%,.05)}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.focus\:border-amber-500\/50:focus{border-color:rgba(245,158,11,.5)}.focus\:border-cyan-500\/50:focus{border-color:rgba(6,182,212,.5)}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.disabled\:cursor-not-allowed:disabled{cursor:not-allowed}.disabled\:opacity-40:disabled{opacity:.4}.disabled\:opacity-50:disabled{opacity:.5}.group:hover .group-hover\:scale-110{--tw-scale-x:1.1;--tw-scale-y:1.1;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:gap-4{gap:1rem}.group:hover .group-hover\:opacity-100{opacity:1}@media (min-width:768px){.md\:col-span-2{grid-column:span 2/span 2}.md\:w-80{width:20rem}.md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.md\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.md\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.md\:flex-row{flex-direction:row}.md\:p-12{padding:3rem}.md\:text-7xl{font-size:4.5rem;line-height:1}.md\:text-base{font-size:1rem;line-height:1.5rem}}</style>
+  <link href="https://fonts.googl<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prop Hunt Protocol - Lobby</title>
+  <style id="tw">*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0}.-bottom-1{bottom:-.25rem}.-right-1{right:-.25rem}.right-4{right:1rem}.top-16{top:4rem}.top-4{top:1rem}.z-0{z-index:0}.z-10{z-index:10}.z-50{z-index:50}.mx-4{margin-left:1rem;margin-right:1rem}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:.25rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.ml-2{margin-left:.5rem}.mt-1{margin-top:.25rem}.mt-12{margin-top:3rem}.mt-3{margin-top:.75rem}.mt-6{margin-top:1.5rem}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.aspect-square{aspect-ratio:1/1}.h-1\.5{height:.375rem}.h-12{height:3rem}.h-16{height:4rem}.h-2{height:.5rem}.h-3{height:.75rem}.h-40{height:10rem}.h-5{height:1.25rem}.h-6{height:1.5rem}.h-64{height:16rem}.h-full{height:100%}.h-screen{height:100vh}.max-h-screen{max-height:100vh}.min-h-screen{min-height:100vh}.w-12{width:3rem}.w-16{width:4rem}.w-2{width:.5rem}.w-3{width:.75rem}.w-5{width:1.25rem}.w-6{width:1.5rem}.w-full{width:100%}.min-w-0{min-width:0}.max-w-2xl{max-width:42rem}.max-w-3xl{max-width:48rem}.max-w-4xl{max-width:56rem}.max-w-lg{max-width:32rem}.flex-1{flex:1 1 0%}.flex-shrink-0{flex-shrink:0}.flex-grow{flex-grow:1}.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@keyframes ping{75%,to{transform:scale(2);opacity:0}}.animate-ping{animation:ping 1s cubic-bezier(0,0,.2,1) infinite}.cursor-pointer{cursor:pointer}.appearance-none{-webkit-appearance:none;-moz-appearance:none;appearance:none}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.flex-col{flex-direction:column}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.space-y-1>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.25rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.25rem*var(--tw-space-y-reverse))}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.5rem*var(--tw-space-y-reverse))}.space-y-4>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem*var(--tw-space-y-reverse))}.space-y-6>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem*var(--tw-space-y-reverse))}.space-y-8>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2rem*var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rounded-full{border-radius:9999px}.rounded-sm{border-radius:.125rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-l-2{border-left-width:2px}.border-r{border-right-width:1px}.border-t{border-top-width:1px}.border-amber-500{--tw-border-opacity:1;border-color:rgb(245 158 11/var(--tw-border-opacity,1))}.border-amber-500\/30{border-color:rgba(245,158,11,.3)}.border-amber-500\/50{border-color:rgba(245,158,11,.5)}.border-cyan-500\/20{border-color:rgba(6,182,212,.2)}.border-cyan-500\/50{border-color:rgba(6,182,212,.5)}.border-purple-500\/50{border-color:rgba(168,85,247,.5)}.border-red-500\/30{border-color:rgba(239,68,68,.3)}.border-red-500\/50{border-color:rgba(239,68,68,.5)}.border-transparent{border-color:transparent}.border-white\/10{border-color:hsla(0,0%,100%,.1)}.border-white\/5{border-color:hsla(0,0%,100%,.05)}.bg-\[\#0a0a0f\]{--tw-bg-opacity:1;background-color:rgb(10 10 15/var(--tw-bg-opacity,1))}.bg-amber-500{--tw-bg-opacity:1;background-color:rgb(245 158 11/var(--tw-bg-opacity,1))}.bg-amber-500\/10{background-color:rgba(245,158,11,.1)}.bg-amber-500\/20{background-color:rgba(245,158,11,.2)}.bg-amber-500\/30{background-color:rgba(245,158,11,.3)}.bg-amber-600{--tw-bg-opacity:1;background-color:rgb(217 119 6/var(--tw-bg-opacity,1))}.bg-amber-900\/80{background-color:rgba(120,53,15,.8)}.bg-black\/30{background-color:rgba(0,0,0,.3)}.bg-black\/40{background-color:rgba(0,0,0,.4)}.bg-black\/50{background-color:rgba(0,0,0,.5)}.bg-black\/90{background-color:rgba(0,0,0,.9)}.bg-cyan-400{--tw-bg-opacity:1;background-color:rgb(34 211 238/var(--tw-bg-opacity,1))}.bg-cyan-500{--tw-bg-opacity:1;background-color:rgb(6 182 212/var(--tw-bg-opacity,1))}.bg-cyan-900\/20{background-color:rgba(22,78,99,.2)}.bg-cyan-900\/80{background-color:rgba(22,78,99,.8)}.bg-gray-600{--tw-bg-opacity:1;background-color:rgb(75 85 99/var(--tw-bg-opacity,1))}.bg-purple-900\/20{background-color:rgba(88,28,135,.2)}.bg-red-400{--tw-bg-opacity:1;background-color:rgb(248 113 113/var(--tw-bg-opacity,1))}.bg-red-500{--tw-bg-opacity:1;background-color:rgb(239 68 68/var(--tw-bg-opacity,1))}.bg-red-600{--tw-bg-opacity:1;background-color:rgb(220 38 38/var(--tw-bg-opacity,1))}.bg-red-900\/20{background-color:rgba(127,29,29,.2)}.bg-red-900\/80{background-color:rgba(127,29,29,.8)}.bg-white\/5{background-color:hsla(0,0%,100%,.05)}.bg-yellow-400{--tw-bg-opacity:1;background-color:rgb(250 204 21/var(--tw-bg-opacity,1))}.bg-yellow-500{--tw-bg-opacity:1;background-color:rgb(234 179 8/var(--tw-bg-opacity,1))}.bg-\[linear-gradient\(rgba\(18\2c 16\2c 16\2c 0\)_50\%\2c rgba\(0\2c 0\2c 0\2c 0\.25\)_50\%\)\2c linear-gradient\(90deg\2c rgba\(255\2c 0\2c 0\2c 0\.06\)\2c rgba\(0\2c 255\2c 0\2c 0\.02\)\2c rgba\(0\2c 0\2c 255\2c 0\.06\)\)\]{background-image:linear-gradient(hsla(0,6%,7%,0) 50%,rgba(0,0,0,.25) 0),linear-gradient(90deg,rgba(255,0,0,.06),rgba(0,255,0,.02),rgba(0,0,255,.06))}.bg-\[radial-gradient\(circle_at_center\2c transparent_0\%\2c \#0a0a0f_90\%\)\]{background-image:radial-gradient(circle at center,transparent 0,#0a0a0f 90%)}.bg-gradient-to-br{background-image:linear-gradient(to bottom right,var(--tw-gradient-stops))}.bg-gradient-to-r{background-image:linear-gradient(to right,var(--tw-gradient-stops))}.from-amber-500{--tw-gradient-from:#f59e0b var(--tw-gradient-from-position);--tw-gradient-to:rgba(245,158,11,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-amber-500\/10{--tw-gradient-from:rgba(245,158,11,.1) var(--tw-gradient-from-position);--tw-gradient-to:rgba(245,158,11,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-amber-600{--tw-gradient-from:#d97706 var(--tw-gradient-from-position);--tw-gradient-to:rgba(217,119,6,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-cyan-900\/20{--tw-gradient-from:rgba(22,78,99,.2) var(--tw-gradient-from-position);--tw-gradient-to:rgba(22,78,99,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.to-amber-400{--tw-gradient-to:#fbbf24 var(--tw-gradient-to-position)}.to-amber-700{--tw-gradient-to:#b45309 var(--tw-gradient-to-position)}.to-blue-900\/20{--tw-gradient-to:rgba(30,58,138,.2) var(--tw-gradient-to-position)}.to-transparent{--tw-gradient-to:transparent var(--tw-gradient-to-position)}.bg-\[length\:100\%_4px\2c 3px_100\%\]{background-size:100% 4px,3px 100%}.p-2{padding:.5rem}.p-3{padding:.75rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-2{padding-left:.5rem;padding-right:.5rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.px-8{padding-left:2rem;padding-right:2rem}.py-0\.5{padding-top:.125rem;padding-bottom:.125rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.py-4{padding-top:1rem;padding-bottom:1rem}.pb-6{padding-bottom:1.5rem}.pt-4{padding-top:1rem}.text-left{text-align:left}.text-center{text-align:center}.font-\[\'Chakra_Petch\'\]{font-family:Chakra Petch}.font-\[\'JetBrains_Mono\'\]{font-family:JetBrains Mono}.font-sans{font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-5xl{font-size:3rem;line-height:1}.text-\[10px\]{font-size:10px}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:.75rem;line-height:1rem}.font-bold{font-weight:700}.uppercase{text-transform:uppercase}.tracking-\[0\.5em\]{letter-spacing:.5em}.tracking-tighter{letter-spacing:-.05em}.tracking-wider{letter-spacing:.05em}.tracking-widest{letter-spacing:.1em}.text-\[\#e2e8f0\]{--tw-text-opacity:1;color:rgb(226 232 240/var(--tw-text-opacity,1))}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77/var(--tw-text-opacity,1))}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36/var(--tw-text-opacity,1))}.text-amber-500{--tw-text-opacity:1;color:rgb(245 158 11/var(--tw-text-opacity,1))}.text-black{--tw-text-opacity:1;color:rgb(0 0 0/var(--tw-text-opacity,1))}.text-cyan-300{--tw-text-opacity:1;color:rgb(103 232 249/var(--tw-text-opacity,1))}.text-cyan-400{--tw-text-opacity:1;color:rgb(34 211 238/var(--tw-text-opacity,1))}.text-gray-300{--tw-text-opacity:1;color:rgb(209 213 219/var(--tw-text-opacity,1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175/var(--tw-text-opacity,1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128/var(--tw-text-opacity,1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99/var(--tw-text-opacity,1))}.text-green-400{--tw-text-opacity:1;color:rgb(74 222 128/var(--tw-text-opacity,1))}.text-red-300{--tw-text-opacity:1;color:rgb(252 165 165/var(--tw-text-opacity,1))}.text-red-400{--tw-text-opacity:1;color:rgb(248 113 113/var(--tw-text-opacity,1))}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.placeholder-gray-700::-moz-placeholder{--tw-placeholder-opacity:1;color:rgb(55 65 81/var(--tw-placeholder-opacity,1))}.placeholder-gray-700::placeholder{--tw-placeholder-opacity:1;color:rgb(55 65 81/var(--tw-placeholder-opacity,1))}.opacity-0{opacity:0}.opacity-40{opacity:.4}.opacity-75{opacity:.75}.opacity-\[0\.03\]{opacity:.03}.shadow-\[0_0_10px_rgba\(245\2c 158\2c 11\2c 0\.5\)\]{--tw-shadow:0 0 10px rgba(245,158,11,.5);--tw-shadow-colored:0 0 10px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-\[0_0_10px_rgba\(6\2c 182\2c 212\2c 0\.5\)\]{--tw-shadow:0 0 10px rgba(6,182,212,.5);--tw-shadow-colored:0 0 10px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-\[0_0_15px_rgba\(245\2c 158\2c 11\2c 0\.4\)\]{--tw-shadow:0 0 15px rgba(245,158,11,.4);--tw-shadow-colored:0 0 15px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-\[0_0_20px_rgba\(245\2c 158\2c 11\2c 0\.3\)\]{--tw-shadow:0 0 20px rgba(245,158,11,.3);--tw-shadow-colored:0 0 20px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-\[inset_10px_0_20px_-10px_rgba\(245\2c 158\2c 11\2c 0\.2\)\]{--tw-shadow:inset 10px 0 20px -10px rgba(245,158,11,.2);--tw-shadow-colored:inset 10px 0 20px -10px var(--tw-shadow-color)}.shadow-\[inset_10px_0_20px_-10px_rgba\(245\2c 158\2c 11\2c 0\.2\)\],.shadow-lg{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color)}.grayscale{--tw-grayscale:grayscale(100%);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-colors{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.duration-1000{transition-duration:1s}.duration-200{transition-duration:.2s}.duration-300{transition-duration:.3s}.duration-500{transition-duration:.5s}.ease-in-out{transition-timing-function:cubic-bezier(.4,0,.2,1)}.ease-out{transition-timing-function:cubic-bezier(0,0,.2,1)}.hover\:border-amber-500\/50:hover{border-color:rgba(245,158,11,.5)}.hover\:border-cyan-500\/50:hover{border-color:rgba(6,182,212,.5)}.hover\:bg-amber-500:hover{--tw-bg-opacity:1;background-color:rgb(245 158 11/var(--tw-bg-opacity,1))}.hover\:bg-amber-500\/20:hover{background-color:rgba(245,158,11,.2)}.hover\:bg-red-500:hover{--tw-bg-opacity:1;background-color:rgb(239 68 68/var(--tw-bg-opacity,1))}.hover\:bg-red-500\/10:hover{background-color:rgba(239,68,68,.1)}.hover\:bg-white\/10:hover{background-color:hsla(0,0%,100%,.1)}.hover\:bg-white\/5:hover{background-color:hsla(0,0%,100%,.05)}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.focus\:border-amber-500\/50:focus{border-color:rgba(245,158,11,.5)}.focus\:border-cyan-500\/50:focus{border-color:rgba(6,182,212,.5)}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.disabled\:cursor-not-allowed:disabled{cursor:not-allowed}.disabled\:opacity-40:disabled{opacity:.4}.disabled\:opacity-50:disabled{opacity:.5}.group:hover .group-hover\:scale-110{--tw-scale-x:1.1;--tw-scale-y:1.1;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:gap-4{gap:1rem}.group:hover .group-hover\:opacity-100{opacity:1}@media (min-width:768px){.md\:col-span-2{grid-column:span 2/span 2}.md\:w-80{width:20rem}.md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.md\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.md\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.md\:flex-row{flex-direction:row}.md\:p-12{padding:3rem}.md\:text-7xl{font-size:4.5rem;line-height:1}.md\:text-base{font-size:1rem;line-height:1.5rem}}</style>
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { margin: 0; background-color: #0a0a0f; }
+    @keyframes loading {
+      0% { transform: translateX(-100%); }
+      50% { transform: translateX(200%); }
+      100% { transform: translateX(-100%); }
+    }
+    .animate-in { animation: fadeIn 0.4s ease-out forwards; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 10px rgba(245,158,11,0.3); }
+      50%       { box-shadow: 0 0 25px rgba(245,158,11,0.7); }
+    }
+    .glow-pulse { animation: pulse-glow 2s ease-in-out infinite; }
+    select option { background: #0f0f16; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- Firebase (compat SDK — works with Babel standalone, no bundler needed) -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+
+    // ─── Firebase setup ─────────────────────────────────────────────────────────
+    const firebaseConfig = {
+      apiKey: "AIzaSyBaO0G1A-GN-uIRbSBTuBOIID11anNYL5o",
+      authDomain: "prop-hunt-protocol.firebaseapp.com",
+      databaseURL: "https://prop-hunt-protocol-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "prop-hunt-protocol",
+      storageBucket: "prop-hunt-protocol.firebasestorage.app",
+      messagingSenderId: "599873832331",
+      appId: "1:599873832331:web:2529e8fee1c1353e285b8e"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db   = firebase.database();
+
+    const LEVEL_XP = 1000; // xp needed per level (flat, simple curve)
+    const HIDE_SECONDS = 30;
+
+    // Matchmaking: just like PUBG/Free Fire battle royale queues, a match
+    // only starts once the lobby is completely full. Players queue and
+    // wait — however long that takes — until TARGET_PLAYERS is reached.
+    const TARGET_PLAYERS = 10;
+
+    function genRoomCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let code = '';
+      for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+      return code;
+    }
+
+    function randomName() {
+      return 'Agent-' + Math.floor(1000 + Math.random() * 9000);
+    }
+
+    const MAPS = ['Office Complex', 'Warehouse', 'Library', 'Shopping Mall'];
+
+    // ─── 2D Game World ──────────────────────────────────────────────────────────
+    // World is a fixed coordinate space (units), rendered via <canvas>, scaled
+    // responsively. Layout: a 3x2 grid of rooms connected by doorway gaps.
+    const WORLD_W = 1000;
+    const WORLD_H = 700;
+    const PLAYER_RADIUS = 14;
+    const MOVE_SPEED = 220; // units per second
+    const ELIMINATE_RADIUS = 36; // proximity distance for auto-elimination
+
+    // Outer border + interior cross-walls forming a 3x2 grid of rooms with
+    // doorway gaps roughly centered on each wall segment.
+    const WALL_THICKNESS = 14;
+    const DOOR_GAP = 90;
+
+    function buildWalls() {
+      const walls = [];
+      const w = WORLD_W, h = WORLD_H, t = WALL_THICKNESS;
+
+      // Outer border (4 walls)
+      walls.push({ x: 0, y: 0, w: w, h: t });               // top
+      walls.push({ x: 0, y: h - t, w: w, h: t });           // bottom
+      walls.push({ x: 0, y: 0, w: t, h: h });               // left
+      walls.push({ x: w - t, y: 0, w: t, h: h });           // right
+
+      // Vertical divider walls at 1/3 and 2/3 width, each split into segments
+      // with a doorway gap centered on each of the two rows.
+      const vXs = [w / 3, (2 * w) / 3];
+      const rowH = h / 2;
+      vXs.forEach(vx => {
+        [0, 1].forEach(row => {
+          const rowTop = row * rowH;
+          const gapStart = rowTop + rowH / 2 - DOOR_GAP / 2;
+          const gapEnd = gapStart + DOOR_GAP;
+          // segment above gap
+          if (gapStart > rowTop) {
+            walls.push({ x: vx - t / 2, y: rowTop, w: t, h: gapStart - rowTop });
+          }
+          // segment below gap
+          if (rowTop + rowH > gapEnd) {
+            walls.push({ x: vx - t / 2, y: gapEnd, w: t, h: (rowTop + rowH) - gapEnd });
+          }
+        });
+      });
+
+      // Horizontal divider wall at half height, split into 3 segments (columns)
+      // each with a doorway gap centered on the column.
+      const colW = w / 3;
+      for (let col = 0; col < 3; col++) {
+        const colLeft = col * colW;
+        const gapStart = colLeft + colW / 2 - DOOR_GAP / 2;
+        const gapEnd = gapStart + DOOR_GAP;
+        if (gapStart > colLeft) {
+          walls.push({ x: colLeft, y: h / 2 - t / 2, w: gapStart - colLeft, h: t });
+        }
+        if (colLeft + colW > gapEnd) {
+          walls.push({ x: gapEnd, y: h / 2 - t / 2, w: (colLeft + colW) - gapEnd, h: t });
+        }
+      }
+
+      return walls;
+    }
+
+    const WALLS = buildWalls();
+
+    // Spawn corners: hunters spawn clustered in the top-left room,
+    // hiders spawn scattered across the remaining rooms.
+    const HUNTER_SPAWN = { x: 70, y: 70 };
+    const HIDER_SPAWNS = [
+      { x: WORLD_W - 70, y: 70 },
+      { x: 70, y: WORLD_H - 70 },
+      { x: WORLD_W - 70, y: WORLD_H - 70 },
+      { x: WORLD_W / 2, y: WORLD_H - 70 },
+      { x: WORLD_W - 70, y: WORLD_H / 2 },
+      { x: WORLD_W / 2, y: 70 },
+      { x: 70, y: WORLD_H / 2 },
+      { x: WORLD_W / 2, y: WORLD_H / 2 },
+    ];
+
+    function spawnFor(role, index) {
+      if (role === 'hunter') {
+        // small jitter so hunters don't perfectly overlap
+        const angle = (index % 8) * (Math.PI / 4);
+        return {
+          x: HUNTER_SPAWN.x + Math.cos(angle) * 24,
+          y: HUNTER_SPAWN.y + Math.sin(angle) * 24,
+        };
+      }
+      const spawn = HIDER_SPAWNS[index % HIDER_SPAWNS.length];
+      return { x: spawn.x, y: spawn.y };
+    }
+
+    // Axis-aligned circle-vs-rectangle collision check, with sliding:
+    // attempts to move along each axis independently so players slide
+    // along walls instead of getting stuck.
+    function resolveMove(px, py, dx, dy, walls, radius) {
+      let nx = px + dx;
+      let ny = py;
+      if (collides(nx, ny, walls, radius)) nx = px;
+
+      ny = py + dy;
+      if (collides(nx, ny, walls, radius)) ny = py;
+
+      // Clamp to world bounds
+      nx = Math.max(radius, Math.min(WORLD_W - radius, nx));
+      ny = Math.max(radius, Math.min(WORLD_H - radius, ny));
+      return { x: nx, y: ny };
+    }
+
+    function collides(cx, cy, walls, radius) {
+      for (const wl of walls) {
+        const closestX = Math.max(wl.x, Math.min(cx, wl.x + wl.w));
+        const closestY = Math.max(wl.y, Math.min(cy, wl.y + wl.h));
+        const dx = cx - closestX;
+        const dy = cy - closestY;
+        if (dx * dx + dy * dy < radius * radius) return true;
+      }
+      return false;
+    }
+
+    // ─── Main App ───────────────────────────────────────────────────────────────
+    function PropHuntLobby() {
+      const [activeTab, setActiveTab]   = useState('play');
+      const [conn, setConn]             = useState('connecting'); // connecting | online | offline
+      const [player, setPlayer]         = useState({
+        id: null, name: 'Connecting...', level: 1,
+        xp: 0, xpToNext: LEVEL_XP, wins: 0, losses: 0,
+      });
+      const [room, setRoom]             = useState(null);
+      const [phase, setPhase]           = useState('lobby'); // lobby|queue|hiding|hunting|ended
+      const [winner, setWinner]         = useState(null);
+      const [queuePos, setQueuePos]     = useState(0);
+      const [queueCount, setQueueCount] = useState(0);
+      const [notification, setNotif]    = useState(null);
+      const [chatMessages, setChatMsgs] = useState([]);
+      const [chatInput, setChatInput]   = useState('');
+      const [roomCodeInput, setRoomCodeInput] = useState('');
+      const [xpPopup, setXpPopup]       = useState(null);
+      const [roomSettings, setRoomSettings] = useState({
+        map: 'Office Complex', timeLimit: 180, maxPlayers: 8
+      });
+      const [countdown, setCountdown]   = useState(null);
+
+      const uidRef        = useRef(null);
+      const roomCodeRef   = useRef(null);
+      const chatRef       = useRef(null);
+      const roomRef       = useRef(null);   // current room DB ref (for listeners/cleanup)
+      const queueRef      = useRef(null);   // queue DB ref
+      const handledEndRef = useRef(false);  // guards GAME_ENDED stats write
+      const lastRoomRef   = useRef(null);   // last room snapshot for diffing join/leave
+
+      // ── Notification helper ─────────────────────────────────────────────────
+      const notify = useCallback((msg, color = 'amber') => {
+        setNotif({ msg, color });
+        setTimeout(() => setNotif(null), 3500);
+      }, []);
+
+      // ── Auth + player profile ────────────────────────────────────────────────
+      useEffect(() => {
+        const unsub = auth.onAuthStateChanged(user => {
+          if (user) {
+            uidRef.current = user.uid;
+            initPlayer(user.uid);
+          }
+        });
+
+        auth.signInAnonymously().catch(err => {
+          console.error('Auth error:', err);
+          setConn('offline');
+          notify(`Auth failed: ${err.code || err.message || 'unknown error'}`, 'red');
+        });
+
+        return () => unsub();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, []);
+
+      async function initPlayer(uid) {
+        const ref = db.ref(`players/${uid}`);
+        const snap = await ref.get();
+        let data;
+        if (!snap.exists()) {
+          data = {
+            name: randomName(), level: 1, xp: 0,
+            wins: 0, losses: 0, createdAt: firebase.database.ServerValue.TIMESTAMP,
+          };
+          await ref.set(data);
+        } else {
+          data = snap.val();
+        }
+
+        setPlayer(p => ({
+          ...p, id: uid,
+          name: data.name || randomName(),
+          level: data.level || 1,
+          xp: data.xp || 0,
+          xpToNext: (data.level || 1) * LEVEL_XP,
+          wins: data.wins || 0,
+          losses: data.losses || 0,
+        }));
+        setConn('online');
+
+        // Live-sync player profile (in case stats change e.g. from another tab)
+        ref.on('value', s => {
+          const d = s.val();
+          if (!d) return;
+          setPlayer(p => ({
+            ...p,
+            name: d.name || p.name,
+            level: d.level || 1,
+            xp: d.xp || 0,
+            xpToNext: (d.level || 1) * LEVEL_XP,
+            wins: d.wins || 0,
+            losses: d.losses || 0,
+          }));
+        });
+      }
+
+      // ── Connection state monitoring ─────────────────────────────────────────
+      useEffect(() => {
+        const connectedRef = db.ref('.info/connected');
+        const cb = (snap) => {
+          if (snap.val() === true) {
+            setConn('online');
+          } else {
+            setConn('offline');
+          }
+        };
+        connectedRef.on('value', cb);
+        return () => connectedRef.off('value', cb);
+      }, []);
+
+      // Auto-scroll chat
+      useEffect(() => {
+        if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
+      }, [chatMessages]);
+
+      // Countdown timer for hiding phase
+      useEffect(() => {
+        if (phase === 'hiding' && room?.hideEndsAt) {
+          const tick = () => {
+            const remaining = Math.ceil((room.hideEndsAt - Date.now()) / 1000);
+            setCountdown(Math.max(0, remaining));
+          };
+          tick();
+          const iv = setInterval(tick, 1000);
+          return () => clearInterval(iv);
+        } else if (phase !== 'hiding') {
+          setCountdown(null);
+        }
+      }, [phase, room?.hideEndsAt]);
+
+      // The in-game overlay (GameView) only renders under the Play tab.
+      // If a game starts/continues while the user is on a different tab
+      // (e.g. a private room created from the Custom tab), jump them to
+      // Play so the countdown / hunting / results screen is visible.
+      useEffect(() => {
+        if (room && (phase === 'hiding' || phase === 'hunting' || phase === 'ended') && activeTab !== 'play') {
+          setActiveTab('play');
+        }
+      }, [room, phase, activeTab]);
+
+      // ── Host-side phase transition watchers ─────────────────────────────────
+      // Hiding → Hunting, once the timer expires (any client can do this safely
+      // via transaction, but we let only the host attempt it to avoid spam).
+      useEffect(() => {
+        if (!room || phase !== 'hiding' || !room.hideEndsAt) return;
+        const isHost = room.hostId === player.id;
+        if (!isHost) return;
+
+        const remaining = room.hideEndsAt - Date.now();
+        if (remaining <= 0) {
+          transitionToHunting();
+          return;
+        }
+        const t = setTimeout(transitionToHunting, remaining + 50);
+        return () => clearTimeout(t);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [room?.hideEndsAt, phase, room?.hostId, player.id]);
+
+      async function transitionToHunting() {
+        const code = roomCodeRef.current;
+        if (!code) return;
+        const ref = db.ref(`rooms/${code}`);
+        await ref.transaction(r => {
+          if (!r) return r;
+          if (r.phase !== 'hiding') return r; // already transitioned
+          r.phase = 'hunting';
+          r.huntEndsAt = Date.now() + (r.timeLimit || 180) * 1000;
+          return r;
+        });
+      }
+
+      // Hunting → Ended, when timer expires (hiders win) — host-driven.
+      useEffect(() => {
+        if (!room || phase !== 'hunting' || !room.huntEndsAt) return;
+        const isHost = room.hostId === player.id;
+        if (!isHost) return;
+
+        const remaining = room.huntEndsAt - Date.now();
+        if (remaining <= 0) {
+          endGame('hiders');
+          return;
+        }
+        const t = setTimeout(() => endGame('hiders'), remaining + 50);
+        return () => clearTimeout(t);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [room?.huntEndsAt, phase, room?.hostId, player.id]);
+
+      // Check win condition whenever players change (all hiders eliminated → hunters win)
+      useEffect(() => {
+        if (!room || phase !== 'hunting') return;
+        const isHost = room.hostId === player.id;
+        if (!isHost) return;
+
+        const playersArr = room.players || [];
+        const hiders = playersArr.filter(p => p.role === 'hider');
+        if (hiders.length > 0 && hiders.every(p => p.alive === false)) {
+          endGame('hunters');
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [room?.players, phase, room?.hostId, player.id]);
+
+      async function endGame(winnerSide) {
+        const code = roomCodeRef.current;
+        if (!code) return;
+        const ref = db.ref(`rooms/${code}`);
+        await ref.transaction(r => {
+          if (!r) return r;
+          if (r.phase === 'ended') return r;
+          r.phase = 'ended';
+          r.winner = winnerSide;
+          return r;
+        });
+      }
+
+      // ── Award XP / stats once game ends (each client updates own record) ────
+      useEffect(() => {
+        if (phase !== 'ended' || !room || handledEndRef.current) return;
+        handledEndRef.current = true;
+
+        const me = (room.players || []).find(p => p.id === player.id);
+        if (!me) return;
+        const won = (room.winner === 'hunters' && me.role === 'hunter')
+                 || (room.winner === 'hiders'  && me.role === 'hider');
+
+        const xpGained = won ? 250 : 75;
+
+        const ref = db.ref(`players/${player.id}`);
+        ref.transaction(p => {
+          if (!p) p = { name: player.name, level: 1, xp: 0, wins: 0, losses: 0 };
+          p.xp = (p.xp || 0) + xpGained;
+          p.level = p.level || 1;
+          while (p.xp >= p.level * LEVEL_XP) {
+            p.xp -= p.level * LEVEL_XP;
+            p.level += 1;
+          }
+          if (won) p.wins = (p.wins || 0) + 1;
+          else p.losses = (p.losses || 0) + 1;
+          return p;
+        });
+
+        setXpPopup({ xpGained, won });
+        setTimeout(() => setXpPopup(null), 4000);
+      }, [phase, room, player.id, player.name]);
+
+      // Reset the "handled end" guard whenever we leave the ended phase / room
+      useEffect(() => {
+        if (phase !== 'ended') handledEndRef.current = false;
+      }, [phase]);
+
+      // ── Room subscription ───────────────────────────────────────────────────
+      function subscribeToRoom(code) {
+        unsubscribeFromRoom();
+        roomCodeRef.current = code;
+        const ref = db.ref(`rooms/${code}`);
+        roomRef.current = ref;
+
+        ref.on('value', snap => {
+          const data = snap.val();
+          if (!data) {
+            // room was deleted (e.g. host left / emptied)
+            notify('Room closed', 'red');
+            leaveRoomCleanup();
+            return;
+          }
+
+          const players = data.players || {};
+          const playersArr = Object.values(players).sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0));
+          const newRoom = { ...data, code, players: playersArr };
+
+          // Detect join/leave/phase changes for notifications
+          const prev = lastRoomRef.current;
+          if (prev) {
+            const prevIds = new Set((prev.players || []).map(p => p.id));
+            const newIds  = new Set(playersArr.map(p => p.id));
+
+            for (const p of playersArr) {
+              if (!prevIds.has(p.id) && p.id !== player.id) {
+                notify(`${p.name} joined`, 'cyan');
+              }
+            }
+            for (const p of (prev.players || [])) {
+              if (!newIds.has(p.id) && p.id !== player.id) {
+                notify('A player left the room', 'red');
+              }
+            }
+
+            if (prev.phase !== newRoom.phase) {
+              if (newRoom.phase === 'hiding') notify('Game started! HIDE NOW!', 'amber');
+              if (newRoom.phase === 'hunting') notify('Hunting phase begins!', 'red');
+            }
+
+            // Eliminations
+            if (newRoom.phase === 'hunting') {
+              for (const p of playersArr) {
+                const prevP = (prev.players || []).find(pp => pp.id === p.id);
+                if (prevP && prevP.alive !== false && p.alive === false) {
+                  if (p.id === player.id) notify('You were eliminated!', 'red');
+                  else notify(`${p.name} was eliminated!`, 'amber');
+                }
+              }
+            }
+          }
+
+          lastRoomRef.current = newRoom;
+          setRoom(newRoom);
+          setPhase(newRoom.phase || 'lobby');
+          setWinner(newRoom.winner || null);
+        });
+
+        // Chat subscription
+        ref.child('chat').limitToLast(100).on('value', snap => {
+          const data = snap.val() || {};
+          const msgs = Object.values(data).sort((a, b) => (a.ts || 0) - (b.ts || 0));
+          setChatMsgs(msgs);
+        });
+
+        // Remove player from room if they disconnect unexpectedly
+        if (uidRef.current) {
+          ref.child(`players/${uidRef.current}`).onDisconnect().remove();
+        }
+      }
+
+      function unsubscribeFromRoom() {
+        if (roomRef.current) {
+          roomRef.current.off();
+          roomRef.current.child('chat').off();
+          if (uidRef.current) roomRef.current.child(`players/${uidRef.current}`).onDisconnect().cancel();
+          roomRef.current = null;
+        }
+        roomCodeRef.current = null;
+        lastRoomRef.current = null;
+      }
+
+      function leaveRoomCleanup() {
+        unsubscribeFromRoom();
+        setRoom(null);
+        setPhase('lobby');
+        setWinner(null);
+        setChatMsgs([]);
+        handledEndRef.current = false;
+      }
+
+      // ── Queue subscription / matchmaking ────────────────────────────────────
+      useEffect(() => {
+        if (phase !== 'queue' || !player.id) return;
+
+        const qRef = db.ref('queue');
+        queueRef.current = qRef;
+
+        const cb = qRef.on('value', snap => {
+          const data = snap.val() || {};
+          const entries = Object.entries(data)
+            .map(([id, v]) => ({ id, ts: v.ts }))
+            .sort((a, b) => a.ts - b.ts);
+
+          const myIndex = entries.findIndex(e => e.id === player.id);
+          if (myIndex === -1) return; // we've left the queue
+          setQueuePos(myIndex + 1);
+          setQueueCount(entries.length);
+
+          // Only start once the lobby is completely full. Any queued
+          // player can attempt to form the match. The transaction-based
+          // lock on entries[0] in tryMakeMatch ensures only one attempt
+          // actually commits, so this is safe even if multiple clients
+          // race. Crucially, this also means a live player can
+          // claim/evict a stale ("ghost") entries[0] left behind by a
+          // disconnected client, instead of deadlocking forever waiting
+          // for that ghost to act as matchmaker.
+          if (entries.length >= TARGET_PLAYERS) {
+            tryMakeMatch(entries);
+          }
+        });
+
+        return () => {
+          db.ref('queue').off('value', cb);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [phase, player.id]);
+
+      async function tryMakeMatch(entries) {
+        // Take up to TARGET_PLAYERS earliest players (including self) and form a match.
+        const group = entries.slice(0, Math.min(TARGET_PLAYERS, entries.length));
+        const ids = group.map(e => e.id);
+
+        // Use a transaction that aborts (returns undefined) if this slot was
+        // already claimed/removed by another matchmaker — only a successful
+        // claim (existing value -> null) counts as "committed".
+        const lockRef = db.ref(`queue/${ids[0]}`);
+        const lockResult = await lockRef.transaction(v => (v ? null : undefined));
+        if (!lockResult.committed) {
+          // someone else already claimed/removed this slot
+          return;
+        }
+        // We own the role of matchmaker. Remove the rest of the group from queue.
+        const restRemovals = {};
+        ids.slice(1).forEach(id => { restRemovals[`queue/${id}`] = null; });
+        if (Object.keys(restRemovals).length) {
+          await db.ref().update(restRemovals);
+        }
+
+        // Fetch player profiles for role assignment + display
+        const profiles = await Promise.all(ids.map(async id => {
+          const s = await db.ref(`players/${id}`).get();
+          const d = s.val() || {};
+          return { id, name: d.name || 'Agent', level: d.level || 1 };
+        }));
+
+        // Assign roles: ~1/4 hunters (min 1), rest hiders
+        const shuffled = [...profiles].sort(() => Math.random() - 0.5);
+        const hunterCount = Math.max(1, Math.floor(shuffled.length / 4));
+        const roomPlayers = {};
+        let hunterIdx = 0, hiderIdx = 0;
+        shuffled.forEach((p, i) => {
+          const role = i < hunterCount ? 'hunter' : 'hider';
+          const spawn = role === 'hunter' ? spawnFor('hunter', hunterIdx++) : spawnFor('hider', hiderIdx++);
+          roomPlayers[p.id] = {
+            id: p.id, name: p.name, level: p.level,
+            role, alive: true,
+            x: spawn.x, y: spawn.y,
+            joinedAt: Date.now() + i, // preserve a stable order
+          };
+        });
+
+        const code = genRoomCode();
+        const roomData = {
+          code, hostId: ids[0],
+          map: MAPS[Math.floor(Math.random() * MAPS.length)],
+          maxPlayers: shuffled.length,
+          timeLimit: 180,
+          phase: 'hiding',
+          hideEndsAt: Date.now() + HIDE_SECONDS * 1000,
+          createdAt: firebase.database.ServerValue.TIMESTAMP,
+          players: roomPlayers,
+          matched: true,
+        };
+
+        await db.ref(`rooms/${code}`).set(roomData);
+
+        // Point each matched player at the new room via a per-player pointer
+        const pointerUpdates = {};
+        ids.forEach(id => { pointerUpdates[`matchPointers/${id}`] = code; });
+        await db.ref().update(pointerUpdates);
+      }
+
+      // Watch for a match pointer being set for us while in queue
+      useEffect(() => {
+        if (phase !== 'queue' || !player.id) return;
+        const ptrRef = db.ref(`matchPointers/${player.id}`);
+        const cb = ptrRef.on('value', async snap => {
+          const code = snap.val();
+          if (!code) return;
+          await ptrRef.remove();
+          // Our queue entry was already removed by the matchmaker; cancel
+          // the onDisconnect so it doesn't linger and affect a future
+          // queue entry under the same player id.
+          await db.ref(`queue/${player.id}`).onDisconnect().cancel();
+          subscribeToRoom(code);
+          notify('Match found! Game starting...', 'cyan');
+        });
+        return () => ptrRef.off('value', cb);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [phase, player.id]);
+
+      // ── Actions ─────────────────────────────────────────────────────────────
+      const joinQueue = async () => {
+        if (!player.id) return;
+        const myQueueRef = db.ref(`queue/${player.id}`);
+        await myQueueRef.set({ ts: firebase.database.ServerValue.TIMESTAMP });
+        // Auto-remove our queue entry if we disconnect without leaving
+        // properly, so we never become a "ghost" entry that blocks
+        // matchmaking forever.
+        myQueueRef.onDisconnect().remove();
+        setPhase('queue');
+        setQueuePos(1);
+      };
+
+      const leaveQueue = async () => {
+        if (!player.id) return;
+        await db.ref(`queue/${player.id}`).onDisconnect().cancel();
+        await db.ref(`queue/${player.id}`).remove();
+        await db.ref(`matchPointers/${player.id}`).remove();
+        setPhase('lobby');
+        setQueuePos(0);
+        setQueueCount(0);
+      };
+
+      const createRoom = async () => {
+        if (!player.id) return;
+        const code = genRoomCode();
+        const roomData = {
+          code, hostId: player.id,
+          map: roomSettings.map,
+          maxPlayers: roomSettings.maxPlayers,
+          timeLimit: roomSettings.timeLimit,
+          phase: 'lobby',
+          createdAt: firebase.database.ServerValue.TIMESTAMP,
+          players: {
+            [player.id]: {
+              id: player.id, name: player.name, level: player.level,
+              role: null, alive: true, joinedAt: Date.now(),
+            }
+          },
+        };
+        await db.ref(`rooms/${code}`).set(roomData);
+        subscribeToRoom(code);
+        notify(`Room created: ${code}`, 'amber');
+      };
+
+      const joinRoom = async () => {
+        if (roomCodeInput.length !== 6 || !player.id) return;
+        const code = roomCodeInput;
+        const ref = db.ref(`rooms/${code}`);
+        const snap = await ref.get();
+        if (!snap.exists()) {
+          notify('Room not found', 'red');
+          return;
+        }
+        const data = snap.val();
+        if (data.phase !== 'lobby') {
+          notify('Match already in progress', 'red');
+          return;
+        }
+        const players = data.players || {};
+        if (Object.keys(players).length >= (data.maxPlayers || 8)) {
+          notify('Room is full', 'red');
+          return;
+        }
+        await ref.child(`players/${player.id}`).set({
+          id: player.id, name: player.name, level: player.level,
+          role: null, alive: true, joinedAt: Date.now(),
+        });
+        subscribeToRoom(code);
+        notify(`Joined room ${code}`, 'cyan');
+      };
+
+      const leaveRoom = async () => {
+        const code = roomCodeRef.current;
+        if (code && player.id) {
+          const ref = db.ref(`rooms/${code}`);
+          const snap = await ref.get();
+          const data = snap.val();
+          if (data) {
+            const players = data.players || {};
+            delete players[player.id];
+            if (Object.keys(players).length === 0) {
+              await ref.remove();
+            } else {
+              const updates = { [`players/${player.id}`]: null };
+              // Reassign host if the host left
+              if (data.hostId === player.id) {
+                const nextHost = Object.values(players).sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0))[0];
+                if (nextHost) updates['hostId'] = nextHost.id;
+              }
+              await ref.update(updates);
+            }
+          }
+        }
+        leaveRoomCleanup();
+      };
+
+      const startGame = async () => {
+        const code = roomCodeRef.current;
+        if (!code || !room) return;
+        const playersArr = room.players;
+        if (playersArr.length < 2) return;
+
+        // Assign roles: ~1/4 hunters (min 1), rest hiders
+        const shuffled = [...playersArr].sort(() => Math.random() - 0.5);
+        const hunterCount = Math.max(1, Math.floor(shuffled.length / 4));
+        const updates = {};
+        let hunterIdx = 0, hiderIdx = 0;
+        shuffled.forEach((p, i) => {
+          const role = i < hunterCount ? 'hunter' : 'hider';
+          const spawn = role === 'hunter' ? spawnFor('hunter', hunterIdx++) : spawnFor('hider', hiderIdx++);
+          updates[`players/${p.id}/role`] = role;
+          updates[`players/${p.id}/alive`] = true;
+          updates[`players/${p.id}/x`] = spawn.x;
+          updates[`players/${p.id}/y`] = spawn.y;
+        });
+        updates['phase'] = 'hiding';
+        updates['hideEndsAt'] = Date.now() + HIDE_SECONDS * 1000;
+
+        await db.ref(`rooms/${code}`).update(updates);
+      };
+
+      const sendChat = () => {
+        if (!chatInput.trim() || !player.id) return;
+        const code = roomCodeRef.current;
+        if (!code) return;
+        db.ref(`rooms/${code}/chat`).push({
+          from: player.name, text: chatInput.trim(), ts: Date.now(),
+        });
+        setChatInput('');
+      };
+
+      const eliminate = useCallback((targetId) => {
+        const code = roomCodeRef.current;
+        if (!code) return;
+        db.ref(`rooms/${code}/players/${targetId}/alive`).set(false);
+      }, []);
+
+      // ── Position sync (throttled) ────────────────────────────────────────────
+      const lastPosSentRef = useRef(0);
+      const updatePosition = useCallback((x, y) => {
+        const code = roomCodeRef.current;
+        if (!code || !player.id) return;
+        const now = Date.now();
+        if (now - lastPosSentRef.current < 80) return; // throttle to ~12/sec
+        lastPosSentRef.current = now;
+        db.ref(`rooms/${code}/players/${player.id}`).update({ x, y });
+      }, [player.id]);
+
+      const myRole = room?.players.find(p => p.id === player.id)?.role;
+      const myAlive = room?.players.find(p => p.id === player.id)?.alive !== false;
+      const xpPct = Math.round((player.xp / player.xpToNext) * 100);
+      const winRate = player.wins + player.losses > 0
+        ? Math.round((player.wins / (player.wins + player.losses)) * 100) : 0;
+
+      return (
+        <div className="relative min-h-screen w-full bg-[#0a0a0f] text-[#e2e8f0] overflow-hidden font-sans">
+          {/* CRT overlay */}
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] z-0" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#0a0a0f_90%)] z-0" />
+          <div className="pointer-events-none absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(#f59e0b 1px, transparent 1px), linear-gradient(90deg, #f59e0b 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+
+          {/* Notification toast */}
+          {notification && (
+            <div className={`fixed top-4 right-4 z-50 px-6 py-3 border font-['JetBrains_Mono'] text-sm animate-in shadow-lg
+              ${notification.color === 'red'  ? 'bg-red-900/80 border-red-500/50 text-red-300' :
+                notification.color === 'cyan' ? 'bg-cyan-900/80 border-cyan-500/50 text-cyan-300' :
+                'bg-amber-900/80 border-amber-500/50 text-amber-300'}`}>
+              {notification.msg}
+            </div>
+          )}
+
+          {/* XP popup */}
+          {xpPopup && (
+            <div className="fixed top-16 right-4 z-50 px-6 py-4 bg-black/90 border border-amber-500/50 font-['JetBrains_Mono'] animate-in text-center">
+              <div className={`text-2xl font-bold ${xpPopup.won ? 'text-green-400' : 'text-red-400'}`}>
+                {xpPopup.won ? 'VICTORY' : 'DEFEAT'}
+              </div>
+              <div className="text-amber-400 text-sm mt-1">+{xpPopup.xpGained} XP</div>
+            </div>
+          )}
+
+          <div className="relative z-10 flex flex-col md:flex-row h-screen max-h-screen">
+            {/* ── Sidebar ── */}
+            <aside className="w-full md:w-80 flex-shrink-0 border-r border-white/10 bg-black/40 backdrop-blur-md flex flex-col">
+              {/* Player card */}
+              <div className="p-6 border-b border-white/10">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="relative">
+                    <div className="w-16 h-16 rounded-sm bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center font-['Chakra_Petch'] font-bold text-2xl text-black shadow-[0_0_15px_rgba(245,158,11,0.4)]">
+                      {player.level}
+                    </div>
+                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-cyan-500 rounded-sm flex items-center justify-center">
+                      <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h2 className="font-['Chakra_Petch'] font-bold text-xl tracking-wider text-white truncate">{player.name}</h2>
+                    <p className="font-['JetBrains_Mono'] text-xs text-amber-500 uppercase tracking-widest">Clearance: Alpha</p>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex justify-between font-['JetBrains_Mono'] text-xs text-gray-400">
+                    <span>XP</span><span>{player.xp} / {player.xpToNext}</span>
+                  </div>
+                  <div className="h-2 bg-white/5 rounded-sm overflow-hidden border border-white/10">
+                    <div className="h-full bg-gradient-to-r from-amber-600 to-amber-400 transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(245,158,11,0.5)]"
+                      style={{ width: `${xpPct}%` }} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Nav */}
+              <nav className="flex-1 p-4 space-y-2">
+                <NavButton active={activeTab==='play'}    onClick={() => setActiveTab('play')}
+                  icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>}>
+                  DEPLOY (Matchmaking)
+                </NavButton>
+                <NavButton active={activeTab==='custom'}  onClick={() => setActiveTab('custom')}
+                  icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>}>
+                  PRIVATE OPERATION
+                </NavButton>
+                <NavButton active={activeTab==='profile'} onClick={() => setActiveTab('profile')}
+                  icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>}>
+                  DOSSIER (Stats)
+                </NavButton>
+              </nav>
+
+              {/* Connection status */}
+              <div className="p-4 border-t border-white/10 font-['JetBrains_Mono'] text-xs text-gray-500 flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${conn==='online' ? 'bg-cyan-400' : conn==='offline' ? 'bg-red-400' : 'bg-yellow-400'}`}></span>
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${conn==='online' ? 'bg-cyan-500' : conn==='offline' ? 'bg-red-500' : 'bg-yellow-500'}`}></span>
+                </span>
+                {conn==='online' ? 'SERVER: CONNECTED' : conn==='offline' ? 'SERVER: OFFLINE — RECONNECTING' : 'CONNECTING...'}
+              </div>
+            </aside>
+
+            {/* ── Main area ── */}
+            <main className="flex-1 overflow-y-auto p-6 md:p-12 relative">
+
+              {/* ══ PLAY TAB ══ */}
+              {activeTab === 'play' && (
+                <div className="max-w-3xl mx-auto space-y-8 animate-in">
+                  <div className="text-center space-y-2">
+                    <h1 className="font-['Chakra_Petch'] text-5xl md:text-7xl font-bold text-white tracking-tighter uppercase">
+                      Prop Hunt <span className="text-amber-500">Protocol</span>
+                    </h1>
+                    <p className="font-['JetBrains_Mono'] text-gray-400 text-sm md:text-base max-w-lg mx-auto">
+                      Select your operational parameters. Hiders must survive until extraction. Hunters must eliminate all anomalies.
+                    </p>
+                  </div>
+
+                  {/* In-game overlay */}
+                  {room && (phase === 'hiding' || phase === 'hunting' || phase === 'ended') && (
+                    <GameView
+                      room={room} phase={phase} winner={winner} myRole={myRole}
+                      myAlive={myAlive} player={player} countdown={countdown}
+                      chatMessages={chatMessages} chatInput={chatInput}
+                      setChatInput={setChatInput} sendChat={sendChat}
+                      eliminate={eliminate} leaveRoom={leaveRoom} chatRef={chatRef}
+                      updatePosition={updatePosition}
+                    />
+                  )}
+
+                  {/* Room lobby */}
+                  {room && phase === 'lobby' && (
+                    <RoomLobby
+                      room={room} player={player} myRole={myRole}
+                      startGame={startGame} leaveRoom={leaveRoom}
+                      chatMessages={chatMessages} chatInput={chatInput}
+                      setChatInput={setChatInput} sendChat={sendChat} chatRef={chatRef}
+                    />
+                  )}
+
+                  {/* Matchmaking buttons */}
+                  {!room && (
+                    <>
+                      <div className="grid md:grid-cols-2 gap-6 mt-12">
+                        <button
+                          onClick={phase === 'queue' ? leaveQueue : joinQueue}
+                          disabled={conn !== 'online'}
+                          className="group relative h-64 bg-white/5 border border-white/10 hover:border-amber-500/50 transition-all duration-300 overflow-hidden text-left p-6 flex flex-col justify-between disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                          <div className="relative z-10">
+                            <div className={`w-12 h-12 rounded-sm flex items-center justify-center mb-4 text-amber-500 group-hover:scale-110 transition-transform duration-300 ${phase==='queue' ? 'bg-amber-500/30 glow-pulse' : 'bg-amber-500/20'}`}>
+                              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            </div>
+                            <h3 className="font-['Chakra_Petch'] text-2xl font-bold text-white mb-1">
+                              {phase === 'queue' ? 'IN QUEUE...' : 'RAPID DEPLOYMENT'}
+                            </h3>
+                            <p className="font-['JetBrains_Mono'] text-xs text-gray-400">
+                              {phase === 'queue' ? `Filling lobby — ${queueCount}/${TARGET_PLAYERS} players (#${queuePos})` : 'Public Matchmaking • Auto Map'}
+                            </p>
+                          </div>
+                          <div className="relative z-10 font-['JetBrains_Mono'] text-xs text-amber-500 flex items-center gap-2 group-hover:gap-4 transition-all">
+                            {phase === 'queue' ? 'ABORT SEQUENCE →' : 'INITIATE SEQUENCE →'}
+                          </div>
+                        </button>
+
+                        <div className="h-64 bg-black/40 border border-white/10 p-6 flex flex-col justify-between">
+                          <div>
+                            <h3 className="font-['Chakra_Petch'] text-xl font-bold text-white mb-4 flex items-center gap-2">
+                              <span className="w-2 h-2 bg-cyan-500 rounded-sm"></span>
+                              OPERATIONAL METRICS
+                            </h3>
+                            <div className="grid grid-cols-2 gap-4">
+                              <StatBox label="WIN RATE"      value={`${winRate}%`}               color="text-cyan-400" />
+                              <StatBox label="TOTAL MATCHES" value={player.wins + player.losses}  color="text-white" />
+                              <StatBox label="WINS"          value={player.wins}                  color="text-green-400" />
+                              <StatBox label="LOSSES"        value={player.losses}                color="text-red-400" />
+                            </div>
+                          </div>
+                          <div className="font-['JetBrains_Mono'] text-xs text-gray-500 border-t border-white/10 pt-4">
+                            SESSION: {player.id?.slice(0,8).toUpperCase() || '--------'}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {/* ══ PRIVATE OPERATION TAB ══ */}
+              {activeTab === 'custom' && (
+                <div className="max-w-2xl mx-auto space-y-8 animate-in">
+                  <div className="text-center space-y-2">
+                    <h1 className="font-['Chakra_Petch'] text-4xl font-bold text-white tracking-tighter uppercase">Private Operation</h1>
+                    <p className="font-['JetBrains_Mono'] text-gray-400 text-sm">Create a secure lobby or join via classified access code.</p>
+                  </div>
+
+                  {room ? (
+                    <RoomLobby
+                      room={room} player={player} myRole={myRole}
+                      startGame={startGame} leaveRoom={leaveRoom}
+                      chatMessages={chatMessages} chatInput={chatInput}
+                      setChatInput={setChatInput} sendChat={sendChat} chatRef={chatRef}
+                    />
+                  ) : (
+                    <div className="bg-white/5 border border-white/10 p-8 space-y-6">
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="font-['JetBrains_Mono'] text-xs text-gray-400 uppercase tracking-wider">Map</label>
+                          <select
+                            value={roomSettings.map}
+                            onChange={e => setRoomSettings(s => ({ ...s, map: e.target.value }))}
+                            className="w-full bg-black/50 border border-white/10 focus:border-amber-500/50 focus:outline-none px-4 py-3 font-['JetBrains_Mono'] text-white transition-colors appearance-none"
+                          >
+                            <option>Office Complex</option>
+                            <option>Warehouse</option>
+                            <option>Library</option>
+                            <option>Shopping Mall</option>
+                          </select>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="font-['JetBrains_Mono'] text-xs text-gray-400 uppercase tracking-wider">Max Players</label>
+                          <select
+                            value={roomSettings.maxPlayers}
+                            onChange={e => setRoomSettings(s => ({ ...s, maxPlayers: Number(e.target.value) }))}
+                            className="w-full bg-black/50 border border-white/10 focus:border-amber-500/50 focus:outline-none px-4 py-3 font-['JetBrains_Mono'] text-white transition-colors appearance-none"
+                          >
+                            <option value={4}>4 Players</option>
+                            <option value={8}>8 Players</option>
+                            <option value={12}>12 Players</option>
+                          </select>
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <label className="font-['JetBrains_Mono'] text-xs text-gray-400 uppercase tracking-wider">Hunt Timer</label>
+                          <select
+                            value={roomSettings.timeLimit}
+                            onChange={e => setRoomSettings(s => ({ ...s, timeLimit: Number(e.target.value) }))}
+                            className="w-full bg-black/50 border border-white/10 focus:border-amber-500/50 focus:outline-none px-4 py-3 font-['JetBrains_Mono'] text-white transition-colors appearance-none"
+                          >
+                            <option value={120}>2 Minutes</option>
+                            <option value={180}>3 Minutes</option>
+                            <option value={300}>5 Minutes</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="pt-4 border-t border-white/10">
+                        <button
+                          onClick={createRoom}
+                          disabled={conn !== 'online'}
+                          className="w-full py-4 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed text-black font-['Chakra_Petch'] font-bold text-lg uppercase tracking-wider transition-colors shadow-[0_0_20px_rgba(245,158,11,0.3)]"
+                        >
+                          Initialize Lobby
+                        </button>
+                      </div>
+
+                      <div className="relative flex items-center py-2">
+                        <div className="flex-grow border-t border-white/10"></div>
+                        <span className="flex-shrink-0 mx-4 font-['JetBrains_Mono'] text-xs text-gray-500">OR JOIN EXISTING</span>
+                        <div className="flex-grow border-t border-white/10"></div>
+                      </div>
+
+                      <div className="flex gap-4">
+                        <input
+                          type="text"
+                          value={roomCodeInput}
+                          onChange={e => setRoomCodeInput(e.target.value.toUpperCase())}
+                          onKeyDown={e => e.key === 'Enter' && joinRoom()}
+                          placeholder="ENTER 6-DIGIT CODE"
+                          maxLength={6}
+                          className="flex-1 bg-black/50 border border-white/10 focus:border-cyan-500/50 focus:outline-none px-4 py-3 font-['JetBrains_Mono'] text-white text-center tracking-[0.5em] placeholder-gray-700 transition-colors"
+                        />
+                        <button
+                          onClick={joinRoom}
+                          disabled={roomCodeInput.length !== 6 || conn !== 'online'}
+                          className="px-8 py-3 bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed border border-white/10 hover:border-cyan-500/50 text-cyan-400 font-['JetBrains_Mono'] text-sm uppercase tracking-wider transition-colors"
+                        >
+                          Connect
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ══ DOSSIER TAB ══ */}
+              {activeTab === 'profile' && (
+                <div className="max-w-4xl mx-auto space-y-8 animate-in">
+                  <div className="flex items-end justify-between border-b border-white/10 pb-6">
+                    <div>
+                      <h1 className="font-['Chakra_Petch'] text-4xl font-bold text-white tracking-tighter uppercase mb-2">Operative Dossier</h1>
+                      <p className="font-['JetBrains_Mono'] text-gray-400 text-sm">Live performance data synced from the server.</p>
+                    </div>
+                  </div>
+
+                  <div className="grid md:grid-cols-3 gap-6">
+                    <div className="md:col-span-2 bg-white/5 border border-white/10 p-6">
+                      <h3 className="font-['Chakra_Petch'] text-xl font-bold text-white mb-6 flex items-center gap-2">
+                        <span className="w-2 h-2 bg-amber-500 rounded-sm"></span>
+                        LIVE STATS
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <StatBox label="WINS"          value={player.wins}                              color="text-green-400" />
+                        <StatBox label="LOSSES"        value={player.losses}                            color="text-red-400" />
+                        <StatBox label="WIN RATE"      value={`${winRate}%`}                            color="text-cyan-400" />
+                        <StatBox label="TOTAL MATCHES" value={player.wins + player.losses}              color="text-white" />
+                        <StatBox label="LEVEL"         value={player.level}                             color="text-amber-400" />
+                        <StatBox label="XP"            value={`${player.xp}/${player.xpToNext}`}       color="text-amber-400" />
+                      </div>
+
+                      <div className="mt-6 space-y-1">
+                        <div className="flex justify-between font-['JetBrains_Mono'] text-xs text-gray-400 mb-1">
+                          <span>LEVEL PROGRESS</span><span>{xpPct}%</span>
+                        </div>
+                        <div className="h-3 bg-white/5 rounded-sm overflow-hidden border border-white/10">
+                          <div className="h-full bg-gradient-to-r from-amber-600 to-amber-400 transition-all duration-1000 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
+                            style={{ width: `${xpPct}%` }} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="bg-white/5 border border-white/10 p-6">
+                        <h3 className="font-['Chakra_Petch'] text-lg font-bold text-white mb-4">COSMETICS</h3>
+                        <div className="grid grid-cols-3 gap-2">
+                          {['📦','🪑','🪴','🗑️','📺','🔒'].map((icon, idx) => (
+                            <div key={idx} className={`aspect-square flex items-center justify-center text-2xl border ${idx < Math.floor(player.level / 3) + 1 ? 'border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 cursor-pointer' : 'border-white/10 bg-black/50 grayscale opacity-40'}`}>
+                              {icon}
+                            </div>
+                          ))}
+                        </div>
+                        <p className="font-['JetBrains_Mono'] text-xs text-gray-500 mt-3">Unlock more by leveling up</p>
+                      </div>
+
+                      <div className="bg-gradient-to-br from-cyan-900/20 to-blue-900/20 border border-cyan-500/20 p-6">
+                        <h3 className="font-['Chakra_Petch'] text-lg font-bold text-cyan-400 mb-2">SEASON 04 PASS</h3>
+                        <p className="font-['JetBrains_Mono'] text-xs text-gray-400 mb-4">
+                          {Math.max(0, 5 - (player.wins + player.losses))} more matches to unlock the Golden Briefcase.
+                        </p>
+                        <div className="h-1.5 bg-black/50 rounded-sm overflow-hidden">
+                          <div className="h-full bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)] transition-all duration-500"
+                            style={{ width: `${Math.min(100, ((player.wins + player.losses) / 5) * 100)}%` }} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </main>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── Room Lobby Component ─────────────────────────────────────────────────
+    function RoomLobby({ room, player, startGame, leaveRoom, chatMessages, chatInput, setChatInput, sendChat, chatRef }) {
+      const isHost = room.hostId === player.id;
+      return (
+        <div className="space-y-6 animate-in">
+          <div className="bg-black/40 border border-amber-500/30 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="font-['Chakra_Petch'] text-2xl font-bold text-white">ROOM: <span className="text-amber-500 tracking-widest">{room.code}</span></h2>
+                <p className="font-['JetBrains_Mono'] text-xs text-gray-400 mt-1">{room.map} • {room.maxPlayers} max • {room.timeLimit}s hunt</p>
+              </div>
+              <button onClick={leaveRoom} className="px-4 py-2 border border-red-500/30 text-red-400 font-['JetBrains_Mono'] text-xs hover:bg-red-500/10 transition-colors">
+                LEAVE
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+              {room.players.map(p => (
+                <div key={p.id} className={`p-3 border text-center ${p.id === player.id ? 'border-amber-500/50 bg-amber-500/10' : 'border-white/10 bg-white/5'}`}>
+                  <div className="font-['Chakra_Petch'] font-bold text-white text-sm truncate">{p.name}</div>
+                  <div className="font-['JetBrains_Mono'] text-xs text-gray-500 mt-1">Lv.{p.level}</div>
+                  {p.id === room.hostId && <div className="text-amber-400 text-xs mt-1">HOST</div>}
+                </div>
+              ))}
+              {Array.from({ length: Math.max(0, room.maxPlayers - room.players.length) }).map((_, i) => (
+                <div key={i} className="p-3 border border-white/5 bg-white/2 text-center">
+                  <div className="font-['JetBrains_Mono'] text-xs text-gray-600">WAITING...</div>
+                </div>
+              ))}
+            </div>
+
+            {isHost && (
+              <button
+                onClick={startGame}
+                disabled={room.players.length < 2}
+                className="w-full py-4 bg-amber-600 hover:bg-amber-500 disabled:opacity-40 disabled:cursor-not-allowed text-black font-['Chakra_Petch'] font-bold text-lg uppercase tracking-wider transition-colors"
+              >
+                {room.players.length < 2 ? 'WAITING FOR PLAYERS...' : 'START OPERATION'}
+              </button>
+            )}
+            {!isHost && (
+              <div className="text-center font-['JetBrains_Mono'] text-sm text-gray-400 py-3 border border-white/10">
+                Waiting for host to start...
+              </div>
+            )}
+          </div>
+
+          <ChatBox messages={chatMessages} input={chatInput} setInput={setChatInput} onSend={sendChat} chatRef={chatRef} />
+        </div>
+      );
+    }
+
+    // ─── In-game View ─────────────────────────────────────────────────────────
+    function GameView({ room, phase, winner, myRole, myAlive, player, countdown, chatMessages, chatInput, setChatInput, sendChat, eliminate, leaveRoom, chatRef, updatePosition }) {
+      const showMap = (phase === 'hiding' && myRole === 'hider') || phase === 'hunting';
+      const hunterLocked = phase === 'hiding' && myRole === 'hunter';
+
+      return (
+        <div className="space-y-4 animate-in">
+          {/* Phase banner */}
+          <div className={`p-4 border text-center ${
+            phase === 'ended'   ? 'border-purple-500/50 bg-purple-900/20' :
+            phase === 'hiding'  ? 'border-cyan-500/50 bg-cyan-900/20' :
+                                  'border-red-500/50 bg-red-900/20'}`}>
+            {phase === 'hiding' && (
+              <div>
+                <div className="font-['Chakra_Petch'] text-2xl font-bold text-cyan-400">HIDING PHASE</div>
+                <div className="font-['JetBrains_Mono'] text-4xl font-bold text-white mt-1">{countdown ?? '...'}</div>
+                <div className="font-['JetBrains_Mono'] text-xs text-gray-400 mt-1">
+                  {myRole === 'hider' ? 'Find a hiding spot! Move with WASD/arrows or the joystick.' : 'Hunters are locked out — wait for the hunt to begin...'}
+                </div>
+              </div>
+            )}
+            {phase === 'hunting' && (
+              <div>
+                <div className="font-['Chakra_Petch'] text-2xl font-bold text-red-400">HUNTING PHASE</div>
+                <div className="font-['JetBrains_Mono'] text-xs text-gray-400 mt-1">
+                  You are a <span className={myRole === 'hunter' ? 'text-red-400' : 'text-cyan-400'}>{myRole?.toUpperCase()}</span>
+                  {!myAlive && <span className="text-red-500 ml-2">— ELIMINATED</span>}
+                  {myRole === 'hunter' && ' — get close to a hider to eliminate them automatically.'}
+                </div>
+              </div>
+            )}
+            {phase === 'ended' && (
+              <div>
+                <div className={`font-['Chakra_Petch'] text-3xl font-bold ${winner === 'hunters' ? 'text-red-400' : 'text-green-400'}`}>
+                  {winner === 'hunters' ? '🎯 HUNTERS WIN' : '🏃 HIDERS ESCAPE'}
+                </div>
+                <button onClick={leaveRoom} className="mt-3 px-6 py-2 bg-amber-600 hover:bg-amber-500 text-black font-['Chakra_Petch'] font-bold text-sm uppercase transition-colors">
+                  BACK TO LOBBY
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Map / locked overlay */}
+          {showMap && (
+            <GameMap
+              room={room} player={player} myRole={myRole} myAlive={myAlive}
+              phase={phase} updatePosition={updatePosition} eliminate={eliminate}
+            />
+          )}
+          {hunterLocked && (
+            <div className="relative h-64 md:h-96 bg-black border border-cyan-500/30 flex items-center justify-center overflow-hidden">
+              <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'repeating-linear-gradient(45deg, rgba(6,182,212,0.15) 0px, rgba(6,182,212,0.15) 2px, transparent 2px, transparent 12px)' }} />
+              <div className="relative z-10 text-center px-4">
+                <div className="font-['Chakra_Petch'] text-xl font-bold text-cyan-400 uppercase tracking-widest mb-2">Comms Locked</div>
+                <div className="font-['JetBrains_Mono'] text-xs text-gray-400">Tracking systems will activate once hiders are in position.</div>
+              </div>
+            </div>
+          )}
+
+          {/* Compact roster */}
+          <div className="bg-black/40 border border-white/10 p-4">
+            <h3 className="font-['JetBrains_Mono'] text-xs text-gray-400 uppercase mb-3">Players</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {room.players.map(p => (
+                <div key={p.id} className={`flex items-center gap-2 p-2 border ${p.id === player.id ? 'border-amber-500/30' : 'border-white/5'}`}>
+                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${!p.alive ? 'bg-gray-600' : p.role === 'hunter' ? 'bg-red-400' : 'bg-cyan-400'}`} />
+                  <span className="font-['JetBrains_Mono'] text-xs text-white truncate">{p.name}</span>
+                  {!p.alive && <span className="font-['JetBrains_Mono'] text-[10px] text-gray-500 flex-shrink-0">(out)</span>}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <ChatBox messages={chatMessages} input={chatInput} setInput={setChatInput} onSend={sendChat} chatRef={chatRef} />
+        </div>
+      );
+    }
+
+    // ─── 2D Game Map (canvas) ───────────────────────────────────────────────────
+    function GameMap({ room, player, myRole, myAlive, phase, updatePosition, eliminate }) {
+      const canvasRef    = useRef(null);
+      const wrapRef      = useRef(null);
+      const posRef       = useRef({ x: WORLD_W / 2, y: WORLD_H / 2 });
+      const keysRef      = useRef({ up: false, down: false, left: false, right: false });
+      const joyRef       = useRef({ active: false, dx: 0, dy: 0 });
+      const playersRef   = useRef(room.players);
+      const eliminatedRef = useRef(new Set());
+      const rafRef       = useRef(null);
+      const lastTsRef    = useRef(null);
+
+      // Keep latest players list (for remote rendering + eliminate checks)
+      // without re-triggering the animation loop on every Firebase tick.
+      useEffect(() => { playersRef.current = room.players; }, [room.players]);
+
+      // Initialize local position from server once when this player first
+      // gets a position (e.g. on spawn / role assignment).
+      const initedRef = useRef(false);
+      useEffect(() => {
+        if (initedRef.current) return;
+        const me = room.players.find(p => p.id === player.id);
+        if (me && typeof me.x === 'number' && typeof me.y === 'number') {
+          posRef.current = { x: me.x, y: me.y };
+          initedRef.current = true;
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [room.players]);
+
+      // ── Keyboard controls ──────────────────────────────────────────────────
+      useEffect(() => {
+        const isTyping = () => {
+          const el = document.activeElement;
+          return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA');
+        };
+        const down = (e) => {
+          if (isTyping()) return;
+          switch (e.key) {
+            case 'w': case 'W': case 'ArrowUp':    keysRef.current.up = true; break;
+            case 's': case 'S': case 'ArrowDown':  keysRef.current.down = true; break;
+            case 'a': case 'A': case 'ArrowLeft':  keysRef.current.left = true; break;
+            case 'd': case 'D': case 'ArrowRight': keysRef.current.right = true; break;
+            default: return;
+          }
+          e.preventDefault();
+        };
+        const up = (e) => {
+          switch (e.key) {
+            case 'w': case 'W': case 'ArrowUp':    keysRef.current.up = false; break;
+            case 's': case 'S': case 'ArrowDown':  keysRef.current.down = false; break;
+            case 'a': case 'A': case 'ArrowLeft':  keysRef.current.left = false; break;
+            case 'd': case 'D': case 'ArrowRight': keysRef.current.right = false; break;
+            default: return;
+          }
+        };
+        window.addEventListener('keydown', down);
+        window.addEventListener('keyup', up);
+        return () => {
+          window.removeEventListener('keydown', down);
+          window.removeEventListener('keyup', up);
+        };
+      }, []);
+
+      // ── Responsive canvas sizing ─────────────────────────────────────────────
+      useEffect(() => {
+        const canvas = canvasRef.current;
+        const wrap = wrapRef.current;
+        if (!canvas || !wrap) return;
+
+        const resize = () => {
+          const rect = wrap.getBoundingClientRect();
+          const dpr = window.devicePixelRatio || 1;
+          canvas.width = Math.round(rect.width * dpr);
+          canvas.height = Math.round(rect.height * dpr);
+          canvas.style.width = `${rect.width}px`;
+          canvas.style.height = `${rect.height}px`;
+        };
+        resize();
+        window.addEventListener('resize', resize);
+        return () => window.removeEventListener('resize', resize);
+      }, []);
+
+      // ── Main loop: movement + render ─────────────────────────────────────────
+      useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const canMove = myAlive !== false;
+
+        const frame = (ts) => {
+          if (lastTsRef.current == null) lastTsRef.current = ts;
+          const dt = Math.min(0.05, (ts - lastTsRef.current) / 1000);
+          lastTsRef.current = ts;
+
+          // ── Compute movement vector from keyboard + joystick ──────────────
+          let dx = 0, dy = 0;
+          const k = keysRef.current;
+          if (k.up) dy -= 1;
+          if (k.down) dy += 1;
+          if (k.left) dx -= 1;
+          if (k.right) dx += 1;
+          const j = joyRef.current;
+          if (j.active) { dx += j.dx; dy += j.dy; }
+
+          if (canMove && (dx !== 0 || dy !== 0)) {
+            const len = Math.hypot(dx, dy) || 1;
+            const normX = (dx / len) * MOVE_SPEED * dt;
+            const normY = (dy / len) * MOVE_SPEED * dt;
+            const resolved = resolveMove(posRef.current.x, posRef.current.y, normX, normY, WALLS, PLAYER_RADIUS);
+            posRef.current = resolved;
+            updatePosition(resolved.x, resolved.y);
+          }
+
+          // ── Proximity-based auto-elimination (hunters only, hunting phase) ──
+          if (phase === 'hunting' && myRole === 'hunter' && canMove) {
+            for (const p of playersRef.current) {
+              if (p.role !== 'hider' || p.alive === false) continue;
+              if (eliminatedRef.current.has(p.id)) continue;
+              if (typeof p.x !== 'number' || typeof p.y !== 'number') continue;
+              const d = Math.hypot(p.x - posRef.current.x, p.y - posRef.current.y);
+              if (d < ELIMINATE_RADIUS) {
+                eliminatedRef.current.add(p.id);
+                eliminate(p.id);
+              }
+            }
+          }
+
+          render(ctx, canvas);
+          rafRef.current = requestAnimationFrame(frame);
+        };
+
+        const render = (ctx, canvas) => {
+          const dpr = window.devicePixelRatio || 1;
+          const scale = Math.min(canvas.width / WORLD_W, canvas.height / WORLD_H);
+          const offX = (canvas.width - WORLD_W * scale) / 2;
+          const offY = (canvas.height - WORLD_H * scale) / 2;
+
+          ctx.save();
+          ctx.fillStyle = '#0a0a0f';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          ctx.translate(offX, offY);
+          ctx.scale(scale, scale);
+
+          // Floor
+          ctx.fillStyle = '#13131c';
+          ctx.fillRect(0, 0, WORLD_W, WORLD_H);
+
+          // Floor grid
+          ctx.strokeStyle = 'rgba(245,158,11,0.05)';
+          ctx.lineWidth = 1;
+          for (let x = 0; x <= WORLD_W; x += 50) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, WORLD_H); ctx.stroke();
+          }
+          for (let y = 0; y <= WORLD_H; y += 50) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WORLD_W, y); ctx.stroke();
+          }
+
+          // Walls
+          ctx.fillStyle = '#3f3f4d';
+          ctx.strokeStyle = 'rgba(245,158,11,0.25)';
+          ctx.lineWidth = 1;
+          for (const w of WALLS) {
+            ctx.fillRect(w.x, w.y, w.w, w.h);
+            ctx.strokeRect(w.x, w.y, w.w, w.h);
+          }
+
+          // Players
+          const players = playersRef.current;
+          for (const p of players) {
+            let px, py;
+            if (p.id === player.id) {
+              px = posRef.current.x; py = posRef.current.y;
+            } else {
+              if (typeof p.x !== 'number' || typeof p.y !== 'number') continue;
+              px = p.x; py = p.y;
+            }
+
+            const isDead = p.alive === false;
+            const color = isDead ? '#4b5563'
+              : p.role === 'hunter' ? '#f87171'
+              : '#22d3ee';
+
+            ctx.globalAlpha = isDead ? 0.35 : 1;
+
+            // outer ring for "me"
+            if (p.id === player.id) {
+              ctx.beginPath();
+              ctx.arc(px, py, PLAYER_RADIUS + 5, 0, Math.PI * 2);
+              ctx.strokeStyle = '#f59e0b';
+              ctx.lineWidth = 2;
+              ctx.stroke();
+            }
+
+            ctx.beginPath();
+            ctx.arc(px, py, PLAYER_RADIUS, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+
+            // name label
+            ctx.globalAlpha = isDead ? 0.5 : 1;
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = '11px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(p.name, px, py - PLAYER_RADIUS - 6);
+            ctx.globalAlpha = 1;
+          }
+
+          ctx.restore();
+        };
+
+        rafRef.current = requestAnimationFrame(frame);
+        return () => {
+          if (rafRef.current) cancelAnimationFrame(rafRef.current);
+          lastTsRef.current = null;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [myAlive, phase, myRole, player.id, updatePosition, eliminate]);
+
+      // ── Touch joystick handlers ──────────────────────────────────────────────
+      const joyBaseRef = useRef(null);
+      const onJoyStart = (e) => {
+        e.preventDefault();
+        joyRef.current.active = true;
+        updateJoy(e);
+      };
+      const onJoyMove = (e) => {
+        if (!joyRef.current.active) return;
+        e.preventDefault();
+        updateJoy(e);
+      };
+      const onJoyEnd = (e) => {
+        e.preventDefault();
+        joyRef.current = { active: false, dx: 0, dy: 0 };
+        setJoyKnob({ x: 0, y: 0 });
+      };
+      const [joyKnob, setJoyKnob] = useState({ x: 0, y: 0 });
+      const updateJoy = (e) => {
+        const base = joyBaseRef.current;
+        if (!base) return;
+        const rect = base.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const touch = e.touches ? e.touches[0] : e;
+        let dx = touch.clientX - cx;
+        let dy = touch.clientY - cy;
+        const maxR = rect.width / 2;
+        const dist = Math.hypot(dx, dy);
+        if (dist > maxR) {
+          dx = (dx / dist) * maxR;
+          dy = (dy / dist) * maxR;
+        }
+        joyRef.current.dx = dx / maxR;
+        joyRef.current.dy = dy / maxR;
+        setJoyKnob({ x: dx, y: dy });
+      };
+
+      return (
+        <div ref={wrapRef} className="relative h-64 md:h-96 bg-black border border-white/10 overflow-hidden" style={{ touchAction: 'none' }}>
+          <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
+
+          {/* Legend */}
+          <div className="absolute top-2 left-2 flex items-center gap-3 px-2 py-1 bg-black/60 border border-white/10 font-['JetBrains_Mono'] text-[10px] text-gray-300">
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-cyan-400 inline-block"></span>Hider</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400 inline-block"></span>Hunter</span>
+          </div>
+
+          {/* On-screen joystick (touch) */}
+          {myAlive !== false && (
+            <div
+              ref={joyBaseRef}
+              onPointerDown={onJoyStart} onPointerMove={onJoyMove}
+              onPointerUp={onJoyEnd} onPointerCancel={onJoyEnd} onPointerLeave={onJoyEnd}
+              className="absolute bottom-4 left-4 w-24 h-24 rounded-full bg-white/5 border border-white/15"
+              style={{ touchAction: 'none' }}
+            >
+              <div
+                className="absolute w-10 h-10 rounded-full bg-amber-500/70 border border-amber-400"
+                style={{
+                  left: `calc(50% + ${joyKnob.x}px - 20px)`,
+                  top: `calc(50% + ${joyKnob.y}px - 20px)`,
+                  transition: joyRef.current.active ? 'none' : 'left 0.15s, top 0.15s',
+                }}
+              />
+            </div>
+          )}
+
+          {myAlive === false && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+              <div className="font-['Chakra_Petch'] text-lg font-bold text-red-400 uppercase tracking-widest">Eliminated — Spectating</div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ─── Chat Box ─────────────────────────────────────────────────────────────
+    function ChatBox({ messages, input, setInput, onSend, chatRef }) {
+      return (
+        <div className="bg-black/40 border border-white/10 p-4">
+          <h3 className="font-['JetBrains_Mono'] text-xs text-gray-400 uppercase mb-3">Mission Chat</h3>
+          <div ref={chatRef} className="h-40 overflow-y-auto space-y-1 mb-3">
+            {messages.length === 0 && (
+              <p className="font-['JetBrains_Mono'] text-xs text-gray-600">No messages yet...</p>
+            )}
+            {messages.map((m, i) => (
+              <div key={i} className="font-['JetBrains_Mono'] text-xs">
+                <span className="text-amber-500">{m.from}: </span>
+                <span className="text-gray-300">{m.text}</span>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="text" value={input} onChange={e => setInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && onSend()}
+              placeholder="Type a message..."
+              className="flex-1 bg-black/50 border border-white/10 focus:border-amber-500/50 focus:outline-none px-3 py-2 font-['JetBrains_Mono'] text-xs text-white placeholder-gray-700 transition-colors"
+            />
+            <button onClick={onSend} className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black font-['JetBrains_Mono'] text-xs font-bold transition-colors">
+              SEND
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── Shared components ────────────────────────────────────────────────────
+    function NavButton({ active, onClick, icon, children }) {
+      return (
+        <button onClick={onClick}
+          className={`w-full flex items-center gap-3 px-4 py-3 font-['JetBrains_Mono'] text-sm uppercase tracking-wider transition-all duration-200 border-l-2 ${
+            active ? 'bg-amber-500/10 border-amber-500 text-amber-500 shadow-[inset_10px_0_20px_-10px_rgba(245,158,11,0.2)]'
+                   : 'border-transparent text-gray-400 hover:text-white hover:bg-white/5'}`}>
+          {icon}<span>{children}</span>
+        </button>
+      );
+    }
+
+    function StatBox({ label, value, color }) {
+      return (
+        <div className="bg-black/30 border border-white/5 p-3">
+          <div className="font-['JetBrains_Mono'] text-[10px] text-gray-500 uppercase tracking-wider mb-1">{label}</div>
+          <div className={`font-['Chakra_Petch'] text-xl font-bold ${color}`}>{value}</div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<PropHuntLobby />);
+  </script>
+</body>
+</html>eapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
