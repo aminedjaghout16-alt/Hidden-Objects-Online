@@ -65,6 +65,19 @@
     // wait — however long that takes — until TARGET_PLAYERS is reached.
     const TARGET_PLAYERS = 10;
 
+    // ── Other games shown in the "More Games" modal ──────────────────────────
+    // Add new entries here as more games get released — each one renders
+    // automatically as a card in the modal.
+    const MORE_GAMES = [
+      {
+        name: 'Loup-Garou Online',
+        desc: 'Multiplayer Werewolf — 40+ roles, real-time rooms',
+        icon: '🐺',
+        url: 'https://loup-garou-game-beta.vercel.app/',
+      },
+    ];
+
+
     function genRoomCode() {
       const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
       let code = '';
@@ -336,6 +349,7 @@
         map: 'Office Complex', timeLimit: 180, maxPlayers: 8
       });
       const [countdown, setCountdown]   = useState(null);
+      const [showMoreGames, setShowMoreGames] = useState(false);
 
       const uidRef        = useRef(null);
       const roomCodeRef   = useRef(null);
@@ -981,6 +995,36 @@
             </div>
           )}
 
+          {/* More Games modal */}
+          {showMoreGames && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4"
+              onClick={() => setShowMoreGames(false)}>
+              <div className="bg-[#0a0a0f] border border-amber-500/30 max-w-lg w-full p-6 space-y-4 animate-in shadow-[0_0_20px_rgba(245,158,11,0.3)]"
+                onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                  <h2 className="font-['Chakra_Petch'] text-2xl font-bold text-white tracking-tighter uppercase">More Games</h2>
+                  <button onClick={() => setShowMoreGames(false)}
+                    className="text-gray-400 hover:text-white transition-colors text-xl leading-none">✕</button>
+                </div>
+                <div className="space-y-3">
+                  {MORE_GAMES.map((game) => (
+                    <a key={game.url} href={game.url} target="_blank" rel="noopener noreferrer"
+                      className="group flex items-center gap-4 p-4 bg-white/5 border border-white/10 hover:border-cyan-500/50 hover:bg-white/10 transition-all duration-200">
+                      <div className="w-12 h-12 flex-shrink-0 rounded-sm bg-cyan-900/40 border border-cyan-500/30 flex items-center justify-center text-2xl">
+                        {game.icon}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-['Chakra_Petch'] font-bold text-white truncate">{game.name}</h3>
+                        <p className="font-['JetBrains_Mono'] text-xs text-gray-400 truncate">{game.desc}</p>
+                      </div>
+                      <span className="font-['JetBrains_Mono'] text-xs text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">PLAY →</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="relative z-10 flex flex-col md:flex-row h-screen max-h-screen">
             {/* ── Sidebar ── */}
             <aside className="w-full md:w-80 flex-shrink-0 border-r border-white/10 bg-black/40 backdrop-blur-md flex flex-col">
@@ -1029,11 +1073,11 @@
                 </NavButton>
 
                 <div className="pt-2 mt-2 border-t border-white/10">
-                  <a href="https://loup-garou-game-beta.vercel.app/" target="_blank" rel="noopener noreferrer"
+                  <button onClick={() => setShowMoreGames(true)}
                     className="w-full flex items-center gap-3 px-4 py-3 font-['JetBrains_Mono'] text-sm uppercase tracking-wider transition-all duration-200 border-l-2 border-transparent text-gray-400 hover:text-cyan-400 hover:bg-white/5 hover:border-cyan-500/50">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                    <span>Loup-Garou Online</span>
-                  </a>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/></svg>
+                    <span>More Games</span>
+                  </button>
                 </div>
               </nav>
 
