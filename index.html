@@ -222,52 +222,82 @@
     }
 
     const PROPS = [
-      // Room (0,0)
-      { id: 'plant_00',  type: 'plant',   ...roomPos(0, 0, -130, -110) },
-      { id: 'crate_00',  type: 'crate',   ...roomPos(0, 0, 120, 100) },
-      // Room (1,0)
-      { id: 'lamp_10',   type: 'lamp',    ...roomPos(1, 0, -120, -90) },
-      { id: 'chair_10',  type: 'chair',   ...roomPos(1, 0, 110, 110) },
-      { id: 'barrel_10', type: 'barrel',  ...roomPos(1, 0, 130, -120) },
-      // Room (2,0)
-      { id: 'tv_20',     type: 'tv',      ...roomPos(2, 0, -100, -100) },
-      { id: 'shelf_20',  type: 'shelf',   ...roomPos(2, 0, 120, 90) },
-      // Room (3,0)
-      { id: 'trash_30',  type: 'trash',   ...roomPos(3, 0, -110, 100) },
-      { id: 'vending_30',type: 'vending', ...roomPos(3, 0, 110, -100) },
-      { id: 'plant_30',  type: 'plant',   ...roomPos(3, 0, -120, -110) },
-
-      // Room (0,1)
-      { id: 'locker_01', type: 'locker',  ...roomPos(0, 1, -110, -100) },
-      { id: 'box_01',    type: 'box',     ...roomPos(0, 1, 120, 110) },
-      { id: 'barrel_01', type: 'barrel',  ...roomPos(0, 1, 110, -110) },
-      // Room (1,1)
-      { id: 'crate_11',  type: 'crate',   ...roomPos(1, 1, -110, 100) },
-      { id: 'chair_11',  type: 'chair',   ...roomPos(1, 1, 120, -100) },
-      // Room (2,1)
-      { id: 'plant_21',  type: 'plant',   ...roomPos(2, 1, -120, -100) },
-      { id: 'shelf_21',  type: 'shelf',   ...roomPos(2, 1, 110, 100) },
-      { id: 'box_21',    type: 'box',     ...roomPos(2, 1, -100, 110) },
-      // Room (3,1)
-      { id: 'lamp_31',   type: 'lamp',    ...roomPos(3, 1, -110, -90) },
-      { id: 'tv_31',     type: 'tv',      ...roomPos(3, 1, 100, 100) },
-
-      // Room (0,2)
-      { id: 'trash_02',  type: 'trash',   ...roomPos(0, 2, -110, -100) },
-      { id: 'crate_02',  type: 'crate',   ...roomPos(0, 2, 110, 110) },
-      { id: 'plant_02',  type: 'plant',   ...roomPos(0, 2, 110, -110) },
-      // Room (1,2)
-      { id: 'vending_12',type: 'vending', ...roomPos(1, 2, -100, -100) },
-      { id: 'box_12',    type: 'box',     ...roomPos(1, 2, 120, 100) },
-      // Room (2,2)
-      { id: 'locker_22', type: 'locker',  ...roomPos(2, 2, -110, -90) },
-      { id: 'chair_22',  type: 'chair',   ...roomPos(2, 2, 110, 110) },
-      { id: 'barrel_22', type: 'barrel',  ...roomPos(2, 2, -110, 110) },
-      // Room (3,2)
-      { id: 'shelf_32',  type: 'shelf',   ...roomPos(3, 2, -110, -100) },
-      { id: 'lamp_32',   type: 'lamp',    ...roomPos(3, 2, 110, -90) },
-      { id: 'plant_32',  type: 'plant',   ...roomPos(3, 2, 100, 110) },
-      { id: 'trash_32b', type: 'trash',   ...roomPos(3, 2, -100, 110) },
+      // Room (0,0) Lobby / Reception
+      { id: 'p_00_0', type: 'reception_desk', ...roomPos(0, 0, 0, 150) },
+      { id: 'p_00_1', type: 'plant',          ...roomPos(0, 0, -180, -180) },
+      { id: 'p_00_2', type: 'water_cooler',   ...roomPos(0, 0, 180, -180) },
+      { id: 'p_00_3', type: 'magazine_rack',  ...roomPos(0, 0, -180, 180) },
+      // Room (1,0) Open Office
+      { id: 'p_10_0', type: 'desk_office',    ...roomPos(1, 0, -120, -120) },
+      { id: 'p_10_1', type: 'monitor',        ...roomPos(1, 0, -120, -140) },
+      { id: 'p_10_2', type: 'chair',          ...roomPos(1, 0, -120, -60) },
+      { id: 'p_10_3', type: 'filing_cabinet', ...roomPos(1, 0, 180, -180) },
+      { id: 'p_10_4', type: 'desk_office',    ...roomPos(1, 0, 120, 120) },
+      { id: 'p_10_5', type: 'monitor',        ...roomPos(1, 0, 120, 100) },
+      { id: 'p_10_6', type: 'chair',          ...roomPos(1, 0, 120, 180) },
+      // Room (2,0) Server Room
+      { id: 'p_20_0', type: 'server_rack',    ...roomPos(2, 0, -180, -180) },
+      { id: 'p_20_1', type: 'server_rack',    ...roomPos(2, 0, -180, 0) },
+      { id: 'p_20_2', type: 'server_rack',    ...roomPos(2, 0, -180, 180) },
+      { id: 'p_20_3', type: 'cable_box',      ...roomPos(2, 0, 180, 180) },
+      { id: 'p_20_4', type: 'cooling_vent',   ...roomPos(2, 0, 0, 0) },
+      // Room (3,0) Break Room / Kitchen
+      { id: 'p_30_0', type: 'fridge',         ...roomPos(3, 0, -180, -180) },
+      { id: 'p_30_1', type: 'vending',        ...roomPos(3, 0, 180, -180) },
+      { id: 'p_30_2', type: 'table_conf',     ...roomPos(3, 0, 0, 0) },
+      { id: 'p_30_3', type: 'chair',          ...roomPos(3, 0, 0, -60) },
+      { id: 'p_30_4', type: 'chair',          ...roomPos(3, 0, 0, 60) },
+      { id: 'p_30_5', type: 'trash',          ...roomPos(3, 0, 180, 180) },
+      // Room (0,1) Conference Room
+      { id: 'p_01_0', type: 'table_conf',     ...roomPos(0, 1, 0, 0) },
+      { id: 'p_01_1', type: 'chair',          ...roomPos(0, 1, -80, -180) },
+      { id: 'p_01_2', type: 'chair',          ...roomPos(0, 1, 80, -180) },
+      { id: 'p_01_3', type: 'chair',          ...roomPos(0, 1, -80, 180) },
+      { id: 'p_01_4', type: 'chair',          ...roomPos(0, 1, 80, 180) },
+      { id: 'p_01_5', type: 'whiteboard',     ...roomPos(0, 1, 180, 0) },
+      // Room (1,1) Manager's Office
+      { id: 'p_11_0', type: 'desk_exec',      ...roomPos(1, 1, 0, -150) },
+      { id: 'p_11_1', type: 'chair',          ...roomPos(1, 1, 0, -80) },
+      { id: 'p_11_2', type: 'shelf',          ...roomPos(1, 1, -180, 0) },
+      { id: 'p_11_3', type: 'safe',           ...roomPos(1, 1, 180, 180) },
+      { id: 'p_11_4', type: 'rug',            ...roomPos(1, 1, 0, 80) },
+      // Room (2,1) Storage / Warehouse
+      { id: 'p_21_0', type: 'crate',          ...roomPos(2, 1, -180, -180) },
+      { id: 'p_21_1', type: 'crate',          ...roomPos(2, 1, -100, -180) },
+      { id: 'p_21_2', type: 'shelf',          ...roomPos(2, 1, 180, -180) },
+      { id: 'p_21_3', type: 'shelf',          ...roomPos(2, 1, 180, 0) },
+      { id: 'p_21_4', type: 'barrel',         ...roomPos(2, 1, -180, 180) },
+      { id: 'p_21_5', type: 'pallet',         ...roomPos(2, 1, 0, 180) },
+      // Room (3,1) Janitor's Closet
+      { id: 'p_31_0', type: 'mop_bucket',     ...roomPos(3, 1, -180, -180) },
+      { id: 'p_31_1', type: 'cleaning_cart',  ...roomPos(3, 1, 180, -180) },
+      { id: 'p_31_2', type: 'box',            ...roomPos(3, 1, -180, 180) },
+      { id: 'p_31_3', type: 'box',            ...roomPos(3, 1, 180, 180) },
+      { id: 'p_31_4', type: 'pipe_bundle',    ...roomPos(3, 1, 0, -180) },
+      // Room (0,2) Living Room / Lounge
+      { id: 'p_02_0', type: 'sofa',           ...roomPos(0, 2, 0, -160) },
+      { id: 'p_02_1', type: 'coffee_table',   ...roomPos(0, 2, 0, 0) },
+      { id: 'p_02_2', type: 'lamp',           ...roomPos(0, 2, -180, 180) },
+      { id: 'p_02_3', type: 'tv_stand',       ...roomPos(0, 2, 180, 0) },
+      { id: 'p_02_4', type: 'rug',            ...roomPos(0, 2, 0, 80) },
+      // Room (1,2) Bedroom
+      { id: 'p_12_0', type: 'bed',            ...roomPos(1, 2, 0, -140) },
+      { id: 'p_12_1', type: 'nightstand',     ...roomPos(1, 2, 140, -140) },
+      { id: 'p_12_2', type: 'wardrobe',       ...roomPos(1, 2, -180, 180) },
+      { id: 'p_12_3', type: 'laundry_basket', ...roomPos(1, 2, 180, 180) },
+      { id: 'p_12_4', type: 'rug',            ...roomPos(1, 2, 0, 80) },
+      // Room (2,2) Bathroom
+      { id: 'p_22_0', type: 'stall',          ...roomPos(2, 2, -180, -180) },
+      { id: 'p_22_1', type: 'sink_vanity',    ...roomPos(2, 2, 180, -180) },
+      { id: 'p_22_2', type: 'toilet',         ...roomPos(2, 2, -180, 180) },
+      { id: 'p_22_3', type: 'towel_rack',     ...roomPos(2, 2, 180, 180) },
+      // Room (3,2) Locker Room / Gym
+      { id: 'p_32_0', type: 'locker',         ...roomPos(3, 2, -180, -180) },
+      { id: 'p_32_1', type: 'locker',         ...roomPos(3, 2, -180, 0) },
+      { id: 'p_32_2', type: 'locker',         ...roomPos(3, 2, -180, 180) },
+      { id: 'p_32_3', type: 'bench',          ...roomPos(3, 2, 180, 0) },
+      { id: 'p_32_4', type: 'dumbbell_rack',  ...roomPos(3, 2, 180, 180) },
+      { id: 'p_32_5', type: 'sports_bag',     ...roomPos(3, 2, 0, 180) },
     ];
 
     const DISGUISE_RANGE = 50;     // how close a hider must be to click-disguise a prop
@@ -1494,6 +1524,13 @@
       const shadowSizes = {
         plant: [22, 9], lamp: [16, 7], tv: [24, 9], crate: [20, 9], trash: [14, 7],
         chair: [16, 8], barrel: [16, 8], shelf: [24, 9], vending: [20, 10], locker: [16, 9], box: [18, 8],
+        reception_desk: [30, 12], water_cooler: [12, 6], magazine_rack: [16, 7], desk_office: [24, 10],
+        monitor: [12, 6], filing_cabinet: [14, 7], server_rack: [20, 10], cable_box: [10, 5], cooling_vent: [20, 8],
+        fridge: [18, 9], table_conf: [30, 12], whiteboard: [16, 6], desk_exec: [28, 12], safe: [16, 8],
+        rug: [24, 10], pallet: [20, 8], mop_bucket: [12, 6], cleaning_cart: [18, 8], pipe_bundle: [16, 7],
+        sofa: [32, 12], coffee_table: [20, 8], tv_stand: [24, 9], bed: [30, 12], nightstand: [14, 7],
+        wardrobe: [18, 9], laundry_basket: [14, 6], stall: [16, 8], sink_vanity: [20, 9], towel_rack: [12, 6],
+        bench: [24, 8], dumbbell_rack: [18, 7], sports_bag: [16, 7], toilet: [14, 7]
       };
       const [sx, sy] = shadowSizes[type] || [16, 7];
       drawGroundShadow(ctx, x, y + sy * 1.4, sx, sy, 0.32 * alpha);
@@ -1783,6 +1820,218 @@
           ctx.fillStyle = 'rgba(255,255,255,0.3)';
           ctx.fillRect(-1, -20, 2, 18);
           ctx.fillRect(-1, -2, 2, 20);
+          break;
+        }
+        case 'reception_desk': {
+          const rdGrad = ctx.createLinearGradient(-28, -14, 28, 14);
+          rdGrad.addColorStop(0, '#a88b6e'); rdGrad.addColorStop(1, '#7a6245');
+          ctx.fillStyle = rdGrad; ctx.fillRect(-28, -14, 56, 28);
+          ctx.fillStyle = '#5c4832'; ctx.fillRect(-28, -14, 56, 4);
+          ctx.fillStyle = '#4a3a28'; ctx.fillRect(-20, -4, 14, 18); ctx.fillRect(6, -4, 14, 18);
+          break;
+        }
+        case 'water_cooler': {
+          ctx.fillStyle = '#e2e8f0'; ctx.fillRect(-8, 4, 16, 16);
+          ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.arc(0, 0, 9, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.beginPath(); ctx.arc(-3, -3, 3, 0, Math.PI*2); ctx.fill();
+          break;
+        }
+        case 'magazine_rack': {
+          ctx.fillStyle = '#475569'; ctx.beginPath(); ctx.moveTo(-14, 12); ctx.lineTo(14, 12); ctx.lineTo(10, -12); ctx.lineTo(-10, -12); ctx.closePath(); ctx.fill();
+          ctx.fillStyle = '#ef4444'; ctx.fillRect(-8, -8, 4, 16);
+          ctx.fillStyle = '#22c55e'; ctx.fillRect(-2, -6, 4, 14);
+          ctx.fillStyle = '#3b82f6'; ctx.fillRect(4, -10, 4, 18);
+          break;
+        }
+        case 'desk_office': {
+          ctx.fillStyle = '#947c5c'; ctx.fillRect(-22, -12, 44, 24);
+          ctx.fillStyle = '#6b5640'; ctx.fillRect(10, -12, 12, 24);
+          ctx.fillStyle = 'rgba(255,255,255,0.1)'; ctx.fillRect(12, -8, 8, 2); ctx.fillRect(12, 0, 8, 2); ctx.fillRect(12, 8, 8, 2);
+          break;
+        }
+        case 'monitor': {
+          ctx.fillStyle = '#1e293b'; ctx.fillRect(-10, -8, 20, 14);
+          ctx.fillStyle = '#7dd3fc'; ctx.globalAlpha = alpha * 0.8; ctx.fillRect(-8, -6, 16, 10); ctx.globalAlpha = alpha;
+          ctx.fillStyle = '#334155'; ctx.fillRect(-3, 6, 6, 4); ctx.fillRect(-6, 10, 12, 2);
+          break;
+        }
+        case 'filing_cabinet': {
+          ctx.fillStyle = '#94a3b8'; ctx.fillRect(-12, -18, 24, 36);
+          ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1;
+          ctx.strokeRect(-12, -18, 24, 11); ctx.strokeRect(-12, -5, 24, 11); ctx.strokeRect(-12, 8, 24, 10);
+          ctx.fillStyle = '#cbd5e1'; ctx.fillRect(-2, -14, 4, 2); ctx.fillRect(-2, -1, 4, 2); ctx.fillRect(-2, 12, 4, 2);
+          break;
+        }
+        case 'server_rack': {
+          ctx.fillStyle = '#1e293b'; ctx.fillRect(-18, -24, 36, 48);
+          ctx.fillStyle = '#0f172a'; ctx.fillRect(-14, -20, 28, 40);
+          ctx.fillStyle = '#22c55e'; for(let i=0; i<4; i++) { ctx.beginPath(); ctx.arc(-8, -14 + i*10, 2, 0, Math.PI*2); ctx.fill(); }
+          ctx.fillStyle = '#3b82f6'; for(let i=0; i<4; i++) { ctx.beginPath(); ctx.arc(8, -14 + i*10, 2, 0, Math.PI*2); ctx.fill(); }
+          break;
+        }
+        case 'cable_box': {
+          ctx.fillStyle = '#475569'; ctx.fillRect(-8, -8, 16, 16);
+          ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(-4, -8); ctx.lineTo(-6, -14); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(4, -8); ctx.lineTo(6, -14); ctx.stroke();
+          break;
+        }
+        case 'cooling_vent': {
+          ctx.fillStyle = '#334155'; ctx.fillRect(-18, -18, 36, 36);
+          ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2;
+          for(let i=-12; i<=12; i+=6) { ctx.beginPath(); ctx.moveTo(-18, i); ctx.lineTo(18, i); ctx.stroke(); }
+          break;
+        }
+        case 'fridge': {
+          const frGrad = ctx.createLinearGradient(-16, -26, 16, 26);
+          frGrad.addColorStop(0, '#f1f5f9'); frGrad.addColorStop(1, '#cbd5e1');
+          ctx.fillStyle = frGrad; ctx.fillRect(-16, -26, 32, 52);
+          ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1; ctx.strokeRect(-16, -26, 32, 52);
+          ctx.fillStyle = '#64748b'; ctx.fillRect(10, -16, 2, 10); ctx.fillRect(10, 10, 2, 10);
+          break;
+        }
+        case 'table_conf': {
+          ctx.fillStyle = '#a88b6e'; ctx.beginPath(); ctx.ellipse(0, 0, 28, 16, 0, 0, Math.PI*2); ctx.fill();
+          ctx.strokeStyle = '#7a6245'; ctx.lineWidth = 2; ctx.stroke();
+          ctx.fillStyle = '#7a6245'; ctx.fillRect(-4, 0, 8, 16);
+          break;
+        }
+        case 'whiteboard': {
+          ctx.fillStyle = '#f8fafc'; ctx.fillRect(-20, -16, 40, 26);
+          ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2; ctx.strokeRect(-20, -16, 40, 26);
+          ctx.fillStyle = '#ef4444'; ctx.fillRect(-16, 12, 6, 4); ctx.fillStyle = '#3b82f6'; ctx.fillRect(-6, 12, 6, 4);
+          ctx.fillStyle = '#64748b'; ctx.fillRect(-18, 16, 3, 8); ctx.fillRect(15, 16, 3, 8);
+          break;
+        }
+        case 'desk_exec': {
+          ctx.fillStyle = '#5c4033'; ctx.fillRect(-26, -14, 52, 28);
+          ctx.fillStyle = '#4a332a'; ctx.fillRect(-26, -14, 52, 4);
+          ctx.fillStyle = '#3d2b1f'; ctx.fillRect(-20, -4, 16, 18); ctx.fillRect(4, -4, 16, 18);
+          break;
+        }
+        case 'safe': {
+          ctx.fillStyle = '#334155'; ctx.fillRect(-14, -14, 28, 28);
+          ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2; ctx.strokeRect(-14, -14, 28, 28);
+          ctx.fillStyle = '#94a3b8'; ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = '#475569'; ctx.fillRect(6, -2, 4, 4);
+          break;
+        }
+        case 'rug': {
+          ctx.fillStyle = 'rgba(168,85,247,0.15)'; ctx.beginPath(); ctx.ellipse(0, 0, 24, 16, 0, 0, Math.PI*2); ctx.fill();
+          ctx.strokeStyle = 'rgba(168,85,247,0.3)'; ctx.lineWidth = 1; ctx.stroke();
+          ctx.beginPath(); ctx.ellipse(0, 0, 16, 10, 0, 0, Math.PI*2); ctx.stroke();
+          break;
+        }
+        case 'pallet': {
+          ctx.fillStyle = '#a88b6e'; ctx.fillRect(-18, -10, 36, 20);
+          ctx.strokeStyle = '#7a6245'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(-12, -10); ctx.lineTo(-12, 10); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(0, -10); ctx.lineTo(0, 10); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(12, -10); ctx.lineTo(12, 10); ctx.stroke();
+          break;
+        }
+        case 'mop_bucket': {
+          ctx.fillStyle = '#eab308'; ctx.beginPath(); ctx.ellipse(0, 6, 10, 8, 0, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = '#64748b'; ctx.fillRect(-8, -4, 16, 6);
+          ctx.strokeStyle = '#334155'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(6, -4); ctx.lineTo(8, -14); ctx.stroke();
+          break;
+        }
+        case 'cleaning_cart': {
+          ctx.fillStyle = '#475569'; ctx.fillRect(-14, -16, 28, 32);
+          ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.moveTo(-10, -12); ctx.lineTo(10, -12); ctx.lineTo(8, 12); ctx.lineTo(-8, 12); ctx.closePath(); ctx.fill();
+          ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(14, -16); ctx.lineTo(14, -24); ctx.stroke();
+          break;
+        }
+        case 'pipe_bundle': {
+          ctx.fillStyle = '#64748b'; 
+          ctx.beginPath(); ctx.ellipse(-6, 0, 5, 8, 0, 0, Math.PI*2); ctx.fill();
+          ctx.beginPath(); ctx.ellipse(0, 0, 5, 8, 0, 0, Math.PI*2); ctx.fill();
+          ctx.beginPath(); ctx.ellipse(6, 0, 5, 8, 0, 0, Math.PI*2); ctx.fill();
+          ctx.strokeStyle = '#334155'; ctx.lineWidth = 1; ctx.stroke();
+          break;
+        }
+        case 'sofa': {
+          ctx.fillStyle = '#475569'; ctx.fillRect(-28, -14, 56, 28);
+          ctx.fillStyle = '#334155'; ctx.fillRect(-26, -12, 24, 24); ctx.fillRect(2, -12, 24, 24);
+          ctx.fillStyle = '#1e293b'; ctx.fillRect(-28, -14, 6, 28); ctx.fillRect(22, -14, 6, 28);
+          break;
+        }
+        case 'coffee_table': {
+          ctx.fillStyle = '#1e293b'; ctx.fillRect(-18, -10, 36, 20);
+          ctx.fillStyle = 'rgba(125,211,252,0.3)'; ctx.fillRect(-16, -8, 32, 16);
+          ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 1; ctx.strokeRect(-16, -8, 32, 16);
+          break;
+        }
+        case 'tv_stand': {
+          ctx.fillStyle = '#1e293b'; ctx.fillRect(-22, -8, 44, 16);
+          ctx.fillStyle = '#0f172a'; ctx.fillRect(-16, -22, 32, 16);
+          ctx.fillStyle = '#7dd3fc'; ctx.globalAlpha = alpha * 0.7; ctx.fillRect(-14, -20, 28, 12); ctx.globalAlpha = alpha;
+          break;
+        }
+        case 'bed': {
+          ctx.fillStyle = '#f1f5f9'; ctx.fillRect(-24, -16, 48, 32);
+          ctx.fillStyle = '#3b82f6'; ctx.fillRect(-24, -4, 48, 20);
+          ctx.fillStyle = '#e2e8f0'; ctx.beginPath(); ctx.ellipse(0, -18, 18, 8, 0, 0, Math.PI*2); ctx.fill();
+          break;
+        }
+        case 'nightstand': {
+          ctx.fillStyle = '#947c5c'; ctx.fillRect(-12, -12, 24, 24);
+          ctx.fillStyle = '#fde047'; ctx.beginPath(); ctx.arc(0, -14, 4, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = '#6b5640'; ctx.fillRect(-2, -8, 4, 8);
+          break;
+        }
+        case 'wardrobe': {
+          ctx.fillStyle = '#7a6245'; ctx.fillRect(-16, -24, 32, 48);
+          ctx.strokeStyle = '#5c4832'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, -24); ctx.lineTo(0, 24); ctx.stroke();
+          ctx.fillStyle = '#cbd5e1'; ctx.beginPath(); ctx.arc(-4, 0, 2, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(4, 0, 2, 0, Math.PI*2); ctx.fill();
+          break;
+        }
+        case 'laundry_basket': {
+          ctx.fillStyle = '#a88b6e'; ctx.beginPath(); ctx.ellipse(0, 4, 12, 8, 0, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(-4, -2, 4, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = '#22c55e'; ctx.beginPath(); ctx.arc(4, 0, 3, 0, Math.PI*2); ctx.fill();
+          break;
+        }
+        case 'stall': {
+          ctx.fillStyle = '#94a3b8'; ctx.fillRect(-14, -24, 28, 48);
+          ctx.fillStyle = '#64748b'; ctx.fillRect(-14, 20, 28, 4);
+          ctx.fillStyle = '#cbd5e1'; ctx.beginPath(); ctx.arc(8, 0, 3, 0, Math.PI*2); ctx.fill();
+          break;
+        }
+        case 'sink_vanity': {
+          ctx.fillStyle = '#e2e8f0'; ctx.fillRect(-20, -10, 40, 20);
+          ctx.fillStyle = '#f8fafc'; ctx.beginPath(); ctx.ellipse(0, 0, 10, 6, 0, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = '#94a3b8'; ctx.beginPath(); ctx.arc(0, -4, 2, 0, Math.PI*2); ctx.fill();
+          break;
+        }
+        case 'towel_rack': {
+          ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-12, 0); ctx.lineTo(12, 0); ctx.stroke();
+          ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.moveTo(-8, 2); ctx.lineTo(8, 2); ctx.lineTo(6, 14); ctx.lineTo(-6, 14); ctx.closePath(); ctx.fill();
+          break;
+        }
+        case 'bench': {
+          ctx.fillStyle = '#7a6245'; ctx.fillRect(-24, -6, 48, 12);
+          ctx.fillStyle = '#1e293b'; ctx.fillRect(-20, 6, 4, 10); ctx.fillRect(16, 6, 4, 10); ctx.fillRect(-20, -16, 4, 10); ctx.fillRect(16, -16, 4, 10);
+          break;
+        }
+        case 'dumbbell_rack': {
+          ctx.fillStyle = '#475569'; ctx.beginPath(); ctx.moveTo(-14, 12); ctx.lineTo(14, 12); ctx.lineTo(10, -12); ctx.lineTo(-10, -12); ctx.closePath(); ctx.fill();
+          ctx.fillStyle = '#1e293b'; 
+          ctx.beginPath(); ctx.arc(-6, -6, 4, 0, Math.PI*2); ctx.fill();
+          ctx.beginPath(); ctx.arc(6, 0, 4, 0, Math.PI*2); ctx.fill();
+          ctx.beginPath(); ctx.arc(0, 6, 4, 0, Math.PI*2); ctx.fill();
+          break;
+        }
+        case 'sports_bag': {
+          ctx.fillStyle = '#1e293b'; ctx.beginPath(); ctx.ellipse(0, 0, 14, 8, 0, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = '#ef4444'; ctx.fillRect(-14, -2, 28, 4);
+          ctx.strokeStyle = '#475569'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, -8, 6, Math.PI, 0); ctx.stroke();
+          break;
+        }
+        case 'toilet': {
+          ctx.fillStyle = '#f1f5f9'; ctx.beginPath(); ctx.ellipse(0, 4, 10, 12, 0, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = '#e2e8f0'; ctx.beginPath(); ctx.ellipse(0, -10, 8, 6, 0, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = '#cbd5e1'; ctx.beginPath(); ctx.ellipse(0, 4, 6, 8, 0, 0, Math.PI*2); ctx.fill();
           break;
         }
         default: {
@@ -2136,7 +2385,7 @@
           ctx.fillStyle = '#15151f';
           ctx.fillRect(vx0, vy0, vx1 - vx0, vy1 - vy0);
 
-          // Per-room subtle color tint (4x3 grid) for visual variety
+          // Per-room subtle color tint and visual details (4x3 grid)
           const roomColors = [
             'rgba(245,158,11,0.035)', 'rgba(34,211,238,0.03)', 'rgba(168,85,247,0.03)', 'rgba(34,197,94,0.03)',
             'rgba(248,113,113,0.03)','rgba(250,204,21,0.03)','rgba(96,165,250,0.03)',  'rgba(244,114,182,0.03)',
@@ -2146,8 +2395,68 @@
             for (let col = 0; col < GRID_COLS; col++) {
               const rx = col * ROOM_SIZE, ry = row * ROOM_SIZE;
               if (!inView(rx + ROOM_SIZE / 2, ry + ROOM_SIZE / 2, ROOM_SIZE)) continue;
-              ctx.fillStyle = roomColors[(row * GRID_COLS + col) % roomColors.length];
+              const roomIdx = row * GRID_COLS + col;
+              
+              // Base tint
+              ctx.fillStyle = roomColors[roomIdx % roomColors.length];
               ctx.fillRect(rx, ry, ROOM_SIZE, ROOM_SIZE);
+
+              // Per-room specific background details
+              ctx.save();
+              ctx.beginPath(); ctx.rect(rx, ry, ROOM_SIZE, ROOM_SIZE); ctx.clip();
+
+              if (roomIdx === 0) { // Lobby
+                ctx.strokeStyle = 'rgba(255,255,255,0.03)'; ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(rx + 100, ry); ctx.lineTo(rx + 150, ry + ROOM_SIZE); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(rx + 300, ry); ctx.lineTo(rx + 380, ry + ROOM_SIZE); ctx.stroke();
+                ctx.fillStyle = 'rgba(125,211,252,0.08)'; ctx.fillRect(rx + 130, ry, 200, 40);
+                ctx.strokeStyle = 'rgba(125,211,252,0.2)'; ctx.strokeRect(rx + 130, ry, 200, 40);
+              } else if (roomIdx === 1) { // Open Office
+                ctx.strokeStyle = 'rgba(255,255,255,0.02)';
+                for (let x = rx; x < rx + ROOM_SIZE; x += 50) {
+                  for (let y = ry; y < ry + ROOM_SIZE; y += 50) {
+                    if ((x/50 + y/50) % 2 === 0) ctx.strokeRect(x, y, 50, 50);
+                  }
+                }
+              } else if (roomIdx === 2) { // Server Room
+                ctx.strokeStyle = 'rgba(34,211,238,0.1)';
+                for (let x = rx; x < rx + ROOM_SIZE; x += 115) { ctx.beginPath(); ctx.moveTo(x, ry); ctx.lineTo(x, ry + ROOM_SIZE); ctx.stroke(); }
+                for (let y = ry; y < ry + ROOM_SIZE; y += 115) { ctx.beginPath(); ctx.moveTo(rx, y); ctx.lineTo(rx + ROOM_SIZE, y); ctx.stroke(); }
+              } else if (roomIdx === 3) { // Break Room
+                ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+                for (let x = rx; x < rx + ROOM_SIZE; x += 115) ctx.strokeRect(x, ry, 115, ROOM_SIZE);
+              } else if (roomIdx === 4) { // Conference Room
+                ctx.strokeStyle = 'rgba(245,158,11,0.05)';
+                for (let y = ry; y < ry + ROOM_SIZE; y += 40) { ctx.beginPath(); ctx.moveTo(rx, y); ctx.lineTo(rx + ROOM_SIZE, y); ctx.stroke(); }
+                ctx.fillStyle = 'rgba(125,211,252,0.08)'; ctx.fillRect(rx + ROOM_SIZE - 40, ry + 130, 40, 200);
+              } else if (roomIdx === 5) { // Manager's Office
+                ctx.fillStyle = 'rgba(168,85,247,0.06)'; ctx.fillRect(rx + 130, ry + 130, 200, 200);
+                ctx.strokeStyle = 'rgba(168,85,247,0.15)'; ctx.strokeRect(rx + 130, ry + 130, 200, 200);
+              } else if (roomIdx === 6) { // Storage
+                ctx.fillStyle = 'rgba(0,0,0,0.05)';
+                ctx.beginPath(); ctx.ellipse(rx + 100, ry + 100, 60, 40, 0, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.ellipse(rx + 350, ry + 300, 80, 50, 0, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = 'rgba(250,204,21,0.1)';
+                for (let x = rx; x < rx + ROOM_SIZE; x += 40) { ctx.beginPath(); ctx.moveTo(x, ry + ROOM_SIZE - 30); ctx.lineTo(x + 20, ry + ROOM_SIZE); ctx.lineTo(x + 10, ry + ROOM_SIZE); ctx.lineTo(x - 10, ry + ROOM_SIZE - 30); ctx.fill(); }
+              } else if (roomIdx === 7) { // Janitor
+                ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+                ctx.strokeRect(rx + 50, ry + 50, 100, 100); ctx.strokeRect(rx + 250, ry + 250, 100, 100);
+              } else if (roomIdx === 8) { // Living Room
+                ctx.strokeStyle = 'rgba(245,158,11,0.06)';
+                for (let x = rx; x < rx + ROOM_SIZE; x += 40) { ctx.beginPath(); ctx.moveTo(x, ry); ctx.lineTo(x, ry + ROOM_SIZE); ctx.stroke(); }
+                ctx.fillStyle = 'rgba(125,211,252,0.08)'; ctx.fillRect(rx, ry + 130, 40, 200);
+              } else if (roomIdx === 9) { // Bedroom
+                ctx.fillStyle = 'rgba(244,114,182,0.05)';
+                for (let x = rx + 20; x < rx + ROOM_SIZE; x += 40) { for (let y = ry + 20; y < ry + ROOM_SIZE; y += 40) { ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI*2); ctx.fill(); } }
+              } else if (roomIdx === 10) { // Bathroom
+                ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+                for (let x = rx; x < rx + ROOM_SIZE; x += 46) { ctx.beginPath(); ctx.moveTo(x, ry); ctx.lineTo(x, ry + ROOM_SIZE); ctx.stroke(); }
+                for (let y = ry; y < ry + ROOM_SIZE; y += 46) { ctx.beginPath(); ctx.moveTo(rx, y); ctx.lineTo(rx + ROOM_SIZE, y); ctx.stroke(); }
+              } else if (roomIdx === 11) { // Locker Room
+                ctx.fillStyle = 'rgba(96,165,250,0.08)';
+                for (let x = rx + 10; x < rx + ROOM_SIZE; x += 20) { for (let y = ry + 10; y < ry + ROOM_SIZE; y += 20) { ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI*2); ctx.fill(); } }
+              }
+              ctx.restore();
             }
           }
 
@@ -2523,5 +2832,6 @@
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<PropHuntLobby />);
   </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"75124c326cb447fe934cde04713ae013","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
