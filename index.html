@@ -215,89 +215,94 @@
     // doorways/walls so they're easy to walk up to and click on.
     const PROP_RADIUS = 22; // click/interaction radius
 
-    // Helper: world-space center of room (col, row), with an (ox, oy) offset
-    // in units from that center.
-    function roomPos(col, row, ox = 0, oy = 0) {
-      return { x: (col + 0.5) * ROOM_SIZE + ox, y: (row + 0.5) * ROOM_SIZE + oy };
+    // Helper: world-space center of room (col, row), with an (ox, oy) offset.
+    // Added deterministic micro-jitter so props don't look perfectly grid-aligned.
+    function roomPos(col, row, ox = 0, oy = 0, seed = 0) {
+      const jitterX = Math.sin(seed * 12.9898) * 8; // ±8 units organic offset
+      const jitterY = Math.cos(seed * 78.233) * 8;
+      return { 
+        x: (col + 0.5) * ROOM_SIZE + ox + jitterX, 
+        y: (row + 0.5) * ROOM_SIZE + oy + jitterY 
+      };
     }
 
     const PROPS = [
       // Room (0,0) Lobby / Reception
-      { id: 'p_00_0', type: 'reception_desk', ...roomPos(0, 0, 0, 150) },
-      { id: 'p_00_1', type: 'plant',          ...roomPos(0, 0, -180, -180) },
-      { id: 'p_00_2', type: 'water_cooler',   ...roomPos(0, 0, 180, -180) },
-      { id: 'p_00_3', type: 'magazine_rack',  ...roomPos(0, 0, -180, 180) },
-      // Room (1,0) Open Office
-      { id: 'p_10_0', type: 'desk_office',    ...roomPos(1, 0, -120, -120) },
-      { id: 'p_10_1', type: 'monitor',        ...roomPos(1, 0, -120, -140) },
-      { id: 'p_10_2', type: 'chair',          ...roomPos(1, 0, -120, -60) },
-      { id: 'p_10_3', type: 'filing_cabinet', ...roomPos(1, 0, 180, -180) },
-      { id: 'p_10_4', type: 'desk_office',    ...roomPos(1, 0, 120, 120) },
-      { id: 'p_10_5', type: 'monitor',        ...roomPos(1, 0, 120, 100) },
-      { id: 'p_10_6', type: 'chair',          ...roomPos(1, 0, 120, 180) },
-      // Room (2,0) Server Room
-      { id: 'p_20_0', type: 'server_rack',    ...roomPos(2, 0, -180, -180) },
-      { id: 'p_20_1', type: 'server_rack',    ...roomPos(2, 0, -180, 0) },
-      { id: 'p_20_2', type: 'server_rack',    ...roomPos(2, 0, -180, 180) },
-      { id: 'p_20_3', type: 'cable_box',      ...roomPos(2, 0, 180, 180) },
-      { id: 'p_20_4', type: 'cooling_vent',   ...roomPos(2, 0, 0, 0) },
+      { id: 'p_00_0', type: 'reception_desk', ...roomPos(0, 0, 0, 160, 1) },
+      { id: 'p_00_1', type: 'plant',          ...roomPos(0, 0, -180, -180, 2) },
+      { id: 'p_00_2', type: 'water_cooler',   ...roomPos(0, 0, 180, -180, 3) },
+      { id: 'p_00_3', type: 'magazine_rack',  ...roomPos(0, 0, -180, 180, 4) },
+      // Room (1,0) Open Office (Desks against walls, not floating)
+      { id: 'p_10_0', type: 'desk_office',    ...roomPos(1, 0, -180, 0, 5) },
+      { id: 'p_10_1', type: 'monitor',        ...roomPos(1, 0, -180, -20, 6) },
+      { id: 'p_10_2', type: 'chair',          ...roomPos(1, 0, -180, 50, 7) },
+      { id: 'p_10_3', type: 'filing_cabinet', ...roomPos(1, 0, -180, -180, 8) },
+      { id: 'p_10_4', type: 'desk_office',    ...roomPos(1, 0, 180, 0, 9) },
+      { id: 'p_10_5', type: 'monitor',        ...roomPos(1, 0, 180, -20, 10) },
+      { id: 'p_10_6', type: 'chair',          ...roomPos(1, 0, 180, 50, 11) },
+      // Room (2,0) Server Room (Racks lining the left wall)
+      { id: 'p_20_0', type: 'server_rack',    ...roomPos(2, 0, -180, -180, 12) },
+      { id: 'p_20_1', type: 'server_rack',    ...roomPos(2, 0, -180, 0, 13) },
+      { id: 'p_20_2', type: 'server_rack',    ...roomPos(2, 0, -180, 180, 14) },
+      { id: 'p_20_3', type: 'cable_box',      ...roomPos(2, 0, 180, 180, 15) },
+      { id: 'p_20_4', type: 'cooling_vent',   ...roomPos(2, 0, 0, 0, 16) },
       // Room (3,0) Break Room / Kitchen
-      { id: 'p_30_0', type: 'fridge',         ...roomPos(3, 0, -180, -180) },
-      { id: 'p_30_1', type: 'vending',        ...roomPos(3, 0, 180, -180) },
-      { id: 'p_30_2', type: 'table_conf',     ...roomPos(3, 0, 0, 0) },
-      { id: 'p_30_3', type: 'chair',          ...roomPos(3, 0, 0, -60) },
-      { id: 'p_30_4', type: 'chair',          ...roomPos(3, 0, 0, 60) },
-      { id: 'p_30_5', type: 'trash',          ...roomPos(3, 0, 180, 180) },
+      { id: 'p_30_0', type: 'fridge',         ...roomPos(3, 0, -180, -180, 17) },
+      { id: 'p_30_1', type: 'vending',        ...roomPos(3, 0, 180, -180, 18) },
+      { id: 'p_30_2', type: 'table_conf',     ...roomPos(3, 0, 0, 0, 19) },
+      { id: 'p_30_3', type: 'chair',          ...roomPos(3, 0, 0, -60, 20) },
+      { id: 'p_30_4', type: 'chair',          ...roomPos(3, 0, 0, 60, 21) },
+      { id: 'p_30_5', type: 'trash',          ...roomPos(3, 0, 180, 180, 22) },
       // Room (0,1) Conference Room
-      { id: 'p_01_0', type: 'table_conf',     ...roomPos(0, 1, 0, 0) },
-      { id: 'p_01_1', type: 'chair',          ...roomPos(0, 1, -80, -180) },
-      { id: 'p_01_2', type: 'chair',          ...roomPos(0, 1, 80, -180) },
-      { id: 'p_01_3', type: 'chair',          ...roomPos(0, 1, -80, 180) },
-      { id: 'p_01_4', type: 'chair',          ...roomPos(0, 1, 80, 180) },
-      { id: 'p_01_5', type: 'whiteboard',     ...roomPos(0, 1, 180, 0) },
+      { id: 'p_01_0', type: 'table_conf',     ...roomPos(0, 1, 0, 0, 23) },
+      { id: 'p_01_1', type: 'chair',          ...roomPos(0, 1, -80, -180, 24) },
+      { id: 'p_01_2', type: 'chair',          ...roomPos(0, 1, 80, -180, 25) },
+      { id: 'p_01_3', type: 'chair',          ...roomPos(0, 1, -80, 180, 26) },
+      { id: 'p_01_4', type: 'chair',          ...roomPos(0, 1, 80, 180, 27) },
+      { id: 'p_01_5', type: 'whiteboard',     ...roomPos(0, 1, 180, 0, 28) },
       // Room (1,1) Manager's Office
-      { id: 'p_11_0', type: 'desk_exec',      ...roomPos(1, 1, 0, -150) },
-      { id: 'p_11_1', type: 'chair',          ...roomPos(1, 1, 0, -80) },
-      { id: 'p_11_2', type: 'shelf',          ...roomPos(1, 1, -180, 0) },
-      { id: 'p_11_3', type: 'safe',           ...roomPos(1, 1, 180, 180) },
-      { id: 'p_11_4', type: 'rug',            ...roomPos(1, 1, 0, 80) },
-      // Room (2,1) Storage / Warehouse
-      { id: 'p_21_0', type: 'crate',          ...roomPos(2, 1, -180, -180) },
-      { id: 'p_21_1', type: 'crate',          ...roomPos(2, 1, -100, -180) },
-      { id: 'p_21_2', type: 'shelf',          ...roomPos(2, 1, 180, -180) },
-      { id: 'p_21_3', type: 'shelf',          ...roomPos(2, 1, 180, 0) },
-      { id: 'p_21_4', type: 'barrel',         ...roomPos(2, 1, -180, 180) },
-      { id: 'p_21_5', type: 'pallet',         ...roomPos(2, 1, 0, 180) },
+      { id: 'p_11_0', type: 'desk_exec',      ...roomPos(1, 1, 0, -180, 29) },
+      { id: 'p_11_1', type: 'chair',          ...roomPos(1, 1, 0, -100, 30) },
+      { id: 'p_11_2', type: 'shelf',          ...roomPos(1, 1, -180, 0, 31) },
+      { id: 'p_11_3', type: 'safe',           ...roomPos(1, 1, 180, 180, 32) },
+      { id: 'p_11_4', type: 'rug',            ...roomPos(1, 1, 0, 80, 33) },
+      // Room (2,1) Storage / Warehouse (Clustered corners)
+      { id: 'p_21_0', type: 'crate',          ...roomPos(2, 1, -180, -180, 34) },
+      { id: 'p_21_1', type: 'crate',          ...roomPos(2, 1, -100, -180, 35) },
+      { id: 'p_21_2', type: 'shelf',          ...roomPos(2, 1, 180, -180, 36) },
+      { id: 'p_21_3', type: 'shelf',          ...roomPos(2, 1, 180, 0, 37) },
+      { id: 'p_21_4', type: 'barrel',         ...roomPos(2, 1, -180, 180, 38) },
+      { id: 'p_21_5', type: 'pallet',         ...roomPos(2, 1, 0, 180, 39) },
       // Room (3,1) Janitor's Closet
-      { id: 'p_31_0', type: 'mop_bucket',     ...roomPos(3, 1, -180, -180) },
-      { id: 'p_31_1', type: 'cleaning_cart',  ...roomPos(3, 1, 180, -180) },
-      { id: 'p_31_2', type: 'box',            ...roomPos(3, 1, -180, 180) },
-      { id: 'p_31_3', type: 'box',            ...roomPos(3, 1, 180, 180) },
-      { id: 'p_31_4', type: 'pipe_bundle',    ...roomPos(3, 1, 0, -180) },
+      { id: 'p_31_0', type: 'mop_bucket',     ...roomPos(3, 1, -180, -180, 40) },
+      { id: 'p_31_1', type: 'cleaning_cart',  ...roomPos(3, 1, 180, -180, 41) },
+      { id: 'p_31_2', type: 'box',            ...roomPos(3, 1, -180, 180, 42) },
+      { id: 'p_31_3', type: 'box',            ...roomPos(3, 1, 180, 180, 43) },
+      { id: 'p_31_4', type: 'pipe_bundle',    ...roomPos(3, 1, 0, -180, 44) },
       // Room (0,2) Living Room / Lounge
-      { id: 'p_02_0', type: 'sofa',           ...roomPos(0, 2, 0, -160) },
-      { id: 'p_02_1', type: 'coffee_table',   ...roomPos(0, 2, 0, 0) },
-      { id: 'p_02_2', type: 'lamp',           ...roomPos(0, 2, -180, 180) },
-      { id: 'p_02_3', type: 'tv_stand',       ...roomPos(0, 2, 180, 0) },
-      { id: 'p_02_4', type: 'rug',            ...roomPos(0, 2, 0, 80) },
+      { id: 'p_02_0', type: 'sofa',           ...roomPos(0, 2, 0, -160, 45) },
+      { id: 'p_02_1', type: 'coffee_table',   ...roomPos(0, 2, 0, 20, 46) },
+      { id: 'p_02_2', type: 'lamp',           ...roomPos(0, 2, -180, 180, 47) },
+      { id: 'p_02_3', type: 'tv_stand',       ...roomPos(0, 2, 180, 0, 48) },
+      { id: 'p_02_4', type: 'rug',            ...roomPos(0, 2, 0, 80, 49) },
       // Room (1,2) Bedroom
-      { id: 'p_12_0', type: 'bed',            ...roomPos(1, 2, 0, -140) },
-      { id: 'p_12_1', type: 'nightstand',     ...roomPos(1, 2, 140, -140) },
-      { id: 'p_12_2', type: 'wardrobe',       ...roomPos(1, 2, -180, 180) },
-      { id: 'p_12_3', type: 'laundry_basket', ...roomPos(1, 2, 180, 180) },
-      { id: 'p_12_4', type: 'rug',            ...roomPos(1, 2, 0, 80) },
+      { id: 'p_12_0', type: 'bed',            ...roomPos(1, 2, 0, -160, 50) },
+      { id: 'p_12_1', type: 'nightstand',     ...roomPos(1, 2, 140, -160, 51) },
+      { id: 'p_12_2', type: 'wardrobe',       ...roomPos(1, 2, -180, 180, 52) },
+      { id: 'p_12_3', type: 'laundry_basket', ...roomPos(1, 2, 180, 180, 53) },
+      { id: 'p_12_4', type: 'rug',            ...roomPos(1, 2, 0, 60, 54) },
       // Room (2,2) Bathroom
-      { id: 'p_22_0', type: 'stall',          ...roomPos(2, 2, -180, -180) },
-      { id: 'p_22_1', type: 'sink_vanity',    ...roomPos(2, 2, 180, -180) },
-      { id: 'p_22_2', type: 'toilet',         ...roomPos(2, 2, -180, 180) },
-      { id: 'p_22_3', type: 'towel_rack',     ...roomPos(2, 2, 180, 180) },
+      { id: 'p_22_0', type: 'stall',          ...roomPos(2, 2, -180, -180, 55) },
+      { id: 'p_22_1', type: 'sink_vanity',    ...roomPos(2, 2, 180, -180, 56) },
+      { id: 'p_22_2', type: 'toilet',         ...roomPos(2, 2, -180, 180, 57) },
+      { id: 'p_22_3', type: 'towel_rack',     ...roomPos(2, 2, 180, 180, 58) },
       // Room (3,2) Locker Room / Gym
-      { id: 'p_32_0', type: 'locker',         ...roomPos(3, 2, -180, -180) },
-      { id: 'p_32_1', type: 'locker',         ...roomPos(3, 2, -180, 0) },
-      { id: 'p_32_2', type: 'locker',         ...roomPos(3, 2, -180, 180) },
-      { id: 'p_32_3', type: 'bench',          ...roomPos(3, 2, 180, 0) },
-      { id: 'p_32_4', type: 'dumbbell_rack',  ...roomPos(3, 2, 180, 180) },
-      { id: 'p_32_5', type: 'sports_bag',     ...roomPos(3, 2, 0, 180) },
+      { id: 'p_32_0', type: 'locker',         ...roomPos(3, 2, -180, -180, 59) },
+      { id: 'p_32_1', type: 'locker',         ...roomPos(3, 2, -180, 0, 60) },
+      { id: 'p_32_2', type: 'locker',         ...roomPos(3, 2, -180, 180, 61) },
+      { id: 'p_32_3', type: 'bench',          ...roomPos(3, 2, 180, 0, 62) },
+      { id: 'p_32_4', type: 'dumbbell_rack',  ...roomPos(3, 2, 180, 180, 63) },
+      { id: 'p_32_5', type: 'sports_bag',     ...roomPos(3, 2, 0, 180, 64) },
     ];
 
     const DISGUISE_RANGE = 50;     // how close a hider must be to click-disguise a prop
@@ -2557,13 +2562,17 @@
               drawCharacter(ctx, px, py, color, { facing, walking, walkPhase, alpha, highlight: isMe });
             }
 
-            // name label
-            ctx.globalAlpha = isDead ? 0.5 : 1;
-            ctx.fillStyle = '#e2e8f0';
-            ctx.font = '11px "JetBrains Mono", monospace';
-            ctx.textAlign = 'center';
-            ctx.fillText(p.name, px, py - PLAYER_RADIUS - 10);
-            ctx.globalAlpha = 1;
+            // name label (CRITICAL: Hide names of disguised hiders to prevent cheating!)
+            const isDisguisedHider = p.role === 'hider' && p.disguise;
+            if (!isDisguisedHider || isMe) {
+              ctx.globalAlpha = isDead ? 0.5 : 1;
+              ctx.fillStyle = '#e2e8f0';
+              ctx.font = '11px "JetBrains Mono", monospace';
+              ctx.textAlign = 'center';
+              const labelY = py - (isDisguisedHider ? PROP_RADIUS : PLAYER_RADIUS) - 10;
+              ctx.fillText(p.name, px, labelY);
+              ctx.globalAlpha = 1;
+            }
           }
 
           // Bullets — glowing tracer with trail
@@ -2832,6 +2841,5 @@
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<PropHuntLobby />);
   </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"75124c326cb447fe934cde04713ae013","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
