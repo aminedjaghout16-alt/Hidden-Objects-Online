@@ -215,94 +215,119 @@
     // doorways/walls so they're easy to walk up to and click on.
     const PROP_RADIUS = 22; // click/interaction radius
 
-    // Helper: world-space center of room (col, row), with an (ox, oy) offset.
-    // Added deterministic micro-jitter so props don't look perfectly grid-aligned.
-    function roomPos(col, row, ox = 0, oy = 0, seed = 0) {
-      const jitterX = Math.sin(seed * 12.9898) * 8; // ±8 units organic offset
-      const jitterY = Math.cos(seed * 78.233) * 8;
-      return { 
-        x: (col + 0.5) * ROOM_SIZE + ox + jitterX, 
-        y: (row + 0.5) * ROOM_SIZE + oy + jitterY 
-      };
+    // Helper: world-space center of room (col, row), with an (ox, oy) offset
+    // in units from that center.
+    function roomPos(col, row, ox = 0, oy = 0) {
+      return { x: (col + 0.5) * ROOM_SIZE + ox, y: (row + 0.5) * ROOM_SIZE + oy };
     }
 
     const PROPS = [
-      // Room (0,0) Lobby / Reception
-      { id: 'p_00_0', type: 'reception_desk', ...roomPos(0, 0, 0, 160, 1) },
-      { id: 'p_00_1', type: 'plant',          ...roomPos(0, 0, -180, -180, 2) },
-      { id: 'p_00_2', type: 'water_cooler',   ...roomPos(0, 0, 180, -180, 3) },
-      { id: 'p_00_3', type: 'magazine_rack',  ...roomPos(0, 0, -180, 180, 4) },
-      // Room (1,0) Open Office (Desks against walls, not floating)
-      { id: 'p_10_0', type: 'desk_office',    ...roomPos(1, 0, -180, 0, 5) },
-      { id: 'p_10_1', type: 'monitor',        ...roomPos(1, 0, -180, -20, 6) },
-      { id: 'p_10_2', type: 'chair',          ...roomPos(1, 0, -180, 50, 7) },
-      { id: 'p_10_3', type: 'filing_cabinet', ...roomPos(1, 0, -180, -180, 8) },
-      { id: 'p_10_4', type: 'desk_office',    ...roomPos(1, 0, 180, 0, 9) },
-      { id: 'p_10_5', type: 'monitor',        ...roomPos(1, 0, 180, -20, 10) },
-      { id: 'p_10_6', type: 'chair',          ...roomPos(1, 0, 180, 50, 11) },
-      // Room (2,0) Server Room (Racks lining the left wall)
-      { id: 'p_20_0', type: 'server_rack',    ...roomPos(2, 0, -180, -180, 12) },
-      { id: 'p_20_1', type: 'server_rack',    ...roomPos(2, 0, -180, 0, 13) },
-      { id: 'p_20_2', type: 'server_rack',    ...roomPos(2, 0, -180, 180, 14) },
-      { id: 'p_20_3', type: 'cable_box',      ...roomPos(2, 0, 180, 180, 15) },
-      { id: 'p_20_4', type: 'cooling_vent',   ...roomPos(2, 0, 0, 0, 16) },
-      // Room (3,0) Break Room / Kitchen
-      { id: 'p_30_0', type: 'fridge',         ...roomPos(3, 0, -180, -180, 17) },
-      { id: 'p_30_1', type: 'vending',        ...roomPos(3, 0, 180, -180, 18) },
-      { id: 'p_30_2', type: 'table_conf',     ...roomPos(3, 0, 0, 0, 19) },
-      { id: 'p_30_3', type: 'chair',          ...roomPos(3, 0, 0, -60, 20) },
-      { id: 'p_30_4', type: 'chair',          ...roomPos(3, 0, 0, 60, 21) },
-      { id: 'p_30_5', type: 'trash',          ...roomPos(3, 0, 180, 180, 22) },
-      // Room (0,1) Conference Room
-      { id: 'p_01_0', type: 'table_conf',     ...roomPos(0, 1, 0, 0, 23) },
-      { id: 'p_01_1', type: 'chair',          ...roomPos(0, 1, -80, -180, 24) },
-      { id: 'p_01_2', type: 'chair',          ...roomPos(0, 1, 80, -180, 25) },
-      { id: 'p_01_3', type: 'chair',          ...roomPos(0, 1, -80, 180, 26) },
-      { id: 'p_01_4', type: 'chair',          ...roomPos(0, 1, 80, 180, 27) },
-      { id: 'p_01_5', type: 'whiteboard',     ...roomPos(0, 1, 180, 0, 28) },
-      // Room (1,1) Manager's Office
-      { id: 'p_11_0', type: 'desk_exec',      ...roomPos(1, 1, 0, -180, 29) },
-      { id: 'p_11_1', type: 'chair',          ...roomPos(1, 1, 0, -100, 30) },
-      { id: 'p_11_2', type: 'shelf',          ...roomPos(1, 1, -180, 0, 31) },
-      { id: 'p_11_3', type: 'safe',           ...roomPos(1, 1, 180, 180, 32) },
-      { id: 'p_11_4', type: 'rug',            ...roomPos(1, 1, 0, 80, 33) },
-      // Room (2,1) Storage / Warehouse (Clustered corners)
-      { id: 'p_21_0', type: 'crate',          ...roomPos(2, 1, -180, -180, 34) },
-      { id: 'p_21_1', type: 'crate',          ...roomPos(2, 1, -100, -180, 35) },
-      { id: 'p_21_2', type: 'shelf',          ...roomPos(2, 1, 180, -180, 36) },
-      { id: 'p_21_3', type: 'shelf',          ...roomPos(2, 1, 180, 0, 37) },
-      { id: 'p_21_4', type: 'barrel',         ...roomPos(2, 1, -180, 180, 38) },
-      { id: 'p_21_5', type: 'pallet',         ...roomPos(2, 1, 0, 180, 39) },
-      // Room (3,1) Janitor's Closet
-      { id: 'p_31_0', type: 'mop_bucket',     ...roomPos(3, 1, -180, -180, 40) },
-      { id: 'p_31_1', type: 'cleaning_cart',  ...roomPos(3, 1, 180, -180, 41) },
-      { id: 'p_31_2', type: 'box',            ...roomPos(3, 1, -180, 180, 42) },
-      { id: 'p_31_3', type: 'box',            ...roomPos(3, 1, 180, 180, 43) },
-      { id: 'p_31_4', type: 'pipe_bundle',    ...roomPos(3, 1, 0, -180, 44) },
-      // Room (0,2) Living Room / Lounge
-      { id: 'p_02_0', type: 'sofa',           ...roomPos(0, 2, 0, -160, 45) },
-      { id: 'p_02_1', type: 'coffee_table',   ...roomPos(0, 2, 0, 20, 46) },
-      { id: 'p_02_2', type: 'lamp',           ...roomPos(0, 2, -180, 180, 47) },
-      { id: 'p_02_3', type: 'tv_stand',       ...roomPos(0, 2, 180, 0, 48) },
-      { id: 'p_02_4', type: 'rug',            ...roomPos(0, 2, 0, 80, 49) },
-      // Room (1,2) Bedroom
-      { id: 'p_12_0', type: 'bed',            ...roomPos(1, 2, 0, -160, 50) },
-      { id: 'p_12_1', type: 'nightstand',     ...roomPos(1, 2, 140, -160, 51) },
-      { id: 'p_12_2', type: 'wardrobe',       ...roomPos(1, 2, -180, 180, 52) },
-      { id: 'p_12_3', type: 'laundry_basket', ...roomPos(1, 2, 180, 180, 53) },
-      { id: 'p_12_4', type: 'rug',            ...roomPos(1, 2, 0, 60, 54) },
-      // Room (2,2) Bathroom
-      { id: 'p_22_0', type: 'stall',          ...roomPos(2, 2, -180, -180, 55) },
-      { id: 'p_22_1', type: 'sink_vanity',    ...roomPos(2, 2, 180, -180, 56) },
-      { id: 'p_22_2', type: 'toilet',         ...roomPos(2, 2, -180, 180, 57) },
-      { id: 'p_22_3', type: 'towel_rack',     ...roomPos(2, 2, 180, 180, 58) },
-      // Room (3,2) Locker Room / Gym
-      { id: 'p_32_0', type: 'locker',         ...roomPos(3, 2, -180, -180, 59) },
-      { id: 'p_32_1', type: 'locker',         ...roomPos(3, 2, -180, 0, 60) },
-      { id: 'p_32_2', type: 'locker',         ...roomPos(3, 2, -180, 180, 61) },
-      { id: 'p_32_3', type: 'bench',          ...roomPos(3, 2, 180, 0, 62) },
-      { id: 'p_32_4', type: 'dumbbell_rack',  ...roomPos(3, 2, 180, 180, 63) },
-      { id: 'p_32_5', type: 'sports_bag',     ...roomPos(3, 2, 0, 180, 64) },
+      // ── Room (0,0): LIVING ROOM ─────────────────────────────────────
+      { id: 'sofa_00a',      type: 'sofa',     ...roomPos(0, 0,  20, -155) }, // against top wall
+      { id: 'tv_00',         type: 'tv',       ...roomPos(0, 0, -155,  -80) }, // on left wall
+      { id: 'plant_00a',     type: 'plant',    ...roomPos(0, 0,  155, -155) }, // top-right corner
+      { id: 'bookcase_00',   type: 'bookcase', ...roomPos(0, 0,  155,  20)  }, // right wall
+      { id: 'lamp_00',       type: 'lamp',     ...roomPos(0, 0, -155,  155) }, // bottom-left corner
+      { id: 'plant_00b',     type: 'plant',    ...roomPos(0, 0, -120,  155) }, // bottom wall
+
+      // ── Room (1,0): OFFICE ──────────────────────────────────────────
+      { id: 'desk_10a',      type: 'desk',          ...roomPos(1, 0,  -80, -150) }, // top wall
+      { id: 'monitor_10a',   type: 'monitor',       ...roomPos(1, 0,  -80, -130) }, // on desk
+      { id: 'desk_10b',      type: 'desk',          ...roomPos(1, 0,   80, -150) },
+      { id: 'monitor_10b',   type: 'monitor',       ...roomPos(1, 0,   80, -130) },
+      { id: 'filing_10a',    type: 'filing_cabinet', ...roomPos(1, 0,  155,  -80) }, // right wall
+      { id: 'filing_10b',    type: 'filing_cabinet', ...roomPos(1, 0,  155,   20) },
+      { id: 'chair_10',      type: 'chair',         ...roomPos(1, 0, -155,   80) }, // left wall corner
+      { id: 'lamp_10',       type: 'lamp',          ...roomPos(1, 0, -155, -155) }, // top-left corner
+
+      // ── Room (2,0): KITCHEN ─────────────────────────────────────────
+      { id: 'counter_20a',   type: 'counter',  ...roomPos(2, 0, -155, -100) }, // left wall
+      { id: 'counter_20b',   type: 'counter',  ...roomPos(2, 0,  -70, -155) }, // top wall
+      { id: 'fridge_20',     type: 'fridge',   ...roomPos(2, 0,  155, -155) }, // top-right corner
+      { id: 'stove_20',      type: 'stove',    ...roomPos(2, 0,  155,  -60) }, // right wall
+      { id: 'trash_20',      type: 'trash',    ...roomPos(2, 0,  155,  155) }, // bottom-right corner
+      { id: 'shelf_20',      type: 'shelf',    ...roomPos(2, 0, -155,  155) }, // bottom-left corner
+
+      // ── Room (3,0): BATHROOM ────────────────────────────────────────
+      { id: 'toilet_30',     type: 'toilet',   ...roomPos(3, 0,  100, -155) }, // top-right
+      { id: 'sink_30',       type: 'sink',     ...roomPos(3, 0, -155, -155) }, // top-left
+      { id: 'locker_30',     type: 'locker',   ...roomPos(3, 0,  155,   60) }, // right wall
+      { id: 'trash_30',      type: 'trash',    ...roomPos(3, 0, -100,  155) }, // bottom
+      { id: 'plant_30',      type: 'plant',    ...roomPos(3, 0, -155,  -60) }, // left wall
+
+      // ── Room (0,1): BEDROOM ─────────────────────────────────────────
+      { id: 'bed_01',        type: 'bed',      ...roomPos(0, 1,   20, -130) }, // top-center wall
+      { id: 'lamp_01a',      type: 'lamp',     ...roomPos(0, 1, -100, -130) }, // bedside left
+      { id: 'lamp_01b',      type: 'lamp',     ...roomPos(0, 1,  140, -130) }, // bedside right
+      { id: 'shelf_01',      type: 'shelf',    ...roomPos(0, 1, -155,   60) }, // left wall
+      { id: 'chair_01',      type: 'chair',    ...roomPos(0, 1,  155,   80) }, // right wall
+      { id: 'plant_01',      type: 'plant',    ...roomPos(0, 1,  155,  155) }, // bottom-right
+      { id: 'box_01',        type: 'box',      ...roomPos(0, 1, -155,  155) }, // bottom-left
+
+      // ── Room (1,1): SERVER ROOM ─────────────────────────────────────
+      { id: 'server_11a',    type: 'server_rack', ...roomPos(1, 1,  -80, -155) }, // top wall
+      { id: 'server_11b',    type: 'server_rack', ...roomPos(1, 1,   60, -155) },
+      { id: 'server_11c',    type: 'server_rack', ...roomPos(1, 1,  155,  -60) }, // right wall
+      { id: 'monitor_11',    type: 'monitor',     ...roomPos(1, 1, -155, -155) }, // top-left
+      { id: 'crate_11',      type: 'crate',       ...roomPos(1, 1, -155,  100) }, // left wall
+      { id: 'barrel_11',     type: 'barrel',      ...roomPos(1, 1,  155,  155) }, // bottom-right
+
+      // ── Room (2,1): WAREHOUSE ───────────────────────────────────────
+      { id: 'shelf_21a',     type: 'shelf',    ...roomPos(2, 1, -155, -100) }, // left wall
+      { id: 'shelf_21b',     type: 'shelf',    ...roomPos(2, 1, -155,   60) },
+      { id: 'crate_21a',     type: 'crate',    ...roomPos(2, 1,   60, -155) }, // top wall
+      { id: 'crate_21b',     type: 'crate',    ...roomPos(2, 1,  155,  -80) }, // right wall
+      { id: 'barrel_21',     type: 'barrel',   ...roomPos(2, 1,  155,  100) },
+      { id: 'box_21',        type: 'box',      ...roomPos(2, 1,  -60,  155) }, // bottom
+      { id: 'vending_21',    type: 'vending',  ...roomPos(2, 1, -155,  155) }, // bottom-left
+      { id: 'trash_21',      type: 'trash',    ...roomPos(2, 1,  155,  155) }, // bottom-right
+
+      // ── Room (3,1): LOCKER ROOM ─────────────────────────────────────
+      { id: 'locker_31a',    type: 'locker',   ...roomPos(3, 1, -155, -100) }, // left wall
+      { id: 'locker_31b',    type: 'locker',   ...roomPos(3, 1, -155,   20) },
+      { id: 'locker_31c',    type: 'locker',   ...roomPos(3, 1,  155,  -80) }, // right wall
+      { id: 'bench_31a',     type: 'bench',    ...roomPos(3, 1,  -40, -155) }, // top wall
+      { id: 'bench_31b',     type: 'bench',    ...roomPos(3, 1,   80,  155) }, // bottom wall
+      { id: 'trash_31',      type: 'trash',    ...roomPos(3, 1,  155,  155) }, // bottom-right
+      { id: 'barrel_31',     type: 'barrel',   ...roomPos(3, 1, -155,  155) }, // bottom-left
+      { id: 'plant_31',      type: 'plant',    ...roomPos(3, 1,  155, -155) }, // top-right
+
+      // ── Room (0,2): LIBRARY ─────────────────────────────────────────
+      { id: 'bookcase_02a',  type: 'bookcase', ...roomPos(0, 2, -155, -100) }, // left wall
+      { id: 'bookcase_02b',  type: 'bookcase', ...roomPos(0, 2, -155,   60) },
+      { id: 'bookcase_02c',  type: 'bookcase', ...roomPos(0, 2,   60, -155) }, // top wall
+      { id: 'lamp_02',       type: 'lamp',     ...roomPos(0, 2,  155, -155) }, // top-right
+      { id: 'chair_02a',     type: 'chair',    ...roomPos(0, 2,   80,   40) }, // center area
+      { id: 'chair_02b',     type: 'chair',    ...roomPos(0, 2,  100,  100) },
+      { id: 'plant_02',      type: 'plant',    ...roomPos(0, 2, -155,  155) }, // bottom-left
+      { id: 'shelf_02',      type: 'shelf',    ...roomPos(0, 2,  155,   80) }, // right wall
+
+      // ── Room (1,2): BREAK ROOM ──────────────────────────────────────
+      { id: 'coffee_12',     type: 'coffee_machine', ...roomPos(1, 2, -155, -155) }, // top-left
+      { id: 'vending_12',    type: 'vending',        ...roomPos(1, 2,  155, -155) }, // top-right
+      { id: 'table_12',      type: 'counter',        ...roomPos(1, 2,  -20,  -20) }, // center table
+      { id: 'chair_12a',     type: 'chair',          ...roomPos(1, 2,  -20,   60) }, // around table
+      { id: 'chair_12b',     type: 'chair',          ...roomPos(1, 2,   80,  -20) },
+      { id: 'trash_12',      type: 'trash',          ...roomPos(1, 2, -155,  155) }, // bottom-left
+      { id: 'plant_12',      type: 'plant',          ...roomPos(1, 2,  155,  155) }, // bottom-right
+
+      // ── Room (2,2): WORKSHOP ────────────────────────────────────────
+      { id: 'workbench_22a', type: 'workbench', ...roomPos(2, 2, -155, -100) }, // left wall
+      { id: 'workbench_22b', type: 'workbench', ...roomPos(2, 2,   40, -155) }, // top wall
+      { id: 'barrel_22a',    type: 'barrel',    ...roomPos(2, 2,  155,  -80) }, // right wall
+      { id: 'barrel_22b',    type: 'barrel',    ...roomPos(2, 2,  155,   60) },
+      { id: 'crate_22',      type: 'crate',     ...roomPos(2, 2, -155,  155) }, // bottom-left
+      { id: 'shelf_22',      type: 'shelf',     ...roomPos(2, 2,  155,  155) }, // bottom-right
+      { id: 'trash_22',      type: 'trash',     ...roomPos(2, 2, -155,  -155) }, // top-left
+
+      // ── Room (3,2): LOBBY / RECEPTION ───────────────────────────────
+      { id: 'reception_32',  type: 'reception_desk', ...roomPos(3, 2,  -20, -155) }, // top-center
+      { id: 'sofa_32a',      type: 'sofa',           ...roomPos(3, 2, -155,   40) }, // left wall
+      { id: 'sofa_32b',      type: 'sofa',           ...roomPos(3, 2,  155,   40) }, // right wall
+      { id: 'plant_32a',     type: 'plant',          ...roomPos(3, 2, -155, -155) }, // top-left
+      { id: 'plant_32b',     type: 'plant',          ...roomPos(3, 2,  155, -155) }, // top-right
+      { id: 'lamp_32',       type: 'lamp',           ...roomPos(3, 2,  -80,  155) }, // bottom
+      { id: 'tv_32',         type: 'tv',             ...roomPos(3, 2, -155,  -60) }, // left wall screen
     ];
 
     const DISGUISE_RANGE = 50;     // how close a hider must be to click-disguise a prop
@@ -1529,13 +1554,6 @@
       const shadowSizes = {
         plant: [22, 9], lamp: [16, 7], tv: [24, 9], crate: [20, 9], trash: [14, 7],
         chair: [16, 8], barrel: [16, 8], shelf: [24, 9], vending: [20, 10], locker: [16, 9], box: [18, 8],
-        reception_desk: [30, 12], water_cooler: [12, 6], magazine_rack: [16, 7], desk_office: [24, 10],
-        monitor: [12, 6], filing_cabinet: [14, 7], server_rack: [20, 10], cable_box: [10, 5], cooling_vent: [20, 8],
-        fridge: [18, 9], table_conf: [30, 12], whiteboard: [16, 6], desk_exec: [28, 12], safe: [16, 8],
-        rug: [24, 10], pallet: [20, 8], mop_bucket: [12, 6], cleaning_cart: [18, 8], pipe_bundle: [16, 7],
-        sofa: [32, 12], coffee_table: [20, 8], tv_stand: [24, 9], bed: [30, 12], nightstand: [14, 7],
-        wardrobe: [18, 9], laundry_basket: [14, 6], stall: [16, 8], sink_vanity: [20, 9], towel_rack: [12, 6],
-        bench: [24, 8], dumbbell_rack: [18, 7], sports_bag: [16, 7], toilet: [14, 7]
       };
       const [sx, sy] = shadowSizes[type] || [16, 7];
       drawGroundShadow(ctx, x, y + sy * 1.4, sx, sy, 0.32 * alpha);
@@ -1827,218 +1845,319 @@
           ctx.fillRect(-1, -2, 2, 20);
           break;
         }
-        case 'reception_desk': {
-          const rdGrad = ctx.createLinearGradient(-28, -14, 28, 14);
-          rdGrad.addColorStop(0, '#a88b6e'); rdGrad.addColorStop(1, '#7a6245');
-          ctx.fillStyle = rdGrad; ctx.fillRect(-28, -14, 56, 28);
-          ctx.fillStyle = '#5c4832'; ctx.fillRect(-28, -14, 56, 4);
-          ctx.fillStyle = '#4a3a28'; ctx.fillRect(-20, -4, 14, 18); ctx.fillRect(6, -4, 14, 18);
-          break;
-        }
-        case 'water_cooler': {
-          ctx.fillStyle = '#e2e8f0'; ctx.fillRect(-8, 4, 16, 16);
-          ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.arc(0, 0, 9, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.beginPath(); ctx.arc(-3, -3, 3, 0, Math.PI*2); ctx.fill();
-          break;
-        }
-        case 'magazine_rack': {
-          ctx.fillStyle = '#475569'; ctx.beginPath(); ctx.moveTo(-14, 12); ctx.lineTo(14, 12); ctx.lineTo(10, -12); ctx.lineTo(-10, -12); ctx.closePath(); ctx.fill();
-          ctx.fillStyle = '#ef4444'; ctx.fillRect(-8, -8, 4, 16);
-          ctx.fillStyle = '#22c55e'; ctx.fillRect(-2, -6, 4, 14);
-          ctx.fillStyle = '#3b82f6'; ctx.fillRect(4, -10, 4, 18);
-          break;
-        }
-        case 'desk_office': {
-          ctx.fillStyle = '#947c5c'; ctx.fillRect(-22, -12, 44, 24);
-          ctx.fillStyle = '#6b5640'; ctx.fillRect(10, -12, 12, 24);
-          ctx.fillStyle = 'rgba(255,255,255,0.1)'; ctx.fillRect(12, -8, 8, 2); ctx.fillRect(12, 0, 8, 2); ctx.fillRect(12, 8, 8, 2);
-          break;
-        }
-        case 'monitor': {
-          ctx.fillStyle = '#1e293b'; ctx.fillRect(-10, -8, 20, 14);
-          ctx.fillStyle = '#7dd3fc'; ctx.globalAlpha = alpha * 0.8; ctx.fillRect(-8, -6, 16, 10); ctx.globalAlpha = alpha;
-          ctx.fillStyle = '#334155'; ctx.fillRect(-3, 6, 6, 4); ctx.fillRect(-6, 10, 12, 2);
-          break;
-        }
-        case 'filing_cabinet': {
-          ctx.fillStyle = '#94a3b8'; ctx.fillRect(-12, -18, 24, 36);
-          ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1;
-          ctx.strokeRect(-12, -18, 24, 11); ctx.strokeRect(-12, -5, 24, 11); ctx.strokeRect(-12, 8, 24, 10);
-          ctx.fillStyle = '#cbd5e1'; ctx.fillRect(-2, -14, 4, 2); ctx.fillRect(-2, -1, 4, 2); ctx.fillRect(-2, 12, 4, 2);
-          break;
-        }
-        case 'server_rack': {
-          ctx.fillStyle = '#1e293b'; ctx.fillRect(-18, -24, 36, 48);
-          ctx.fillStyle = '#0f172a'; ctx.fillRect(-14, -20, 28, 40);
-          ctx.fillStyle = '#22c55e'; for(let i=0; i<4; i++) { ctx.beginPath(); ctx.arc(-8, -14 + i*10, 2, 0, Math.PI*2); ctx.fill(); }
-          ctx.fillStyle = '#3b82f6'; for(let i=0; i<4; i++) { ctx.beginPath(); ctx.arc(8, -14 + i*10, 2, 0, Math.PI*2); ctx.fill(); }
-          break;
-        }
-        case 'cable_box': {
-          ctx.fillStyle = '#475569'; ctx.fillRect(-8, -8, 16, 16);
-          ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2;
-          ctx.beginPath(); ctx.moveTo(-4, -8); ctx.lineTo(-6, -14); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(4, -8); ctx.lineTo(6, -14); ctx.stroke();
-          break;
-        }
-        case 'cooling_vent': {
-          ctx.fillStyle = '#334155'; ctx.fillRect(-18, -18, 36, 36);
-          ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2;
-          for(let i=-12; i<=12; i+=6) { ctx.beginPath(); ctx.moveTo(-18, i); ctx.lineTo(18, i); ctx.stroke(); }
-          break;
-        }
-        case 'fridge': {
-          const frGrad = ctx.createLinearGradient(-16, -26, 16, 26);
-          frGrad.addColorStop(0, '#f1f5f9'); frGrad.addColorStop(1, '#cbd5e1');
-          ctx.fillStyle = frGrad; ctx.fillRect(-16, -26, 32, 52);
-          ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1; ctx.strokeRect(-16, -26, 32, 52);
-          ctx.fillStyle = '#64748b'; ctx.fillRect(10, -16, 2, 10); ctx.fillRect(10, 10, 2, 10);
-          break;
-        }
-        case 'table_conf': {
-          ctx.fillStyle = '#a88b6e'; ctx.beginPath(); ctx.ellipse(0, 0, 28, 16, 0, 0, Math.PI*2); ctx.fill();
-          ctx.strokeStyle = '#7a6245'; ctx.lineWidth = 2; ctx.stroke();
-          ctx.fillStyle = '#7a6245'; ctx.fillRect(-4, 0, 8, 16);
-          break;
-        }
-        case 'whiteboard': {
-          ctx.fillStyle = '#f8fafc'; ctx.fillRect(-20, -16, 40, 26);
-          ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2; ctx.strokeRect(-20, -16, 40, 26);
-          ctx.fillStyle = '#ef4444'; ctx.fillRect(-16, 12, 6, 4); ctx.fillStyle = '#3b82f6'; ctx.fillRect(-6, 12, 6, 4);
-          ctx.fillStyle = '#64748b'; ctx.fillRect(-18, 16, 3, 8); ctx.fillRect(15, 16, 3, 8);
-          break;
-        }
-        case 'desk_exec': {
-          ctx.fillStyle = '#5c4033'; ctx.fillRect(-26, -14, 52, 28);
-          ctx.fillStyle = '#4a332a'; ctx.fillRect(-26, -14, 52, 4);
-          ctx.fillStyle = '#3d2b1f'; ctx.fillRect(-20, -4, 16, 18); ctx.fillRect(4, -4, 16, 18);
-          break;
-        }
-        case 'safe': {
-          ctx.fillStyle = '#334155'; ctx.fillRect(-14, -14, 28, 28);
-          ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2; ctx.strokeRect(-14, -14, 28, 28);
-          ctx.fillStyle = '#94a3b8'; ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = '#475569'; ctx.fillRect(6, -2, 4, 4);
-          break;
-        }
-        case 'rug': {
-          ctx.fillStyle = 'rgba(168,85,247,0.15)'; ctx.beginPath(); ctx.ellipse(0, 0, 24, 16, 0, 0, Math.PI*2); ctx.fill();
-          ctx.strokeStyle = 'rgba(168,85,247,0.3)'; ctx.lineWidth = 1; ctx.stroke();
-          ctx.beginPath(); ctx.ellipse(0, 0, 16, 10, 0, 0, Math.PI*2); ctx.stroke();
-          break;
-        }
-        case 'pallet': {
-          ctx.fillStyle = '#a88b6e'; ctx.fillRect(-18, -10, 36, 20);
-          ctx.strokeStyle = '#7a6245'; ctx.lineWidth = 2;
-          ctx.beginPath(); ctx.moveTo(-12, -10); ctx.lineTo(-12, 10); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(0, -10); ctx.lineTo(0, 10); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(12, -10); ctx.lineTo(12, 10); ctx.stroke();
-          break;
-        }
-        case 'mop_bucket': {
-          ctx.fillStyle = '#eab308'; ctx.beginPath(); ctx.ellipse(0, 6, 10, 8, 0, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = '#64748b'; ctx.fillRect(-8, -4, 16, 6);
-          ctx.strokeStyle = '#334155'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(6, -4); ctx.lineTo(8, -14); ctx.stroke();
-          break;
-        }
-        case 'cleaning_cart': {
-          ctx.fillStyle = '#475569'; ctx.fillRect(-14, -16, 28, 32);
-          ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.moveTo(-10, -12); ctx.lineTo(10, -12); ctx.lineTo(8, 12); ctx.lineTo(-8, 12); ctx.closePath(); ctx.fill();
-          ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(14, -16); ctx.lineTo(14, -24); ctx.stroke();
-          break;
-        }
-        case 'pipe_bundle': {
-          ctx.fillStyle = '#64748b'; 
-          ctx.beginPath(); ctx.ellipse(-6, 0, 5, 8, 0, 0, Math.PI*2); ctx.fill();
-          ctx.beginPath(); ctx.ellipse(0, 0, 5, 8, 0, 0, Math.PI*2); ctx.fill();
-          ctx.beginPath(); ctx.ellipse(6, 0, 5, 8, 0, 0, Math.PI*2); ctx.fill();
-          ctx.strokeStyle = '#334155'; ctx.lineWidth = 1; ctx.stroke();
-          break;
-        }
+        // ── SOFA ─────────────────────────────────────────────────────
         case 'sofa': {
-          ctx.fillStyle = '#475569'; ctx.fillRect(-28, -14, 56, 28);
-          ctx.fillStyle = '#334155'; ctx.fillRect(-26, -12, 24, 24); ctx.fillRect(2, -12, 24, 24);
-          ctx.fillStyle = '#1e293b'; ctx.fillRect(-28, -14, 6, 28); ctx.fillRect(22, -14, 6, 28);
+          // body
+          ctx.fillStyle = '#8b5e3c';
+          ctx.beginPath(); ctx.roundRect(-22, -10, 44, 22, 5); ctx.fill();
+          // backrest
+          ctx.fillStyle = '#a0714f';
+          ctx.beginPath(); ctx.roundRect(-22, -18, 44, 10, 4); ctx.fill();
+          // armrests
+          ctx.fillStyle = '#7a5230';
+          ctx.fillRect(-24, -10, 5, 18);
+          ctx.fillRect(19,  -10, 5, 18);
+          // cushion line
+          ctx.strokeStyle = '#6b4526'; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(0, -8); ctx.lineTo(0, 12); ctx.stroke();
           break;
         }
-        case 'coffee_table': {
-          ctx.fillStyle = '#1e293b'; ctx.fillRect(-18, -10, 36, 20);
-          ctx.fillStyle = 'rgba(125,211,252,0.3)'; ctx.fillRect(-16, -8, 32, 16);
-          ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 1; ctx.strokeRect(-16, -8, 32, 16);
+
+        // ── DESK ─────────────────────────────────────────────────────
+        case 'desk': {
+          // legs
+          ctx.fillStyle = '#78583a';
+          ctx.fillRect(-20, 10, 5, 10);
+          ctx.fillRect(15,  10, 5, 10);
+          // surface
+          ctx.fillStyle = '#c8a96e';
+          ctx.beginPath(); ctx.roundRect(-22, -10, 44, 22, 3); ctx.fill();
+          // edge detail
+          ctx.strokeStyle = '#a07840'; ctx.lineWidth = 1;
+          ctx.strokeRect(-22, -10, 44, 22);
           break;
         }
-        case 'tv_stand': {
-          ctx.fillStyle = '#1e293b'; ctx.fillRect(-22, -8, 44, 16);
-          ctx.fillStyle = '#0f172a'; ctx.fillRect(-16, -22, 32, 16);
-          ctx.fillStyle = '#7dd3fc'; ctx.globalAlpha = alpha * 0.7; ctx.fillRect(-14, -20, 28, 12); ctx.globalAlpha = alpha;
+
+        // ── MONITOR ──────────────────────────────────────────────────
+        case 'monitor': {
+          // stand
+          ctx.fillStyle = '#4b5563';
+          ctx.fillRect(-3, 12, 6, 8);
+          ctx.fillRect(-8, 18, 16, 3);
+          // screen bezel
+          ctx.fillStyle = '#1f2937';
+          ctx.beginPath(); ctx.roundRect(-18, -14, 36, 28, 3); ctx.fill();
+          // screen glow (cyan-ish)
+          ctx.fillStyle = '#0e7490';
+          ctx.fillRect(-14, -10, 28, 20);
+          // screen glare
+          ctx.fillStyle = 'rgba(255,255,255,0.15)';
+          ctx.beginPath(); ctx.moveTo(-12,-8); ctx.lineTo(-4,-8); ctx.lineTo(-12,2); ctx.closePath(); ctx.fill();
           break;
         }
-        case 'bed': {
-          ctx.fillStyle = '#f1f5f9'; ctx.fillRect(-24, -16, 48, 32);
-          ctx.fillStyle = '#3b82f6'; ctx.fillRect(-24, -4, 48, 20);
-          ctx.fillStyle = '#e2e8f0'; ctx.beginPath(); ctx.ellipse(0, -18, 18, 8, 0, 0, Math.PI*2); ctx.fill();
+
+        // ── FILING CABINET ───────────────────────────────────────────
+        case 'filing_cabinet': {
+          ctx.fillStyle = '#6b7280';
+          ctx.beginPath(); ctx.roundRect(-14, -20, 28, 40, 2); ctx.fill();
+          // drawer dividers
+          ctx.strokeStyle = '#4b5563'; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(-14, -5); ctx.lineTo(14, -5); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(-14,  9); ctx.lineTo(14,  9); ctx.stroke();
+          // handles
+          ctx.fillStyle = '#9ca3af';
+          ctx.fillRect(-5, -13, 10, 3);
+          ctx.fillRect(-5,   1, 10, 3);
+          ctx.fillRect(-5,  15, 10, 3);
           break;
         }
-        case 'nightstand': {
-          ctx.fillStyle = '#947c5c'; ctx.fillRect(-12, -12, 24, 24);
-          ctx.fillStyle = '#fde047'; ctx.beginPath(); ctx.arc(0, -14, 4, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = '#6b5640'; ctx.fillRect(-2, -8, 4, 8);
+
+        // ── COUNTER (kitchen / break room table) ─────────────────────
+        case 'counter': {
+          // cabinet body
+          ctx.fillStyle = '#d1d5db';
+          ctx.beginPath(); ctx.roundRect(-22, -8, 44, 24, 3); ctx.fill();
+          // countertop
+          ctx.fillStyle = '#f9fafb';
+          ctx.beginPath(); ctx.roundRect(-23, -12, 46, 8, 2); ctx.fill();
+          // cabinet door line
+          ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(0, -8); ctx.lineTo(0, 16); ctx.stroke();
+          // knobs
+          ctx.fillStyle = '#6b7280';
+          ctx.beginPath(); ctx.arc(-8, 4, 2, 0, Math.PI*2); ctx.fill();
+          ctx.beginPath(); ctx.arc( 8, 4, 2, 0, Math.PI*2); ctx.fill();
           break;
         }
-        case 'wardrobe': {
-          ctx.fillStyle = '#7a6245'; ctx.fillRect(-16, -24, 32, 48);
-          ctx.strokeStyle = '#5c4832'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, -24); ctx.lineTo(0, 24); ctx.stroke();
-          ctx.fillStyle = '#cbd5e1'; ctx.beginPath(); ctx.arc(-4, 0, 2, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(4, 0, 2, 0, Math.PI*2); ctx.fill();
+
+        // ── FRIDGE ───────────────────────────────────────────────────
+        case 'fridge': {
+          // body
+          ctx.fillStyle = '#e5e7eb';
+          ctx.beginPath(); ctx.roundRect(-16, -24, 32, 48, 4); ctx.fill();
+          // door split line
+          ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(-16, 2); ctx.lineTo(16, 2); ctx.stroke();
+          // handles
+          ctx.fillStyle = '#9ca3af';
+          ctx.fillRect(9, -18, 4, 12);
+          ctx.fillRect(9,   6, 4, 10);
+          // top freezer tint
+          ctx.fillStyle = 'rgba(147,197,253,0.25)';
+          ctx.beginPath(); ctx.roundRect(-14,-22, 28, 22, 3); ctx.fill();
           break;
         }
-        case 'laundry_basket': {
-          ctx.fillStyle = '#a88b6e'; ctx.beginPath(); ctx.ellipse(0, 4, 12, 8, 0, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(-4, -2, 4, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = '#22c55e'; ctx.beginPath(); ctx.arc(4, 0, 3, 0, Math.PI*2); ctx.fill();
+
+        // ── STOVE ────────────────────────────────────────────────────
+        case 'stove': {
+          // body
+          ctx.fillStyle = '#374151';
+          ctx.beginPath(); ctx.roundRect(-20, -18, 40, 36, 3); ctx.fill();
+          // burners (4)
+          const bPos = [[-10,-8],[10,-8],[-10,8],[10,8]];
+          bPos.forEach(([bx,by]) => {
+            ctx.strokeStyle = '#6b7280'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(bx, by, 7, 0, Math.PI*2); ctx.stroke();
+            ctx.strokeStyle = '#4b5563'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.arc(bx, by, 4, 0, Math.PI*2); ctx.stroke();
+          });
+          // control knobs
+          ctx.fillStyle = '#9ca3af';
+          [-14,-7,0,7].forEach(kx => {
+            ctx.beginPath(); ctx.arc(kx, 20, 3, 0, Math.PI*2); ctx.fill();
+          });
           break;
         }
-        case 'stall': {
-          ctx.fillStyle = '#94a3b8'; ctx.fillRect(-14, -24, 28, 48);
-          ctx.fillStyle = '#64748b'; ctx.fillRect(-14, 20, 28, 4);
-          ctx.fillStyle = '#cbd5e1'; ctx.beginPath(); ctx.arc(8, 0, 3, 0, Math.PI*2); ctx.fill();
-          break;
-        }
-        case 'sink_vanity': {
-          ctx.fillStyle = '#e2e8f0'; ctx.fillRect(-20, -10, 40, 20);
-          ctx.fillStyle = '#f8fafc'; ctx.beginPath(); ctx.ellipse(0, 0, 10, 6, 0, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = '#94a3b8'; ctx.beginPath(); ctx.arc(0, -4, 2, 0, Math.PI*2); ctx.fill();
-          break;
-        }
-        case 'towel_rack': {
-          ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-12, 0); ctx.lineTo(12, 0); ctx.stroke();
-          ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.moveTo(-8, 2); ctx.lineTo(8, 2); ctx.lineTo(6, 14); ctx.lineTo(-6, 14); ctx.closePath(); ctx.fill();
-          break;
-        }
-        case 'bench': {
-          ctx.fillStyle = '#7a6245'; ctx.fillRect(-24, -6, 48, 12);
-          ctx.fillStyle = '#1e293b'; ctx.fillRect(-20, 6, 4, 10); ctx.fillRect(16, 6, 4, 10); ctx.fillRect(-20, -16, 4, 10); ctx.fillRect(16, -16, 4, 10);
-          break;
-        }
-        case 'dumbbell_rack': {
-          ctx.fillStyle = '#475569'; ctx.beginPath(); ctx.moveTo(-14, 12); ctx.lineTo(14, 12); ctx.lineTo(10, -12); ctx.lineTo(-10, -12); ctx.closePath(); ctx.fill();
-          ctx.fillStyle = '#1e293b'; 
-          ctx.beginPath(); ctx.arc(-6, -6, 4, 0, Math.PI*2); ctx.fill();
-          ctx.beginPath(); ctx.arc(6, 0, 4, 0, Math.PI*2); ctx.fill();
-          ctx.beginPath(); ctx.arc(0, 6, 4, 0, Math.PI*2); ctx.fill();
-          break;
-        }
-        case 'sports_bag': {
-          ctx.fillStyle = '#1e293b'; ctx.beginPath(); ctx.ellipse(0, 0, 14, 8, 0, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = '#ef4444'; ctx.fillRect(-14, -2, 28, 4);
-          ctx.strokeStyle = '#475569'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, -8, 6, Math.PI, 0); ctx.stroke();
-          break;
-        }
+
+        // ── TOILET ───────────────────────────────────────────────────
         case 'toilet': {
-          ctx.fillStyle = '#f1f5f9'; ctx.beginPath(); ctx.ellipse(0, 4, 10, 12, 0, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = '#e2e8f0'; ctx.beginPath(); ctx.ellipse(0, -10, 8, 6, 0, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = '#cbd5e1'; ctx.beginPath(); ctx.ellipse(0, 4, 6, 8, 0, 0, Math.PI*2); ctx.fill();
+          // tank
+          ctx.fillStyle = '#e5e7eb';
+          ctx.beginPath(); ctx.roundRect(-12, -22, 24, 14, 3); ctx.fill();
+          ctx.strokeStyle = '#d1d5db'; ctx.lineWidth = 0.5; ctx.stroke();
+          // bowl
+          ctx.fillStyle = '#f3f4f6';
+          ctx.beginPath(); ctx.ellipse(0, 8, 14, 18, 0, 0, Math.PI*2); ctx.fill();
+          ctx.strokeStyle = '#d1d5db'; ctx.lineWidth = 0.5; ctx.stroke();
+          // bowl interior
+          ctx.fillStyle = '#bfdbfe';
+          ctx.beginPath(); ctx.ellipse(0, 10, 9, 12, 0, 0, Math.PI*2); ctx.fill();
           break;
         }
+
+        // ── SINK ─────────────────────────────────────────────────────
+        case 'sink': {
+          // cabinet
+          ctx.fillStyle = '#d1d5db';
+          ctx.beginPath(); ctx.roundRect(-18, -6, 36, 24, 3); ctx.fill();
+          // basin
+          ctx.fillStyle = '#e5e7eb';
+          ctx.beginPath(); ctx.roundRect(-14, -14, 28, 20, 4); ctx.fill();
+          ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 0.5; ctx.stroke();
+          // basin interior (water tint)
+          ctx.fillStyle = 'rgba(147,197,253,0.35)';
+          ctx.beginPath(); ctx.roundRect(-11, -11, 22, 14, 3); ctx.fill();
+          // faucet
+          ctx.fillStyle = '#9ca3af';
+          ctx.fillRect(-2, -18, 4, 8);
+          ctx.fillRect(-6, -18, 12, 3);
+          break;
+        }
+
+        // ── BED ──────────────────────────────────────────────────────
+        case 'bed': {
+          // frame
+          ctx.fillStyle = '#78583a';
+          ctx.beginPath(); ctx.roundRect(-26, -20, 52, 40, 4); ctx.fill();
+          // headboard
+          ctx.fillStyle = '#5a3e22';
+          ctx.beginPath(); ctx.roundRect(-26, -20, 52, 10, 4); ctx.fill();
+          // mattress
+          ctx.fillStyle = '#f9fafb';
+          ctx.beginPath(); ctx.roundRect(-22, -9, 44, 26, 3); ctx.fill();
+          // pillow
+          ctx.fillStyle = '#dbeafe';
+          ctx.beginPath(); ctx.roundRect(-18, -7, 16, 10, 3); ctx.fill();
+          ctx.beginPath(); ctx.roundRect( 2, -7, 16, 10, 3); ctx.fill();
+          // blanket
+          ctx.fillStyle = '#93c5fd';
+          ctx.beginPath(); ctx.roundRect(-22, 4, 44, 12, 2); ctx.fill();
+          // blanket fold line
+          ctx.strokeStyle = '#60a5fa'; ctx.lineWidth = 0.5;
+          ctx.beginPath(); ctx.moveTo(-22,8); ctx.lineTo(22,8); ctx.stroke();
+          break;
+        }
+
+        // ── SERVER RACK ──────────────────────────────────────────────
+        case 'server_rack': {
+          // enclosure
+          ctx.fillStyle = '#1f2937';
+          ctx.beginPath(); ctx.roundRect(-14, -24, 28, 48, 2); ctx.fill();
+          ctx.strokeStyle = '#374151'; ctx.lineWidth = 0.5; ctx.stroke();
+          // rack units
+          const uColors = ['#22c55e','#3b82f6','#22c55e','#f59e0b','#3b82f6'];
+          uColors.forEach((c, i) => {
+            ctx.fillStyle = '#374151';
+            ctx.fillRect(-12, -21 + i*9, 24, 7);
+            // status LED
+            ctx.fillStyle = c;
+            ctx.beginPath(); ctx.arc(8, -21 + i*9 + 3, 2, 0, Math.PI*2); ctx.fill();
+            // unit lines
+            ctx.fillStyle = '#4b5563';
+            ctx.fillRect(-10, -21 + i*9 + 2, 14, 3);
+          });
+          break;
+        }
+
+        // ── WORKBENCH ────────────────────────────────────────────────
+        case 'workbench': {
+          // legs
+          ctx.fillStyle = '#92400e';
+          ctx.fillRect(-22, 12, 5, 12);
+          ctx.fillRect(17,  12, 5, 12);
+          // surface
+          ctx.fillStyle = '#b45309';
+          ctx.beginPath(); ctx.roundRect(-24, -6, 48, 20, 2); ctx.fill();
+          // pegboard back
+          ctx.fillStyle = '#78350f';
+          ctx.beginPath(); ctx.roundRect(-20, -20, 40, 16, 1); ctx.fill();
+          // pegs (dots)
+          ctx.fillStyle = '#92400e';
+          for (let px = -16; px <= 16; px += 8) {
+            ctx.beginPath(); ctx.arc(px, -12, 1.5, 0, Math.PI*2); ctx.fill();
+          }
+          // tool on surface (wrench silhouette)
+          ctx.fillStyle = '#6b7280';
+          ctx.fillRect(-8, -3, 16, 4);
+          ctx.beginPath(); ctx.arc(-8, -1, 4, 0, Math.PI*2); ctx.fill();
+          break;
+        }
+
+        // ── BENCH ────────────────────────────────────────────────────
+        case 'bench': {
+          // seat planks
+          ctx.fillStyle = '#a16207';
+          ctx.beginPath(); ctx.roundRect(-22, -5, 44, 10, 2); ctx.fill();
+          // plank line
+          ctx.strokeStyle = '#854d0e'; ctx.lineWidth = 0.5;
+          ctx.beginPath(); ctx.moveTo(0,-5); ctx.lineTo(0,5); ctx.stroke();
+          // legs
+          ctx.fillStyle = '#78350f';
+          ctx.fillRect(-20,  5, 5, 10);
+          ctx.fillRect( 15,  5, 5, 10);
+          break;
+        }
+
+        // ── BOOKCASE ─────────────────────────────────────────────────
+        case 'bookcase': {
+          // frame
+          ctx.fillStyle = '#92400e';
+          ctx.beginPath(); ctx.roundRect(-18, -24, 36, 48, 2); ctx.fill();
+          // shelves + books
+          const bookColors = ['#ef4444','#3b82f6','#22c55e','#f59e0b','#a855f7','#ec4899'];
+          [-18,-6,6,18].forEach((sy, si) => {
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(-16, sy, 32, 2); // shelf plank
+            // books on this shelf
+            let bx = -15;
+            for (let b = 0; b < 5; b++) {
+              ctx.fillStyle = bookColors[(si*5+b) % bookColors.length];
+              const bw = 5 + Math.floor((si*7+b*3) % 4);
+              ctx.fillRect(bx, sy-10, bw, 10);
+              bx += bw + 1;
+            }
+          });
+          break;
+        }
+
+        // ── COFFEE MACHINE ───────────────────────────────────────────
+        case 'coffee_machine': {
+          // body
+          ctx.fillStyle = '#111827';
+          ctx.beginPath(); ctx.roundRect(-14, -18, 28, 36, 4); ctx.fill();
+          // display panel
+          ctx.fillStyle = '#1e3a5f';
+          ctx.beginPath(); ctx.roundRect(-10, -14, 20, 10, 2); ctx.fill();
+          ctx.fillStyle = '#38bdf8';
+          ctx.fillRect(-8, -12, 16, 6);
+          // spout
+          ctx.fillStyle = '#374151';
+          ctx.fillRect(-3, 0, 6, 8);
+          ctx.fillRect(-6, 7, 12, 3);
+          // cup
+          ctx.fillStyle = '#f9fafb';
+          ctx.beginPath(); ctx.roundRect(-7, 10, 14, 10, 2); ctx.fill();
+          // buttons
+          ctx.fillStyle = '#22c55e';
+          ctx.beginPath(); ctx.arc(-6, -2, 3, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = '#ef4444';
+          ctx.beginPath(); ctx.arc( 6, -2, 3, 0, Math.PI*2); ctx.fill();
+          break;
+        }
+
+        // ── RECEPTION DESK ───────────────────────────────────────────
+        case 'reception_desk': {
+          // main desk body
+          ctx.fillStyle = '#d1fae5';
+          ctx.beginPath(); ctx.roundRect(-26, -14, 52, 28, 4); ctx.fill();
+          ctx.strokeStyle = '#6ee7b7'; ctx.lineWidth = 1; ctx.stroke();
+          // top panel (raised counter)
+          ctx.fillStyle = '#a7f3d0';
+          ctx.beginPath(); ctx.roundRect(-26, -14, 52, 10, 4); ctx.fill();
+          // monitor on desk
+          ctx.fillStyle = '#1f2937';
+          ctx.beginPath(); ctx.roundRect(-10, -22, 20, 12, 2); ctx.fill();
+          ctx.fillStyle = '#0e7490';
+          ctx.fillRect(-8, -20, 16, 8);
+          // monitor stand
+          ctx.fillStyle = '#374151';
+          ctx.fillRect(-2, -10, 4, 4);
+          // nameplate
+          ctx.fillStyle = '#6ee7b7';
+          ctx.beginPath(); ctx.roundRect(-12, 2, 24, 6, 1); ctx.fill();
+          break;
+        }
+
         default: {
           ctx.fillStyle = '#6b7280';
           ctx.fillRect(-14, -14, 28, 28);
@@ -2390,91 +2509,180 @@
           ctx.fillStyle = '#15151f';
           ctx.fillRect(vx0, vy0, vx1 - vx0, vy1 - vy0);
 
-          // Per-room subtle color tint and visual details (4x3 grid)
-          const roomColors = [
-            'rgba(245,158,11,0.035)', 'rgba(34,211,238,0.03)', 'rgba(168,85,247,0.03)', 'rgba(34,197,94,0.03)',
-            'rgba(248,113,113,0.03)','rgba(250,204,21,0.03)','rgba(96,165,250,0.03)',  'rgba(244,114,182,0.03)',
-            'rgba(251,146,60,0.03)', 'rgba(74,222,128,0.03)','rgba(192,132,252,0.03)', 'rgba(94,234,212,0.03)',
+          // ── Per-room themed floors + wall decorations ──────────────────
+          const roomThemes = [
+            // Row 0
+            { // (0,0) Living Room — warm amber parquet
+              floor: 'rgba(180,120,50,0.10)', tile: 46, tileColor: 'rgba(160,100,30,0.07)',
+              decor: (rx,ry) => {
+                // rug in center
+                ctx.save(); ctx.globalAlpha=0.18;
+                ctx.fillStyle='#b45309';
+                ctx.beginPath(); ctx.ellipse(rx+230, ry+230, 90, 60, 0, 0, Math.PI*2); ctx.fill();
+                ctx.restore();
+                // window top-right
+                _drawWindow(ctx, rx+360, ry+20, 60, 40);
+              }
+            },
+            { // (1,0) Office — cool gray carpet
+              floor: 'rgba(100,116,139,0.09)', tile: 30, tileColor: 'rgba(100,116,139,0.05)',
+              decor: (rx,ry) => {
+                _drawWindow(ctx, rx+80, ry+20, 50, 36);
+                _drawPoster(ctx, rx+360, ry+24, 40, 50, '#1d4ed8');
+              }
+            },
+            { // (2,0) Kitchen — white tile
+              floor: 'rgba(241,245,249,0.12)', tile: 38, tileColor: 'rgba(200,210,220,0.10)',
+              decor: (rx,ry) => {
+                _drawWindow(ctx, rx+120, ry+20, 55, 38);
+                _drawWindow(ctx, rx+290, ry+20, 55, 38);
+              }
+            },
+            { // (3,0) Bathroom — blue-white tile
+              floor: 'rgba(186,230,253,0.10)', tile: 28, tileColor: 'rgba(125,211,252,0.08)',
+              decor: (rx,ry) => {
+                _drawWindow(ctx, rx+180, ry+20, 45, 32);
+                _drawPoster(ctx, rx+340, ry+24, 32, 44, '#0891b2');
+              }
+            },
+            // Row 1
+            { // (0,1) Bedroom — soft purple carpet
+              floor: 'rgba(167,139,250,0.09)', tile: 60, tileColor: 'rgba(139,92,246,0.04)',
+              decor: (rx,ry) => {
+                // bedside rug
+                ctx.save(); ctx.globalAlpha=0.15;
+                ctx.fillStyle='#7c3aed';
+                ctx.beginPath(); ctx.ellipse(rx+175, ry+140, 70, 40, 0, 0, Math.PI*2); ctx.fill();
+                ctx.restore();
+                _drawWindow(ctx, rx+300, ry+20, 55, 38);
+              }
+            },
+            { // (1,1) Server Room — dark grid
+              floor: 'rgba(17,24,39,0.20)', tile: 40, tileColor: 'rgba(55,65,81,0.15)',
+              decor: (rx,ry) => {
+                // raised floor dots
+                ctx.save(); ctx.globalAlpha=0.25; ctx.fillStyle='#4b5563';
+                for (let dx=20; dx<440; dx+=40) for (let dy=20; dy<440; dy+=40) {
+                  ctx.beginPath(); ctx.arc(rx+dx, ry+dy, 2, 0, Math.PI*2); ctx.fill();
+                }
+                ctx.restore();
+                _drawPoster(ctx, rx+24, ry+24, 44, 60, '#065f46');
+              }
+            },
+            { // (2,1) Warehouse — concrete gray
+              floor: 'rgba(107,114,128,0.12)', tile: 80, tileColor: 'rgba(75,85,99,0.08)',
+              decor: (rx,ry) => {
+                // hazard stripe on floor (bottom area)
+                ctx.save(); ctx.globalAlpha=0.12;
+                ctx.fillStyle='#f59e0b';
+                for (let dx=0; dx<440; dx+=32) {
+                  ctx.fillRect(rx+dx, ry+380, 16, 50);
+                }
+                ctx.restore();
+                _drawPoster(ctx, rx+24, ry+24, 36, 50, '#92400e');
+              }
+            },
+            { // (3,1) Locker Room — gray-green tile
+              floor: 'rgba(52,211,153,0.07)', tile: 34, tileColor: 'rgba(16,185,129,0.06)',
+              decor: (rx,ry) => {
+                _drawWindow(ctx, rx+180, ry+20, 50, 34);
+                _drawWindow(ctx, rx+330, ry+20, 50, 34);
+              }
+            },
+            // Row 2
+            { // (0,2) Library — warm wood
+              floor: 'rgba(161,110,50,0.11)', tile: 52, tileColor: 'rgba(120,80,30,0.07)',
+              decor: (rx,ry) => {
+                _drawWindow(ctx, rx+300, ry+20, 60, 42);
+                _drawPoster(ctx, rx+24, ry+24, 36, 54, '#92400e');
+                _drawPoster(ctx, rx+24, ry+90, 36, 54, '#1e40af');
+              }
+            },
+            { // (1,2) Break Room — warm tile
+              floor: 'rgba(254,215,170,0.10)', tile: 42, tileColor: 'rgba(253,186,116,0.07)',
+              decor: (rx,ry) => {
+                _drawWindow(ctx, rx+80, ry+20, 55, 38);
+                _drawWindow(ctx, rx+310, ry+20, 55, 38);
+                // plant pot ring on floor
+                ctx.save(); ctx.globalAlpha=0.10;
+                ctx.fillStyle='#a3e635';
+                ctx.beginPath(); ctx.arc(rx+400, ry+400, 30, 0, Math.PI*2); ctx.fill();
+                ctx.restore();
+              }
+            },
+            { // (2,2) Workshop — concrete + orange
+              floor: 'rgba(154,108,60,0.12)', tile: 70, tileColor: 'rgba(120,80,40,0.08)',
+              decor: (rx,ry) => {
+                // oil stains
+                ctx.save(); ctx.globalAlpha=0.10; ctx.fillStyle='#374151';
+                ctx.beginPath(); ctx.ellipse(rx+140, ry+310, 30, 18, 0.4, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.ellipse(rx+300, ry+180, 22, 14, -0.3, 0, Math.PI*2); ctx.fill();
+                ctx.restore();
+                _drawPoster(ctx, rx+24, ry+24, 40, 56, '#b45309');
+              }
+            },
+            { // (3,2) Lobby — marble-white
+              floor: 'rgba(241,245,249,0.14)', tile: 55, tileColor: 'rgba(203,213,225,0.09)',
+              decor: (rx,ry) => {
+                // marble veins
+                ctx.save(); ctx.globalAlpha=0.07; ctx.strokeStyle='#94a3b8'; ctx.lineWidth=1;
+                ctx.beginPath(); ctx.moveTo(rx+50,ry+80); ctx.bezierCurveTo(rx+120,ry+160,rx+200,ry+100,rx+310,ry+200); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(rx+200,ry+50); ctx.bezierCurveTo(rx+280,ry+130,rx+350,ry+90,rx+420,ry+180); ctx.stroke();
+                ctx.restore();
+                _drawWindow(ctx, rx+80, ry+20, 60, 44);
+                _drawWindow(ctx, rx+310, ry+20, 60, 44);
+              }
+            },
           ];
+
+          // helper: draw a wall window decoration
+          function _drawWindow(ctx, x, y, w, h) {
+            ctx.save(); ctx.globalAlpha=0.28;
+            ctx.fillStyle='#bae6fd';
+            ctx.beginPath(); ctx.roundRect(x, y, w, h, 2); ctx.fill();
+            ctx.strokeStyle='#94a3b8'; ctx.lineWidth=1; ctx.stroke();
+            // cross frame
+            ctx.strokeStyle='#7dd3fc'; ctx.lineWidth=0.5;
+            ctx.beginPath(); ctx.moveTo(x+w/2,y); ctx.lineTo(x+w/2,y+h); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x,y+h/2); ctx.lineTo(x+w,y+h/2); ctx.stroke();
+            ctx.restore();
+          }
+          // helper: draw a wall poster/painting
+          function _drawPoster(ctx, x, y, w, h, color) {
+            ctx.save(); ctx.globalAlpha=0.30;
+            ctx.fillStyle=color;
+            ctx.beginPath(); ctx.roundRect(x, y, w, h, 2); ctx.fill();
+            ctx.strokeStyle='rgba(255,255,255,0.4)'; ctx.lineWidth=1; ctx.stroke();
+            // inner design
+            ctx.globalAlpha=0.15; ctx.fillStyle='#fff';
+            ctx.beginPath(); ctx.roundRect(x+4, y+4, w-8, h/2-4, 1); ctx.fill();
+            ctx.restore();
+          }
+
           for (let row = 0; row < GRID_ROWS; row++) {
             for (let col = 0; col < GRID_COLS; col++) {
               const rx = col * ROOM_SIZE, ry = row * ROOM_SIZE;
               if (!inView(rx + ROOM_SIZE / 2, ry + ROOM_SIZE / 2, ROOM_SIZE)) continue;
-              const roomIdx = row * GRID_COLS + col;
-              
-              // Base tint
-              ctx.fillStyle = roomColors[roomIdx % roomColors.length];
+              const theme = roomThemes[row * GRID_COLS + col];
+              // base floor tint
+              ctx.fillStyle = theme.floor;
               ctx.fillRect(rx, ry, ROOM_SIZE, ROOM_SIZE);
-
-              // Per-room specific background details
-              ctx.save();
-              ctx.beginPath(); ctx.rect(rx, ry, ROOM_SIZE, ROOM_SIZE); ctx.clip();
-
-              if (roomIdx === 0) { // Lobby
-                ctx.strokeStyle = 'rgba(255,255,255,0.03)'; ctx.lineWidth = 1;
-                ctx.beginPath(); ctx.moveTo(rx + 100, ry); ctx.lineTo(rx + 150, ry + ROOM_SIZE); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(rx + 300, ry); ctx.lineTo(rx + 380, ry + ROOM_SIZE); ctx.stroke();
-                ctx.fillStyle = 'rgba(125,211,252,0.08)'; ctx.fillRect(rx + 130, ry, 200, 40);
-                ctx.strokeStyle = 'rgba(125,211,252,0.2)'; ctx.strokeRect(rx + 130, ry, 200, 40);
-              } else if (roomIdx === 1) { // Open Office
-                ctx.strokeStyle = 'rgba(255,255,255,0.02)';
-                for (let x = rx; x < rx + ROOM_SIZE; x += 50) {
-                  for (let y = ry; y < ry + ROOM_SIZE; y += 50) {
-                    if ((x/50 + y/50) % 2 === 0) ctx.strokeRect(x, y, 50, 50);
-                  }
-                }
-              } else if (roomIdx === 2) { // Server Room
-                ctx.strokeStyle = 'rgba(34,211,238,0.1)';
-                for (let x = rx; x < rx + ROOM_SIZE; x += 115) { ctx.beginPath(); ctx.moveTo(x, ry); ctx.lineTo(x, ry + ROOM_SIZE); ctx.stroke(); }
-                for (let y = ry; y < ry + ROOM_SIZE; y += 115) { ctx.beginPath(); ctx.moveTo(rx, y); ctx.lineTo(rx + ROOM_SIZE, y); ctx.stroke(); }
-              } else if (roomIdx === 3) { // Break Room
-                ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-                for (let x = rx; x < rx + ROOM_SIZE; x += 115) ctx.strokeRect(x, ry, 115, ROOM_SIZE);
-              } else if (roomIdx === 4) { // Conference Room
-                ctx.strokeStyle = 'rgba(245,158,11,0.05)';
-                for (let y = ry; y < ry + ROOM_SIZE; y += 40) { ctx.beginPath(); ctx.moveTo(rx, y); ctx.lineTo(rx + ROOM_SIZE, y); ctx.stroke(); }
-                ctx.fillStyle = 'rgba(125,211,252,0.08)'; ctx.fillRect(rx + ROOM_SIZE - 40, ry + 130, 40, 200);
-              } else if (roomIdx === 5) { // Manager's Office
-                ctx.fillStyle = 'rgba(168,85,247,0.06)'; ctx.fillRect(rx + 130, ry + 130, 200, 200);
-                ctx.strokeStyle = 'rgba(168,85,247,0.15)'; ctx.strokeRect(rx + 130, ry + 130, 200, 200);
-              } else if (roomIdx === 6) { // Storage
-                ctx.fillStyle = 'rgba(0,0,0,0.05)';
-                ctx.beginPath(); ctx.ellipse(rx + 100, ry + 100, 60, 40, 0, 0, Math.PI*2); ctx.fill();
-                ctx.beginPath(); ctx.ellipse(rx + 350, ry + 300, 80, 50, 0, 0, Math.PI*2); ctx.fill();
-                ctx.fillStyle = 'rgba(250,204,21,0.1)';
-                for (let x = rx; x < rx + ROOM_SIZE; x += 40) { ctx.beginPath(); ctx.moveTo(x, ry + ROOM_SIZE - 30); ctx.lineTo(x + 20, ry + ROOM_SIZE); ctx.lineTo(x + 10, ry + ROOM_SIZE); ctx.lineTo(x - 10, ry + ROOM_SIZE - 30); ctx.fill(); }
-              } else if (roomIdx === 7) { // Janitor
-                ctx.strokeStyle = 'rgba(255,255,255,0.03)';
-                ctx.strokeRect(rx + 50, ry + 50, 100, 100); ctx.strokeRect(rx + 250, ry + 250, 100, 100);
-              } else if (roomIdx === 8) { // Living Room
-                ctx.strokeStyle = 'rgba(245,158,11,0.06)';
-                for (let x = rx; x < rx + ROOM_SIZE; x += 40) { ctx.beginPath(); ctx.moveTo(x, ry); ctx.lineTo(x, ry + ROOM_SIZE); ctx.stroke(); }
-                ctx.fillStyle = 'rgba(125,211,252,0.08)'; ctx.fillRect(rx, ry + 130, 40, 200);
-              } else if (roomIdx === 9) { // Bedroom
-                ctx.fillStyle = 'rgba(244,114,182,0.05)';
-                for (let x = rx + 20; x < rx + ROOM_SIZE; x += 40) { for (let y = ry + 20; y < ry + ROOM_SIZE; y += 40) { ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI*2); ctx.fill(); } }
-              } else if (roomIdx === 10) { // Bathroom
-                ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-                for (let x = rx; x < rx + ROOM_SIZE; x += 46) { ctx.beginPath(); ctx.moveTo(x, ry); ctx.lineTo(x, ry + ROOM_SIZE); ctx.stroke(); }
-                for (let y = ry; y < ry + ROOM_SIZE; y += 46) { ctx.beginPath(); ctx.moveTo(rx, y); ctx.lineTo(rx + ROOM_SIZE, y); ctx.stroke(); }
-              } else if (roomIdx === 11) { // Locker Room
-                ctx.fillStyle = 'rgba(96,165,250,0.08)';
-                for (let x = rx + 10; x < rx + ROOM_SIZE; x += 20) { for (let y = ry + 10; y < ry + ROOM_SIZE; y += 20) { ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI*2); ctx.fill(); } }
+              // tile grid overlay
+              ctx.strokeStyle = theme.tileColor;
+              ctx.lineWidth = 0.8;
+              const ts = theme.tile;
+              for (let tx = rx; tx < rx + ROOM_SIZE; tx += ts) {
+                ctx.beginPath(); ctx.moveTo(tx, ry); ctx.lineTo(tx, ry + ROOM_SIZE); ctx.stroke();
               }
-              ctx.restore();
+              for (let ty = ry; ty < ry + ROOM_SIZE; ty += ts) {
+                ctx.beginPath(); ctx.moveTo(rx, ty); ctx.lineTo(rx + ROOM_SIZE, ty); ctx.stroke();
+              }
+              // wall decorations
+              theme.decor(rx, ry);
             }
           }
 
-          // Floor tile grid
-          ctx.strokeStyle = 'rgba(255,255,255,0.035)';
-          ctx.lineWidth = 1;
-          const gridStart = (v) => Math.floor(v / 50) * 50;
-          for (let x = gridStart(vx0); x <= vx1; x += 50) {
-            ctx.beginPath(); ctx.moveTo(x, vy0); ctx.lineTo(x, vy1); ctx.stroke();
-          }
-          for (let y = gridStart(vy0); y <= vy1; y += 50) {
-            ctx.beginPath(); ctx.moveTo(vx0, y); ctx.lineTo(vx1, y); ctx.stroke();
-          }
+
 
           // Walls — top-down blocks with depth shading and amber edge glow
           for (const w of WALLS) {
@@ -2562,17 +2770,13 @@
               drawCharacter(ctx, px, py, color, { facing, walking, walkPhase, alpha, highlight: isMe });
             }
 
-            // name label (CRITICAL: Hide names of disguised hiders to prevent cheating!)
-            const isDisguisedHider = p.role === 'hider' && p.disguise;
-            if (!isDisguisedHider || isMe) {
-              ctx.globalAlpha = isDead ? 0.5 : 1;
-              ctx.fillStyle = '#e2e8f0';
-              ctx.font = '11px "JetBrains Mono", monospace';
-              ctx.textAlign = 'center';
-              const labelY = py - (isDisguisedHider ? PROP_RADIUS : PLAYER_RADIUS) - 10;
-              ctx.fillText(p.name, px, labelY);
-              ctx.globalAlpha = 1;
-            }
+            // name label
+            ctx.globalAlpha = isDead ? 0.5 : 1;
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = '11px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(p.name, px, py - PLAYER_RADIUS - 10);
+            ctx.globalAlpha = 1;
           }
 
           // Bullets — glowing tracer with trail
