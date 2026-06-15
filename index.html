@@ -927,11 +927,25 @@
         db.ref(`rooms/${code}/players/${player.id}`).update({ x, y });
       }, [player.id]);
 
-      // ── Disguise sync ─────────────────────────────────────────────────────────
+      // ── Disguise & Rotation sync ──────────────────────────────────────────────
       const setDisguise = useCallback((propType) => {
         const code = roomCodeRef.current;
         if (!code || !player.id) return;
-        db.ref(`rooms/${code}/players/${player.id}/disguise`).set(propType || null);
+        disguiseRotationRef.current = 0; // Reset rotation on new disguise
+        db.ref(`rooms/${code}/players/${player.id}`).update({ 
+          disguise: propType || null,
+          disguiseRotation: 0 
+        });
+      }, [player.id]);
+
+      const rotateDisguise = useCallback((dir) => {
+        if (!disguiseRef.current) return;
+        const newRot = (disguiseRotationRef.current + dir * (Math.PI / 4)) % (Math.PI * 2);
+        disguiseRotationRef.current = newRot;
+        const code = roomCodeRef.current;
+        if (code && player.id) {
+          db.ref(`rooms/${code}/players/${player.id}/disguiseRotation`).set(newRot);
+        }
       }, [player.id]);
 
       const myRole = room?.players.find(p => p.id === player.id)?.role;
@@ -1523,8 +1537,8 @@
       return `rgb(${r},${g},${b})`;
     }
 
-    // Draw a prop icon (plant, lamp, tv, crate, trash) at the given world position.
-    function drawProp(ctx, x, y, type, alpha = 1) {
+    // Draw a prop icon at the given world position, with optional rotation and ambient animation.
+    function drawProp(ctx, x, y, type, alpha = 1, rotation = 0, propId = '') {
       // Ground shadow shared by all props
       const shadowSizes = {
         plant: [22, 9], lamp: [16, 7], tv: [24, 9], crate: [20, 9], trash: [14, 7],
@@ -1538,11 +1552,26 @@
         bench: [24, 8], dumbbell_rack: [18, 7], sports_bag: [16, 7], toilet: [14, 7]
       };
       const [sx, sy] = shadowSizes[type] || [16, 7];
-      drawGroundShadow(ctx, x, y + sy * 1.4, sx, sy, 0.32 * alpha);
-
+      
       ctx.save();
       ctx.globalAlpha = alpha;
       ctx.translate(x, y);
+      ctx.rotate(rotation);
+      
+      // Draw shadow *after* rotation so it rotates with the prop, but we counter-rotate the shadow drawing 
+      // or just draw it before rotation. Let's draw shadow before rotation for consistency with ground.
+      ctx.restore();
+      drawGroundShadow(ctx, x, y + sy * 1.4, sx, sy, 0.32 * alpha);
+      
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(x, y);
+      ctx.rotate(rotation);
+
+      // Ambient animation seed based on propId or coordinates
+      const seed = propId ? propId.charCodeAt(propId.length - 1) : Math.floor(x + y);
+      const time = Date.now() / 1000;
+
       switch (type) {
         case 'plant': {
           // Pot with gradient + rim
@@ -1623,13 +1652,14 @@
           tvGrad.addColorStop(1, '#0f0f12');
           ctx.fillStyle = tvGrad;
           ctx.fillRect(-22, -16, 44, 28);
-          // Screen with glow gradient
+          // Screen with ambient flicker animation
+          const flicker = 0.85 + 0.15 * Math.sin(time * 5 + seed);
+          ctx.globalAlpha = alpha * flicker;
           const screenGrad = ctx.createLinearGradient(-18, -12, 18, 8);
           screenGrad.addColorStop(0, '#7dd3fc');
           screenGrad.addColorStop(0.5, '#38bdf8');
           screenGrad.addColorStop(1, '#0ea5e9');
           ctx.fillStyle = screenGrad;
-          ctx.globalAlpha = alpha * 0.85;
           ctx.fillRect(-18, -12, 36, 20);
           ctx.globalAlpha = alpha;
           // screen scanline
@@ -1870,8 +1900,16 @@
         case 'server_rack': {
           ctx.fillStyle = '#1e293b'; ctx.fillRect(-18, -24, 36, 48);
           ctx.fillStyle = '#0f172a'; ctx.fillRect(-14, -20, 28, 40);
-          ctx.fillStyle = '#22c55e'; for(let i=0; i<4; i++) { ctx.beginPath(); ctx.arc(-8, -14 + i*10, 2, 0, Math.PI*2); ctx.fill(); }
-          ctx.fillStyle = '#3b82f6'; for(let i=0; i<4; i++) { ctx.beginPath(); ctx.arc(8, -14 + i*10, 2, 0, Math.PI*2); ctx.fill(); }
+          // Ambient blinking LED lights
+          for(let i=0; i<4; i++) {
+            const blinkGreen = Math.sin(time * 3 + seed + i) > 0 ? '#22c55e' : '#064e3b';
+            ctx.fillStyle = blinkGreen; 
+            ctx.beginPath(); ctx.arc(-8, -14 + i*10, 2, 0, Math.PI*2); ctx.fill();
+            
+            const blinkBlue = Math.sin(time * 4 + seed + i * 2) > 0 ? '#3b82f6' : '#1e3a8a';
+            ctx.fillStyle = blinkBlue; 
+            ctx.beginPath(); ctx.arc(8, -14 + i*10, 2, 0, Math.PI*2); ctx.fill();
+          }
           break;
         }
         case 'cable_box': {
@@ -2061,6 +2099,7 @@
       const facingRef    = useRef(1);       // 1 = right, -1 = left
       const walkPhaseRef = useRef(0);
       const disguiseRef  = useRef(null);    // prop type string or null
+      const disguiseRotationRef = useRef(0); // rotation in radians
       const aimRef       = useRef({ x: WORLD_W / 2, y: WORLD_H / 2 }); // world coords
       const bulletsRef   = useRef([]);      // local + remote bullets for rendering
       const ammoRef      = useRef(MAX_AMMO);
@@ -2119,9 +2158,14 @@
             case 's': case 'S': case 'ArrowDown':  keysRef.current.down = true; break;
             case 'a': case 'A': case 'ArrowLeft':  keysRef.current.left = true; break;
             case 'd': case 'D': case 'ArrowRight': keysRef.current.right = true; break;
+            case 'q': case 'Q': 
+              if (disguiseRef.current) { rotateDisguise(-1); e.preventDefault(); }
+              break;
+            case 'e': case 'E':
+              if (disguiseRef.current) { rotateDisguise(1); e.preventDefault(); }
+              break;
             default: return;
           }
-          e.preventDefault();
         };
         const up = (e) => {
           switch (e.key) {
@@ -2503,7 +2547,7 @@
           const canInteract = myRole === 'hider' && myAlive !== false && !disguiseRef.current;
           for (const prop of PROPS) {
             if (!inView(prop.x, prop.y, 60)) continue;
-            drawProp(ctx, prop.x, prop.y, prop.type);
+            drawProp(ctx, prop.x, prop.y, prop.type, 1, 0, prop.id);
             if (canInteract) {
               const d = Math.hypot(prop.x - posRef.current.x, prop.y - posRef.current.y);
               if (d <= DISGUISE_RANGE) {
@@ -2548,8 +2592,8 @@
             const alpha = isDead ? 0.35 : 1;
 
             if (disguise && !isDead) {
-              // Render as the disguised prop instead of a character.
-              drawProp(ctx, px, py, disguise, alpha);
+              // Render as the disguised prop instead of a character, with rotation.
+              drawProp(ctx, px, py, disguise, alpha, p.disguiseRotation || 0, p.id);
               // subtle highlight ring for "me" so I can find myself
               if (isMe) {
                 ctx.beginPath();
@@ -2752,8 +2796,13 @@
 
           {/* Disguise indicator (hiders) */}
           {myRole === 'hider' && myAlive !== false && (
-            <div className="absolute top-2 right-2 px-2 py-1 bg-black/60 border border-white/10 font-['JetBrains_Mono'] text-[10px] text-gray-300">
-              {disguiseDisplay ? `DISGUISED: ${disguiseDisplay.toUpperCase()} (click to revert)` : 'Click a glowing prop to disguise'}
+            <div className="absolute top-2 right-2 px-2 py-1 bg-black/60 border border-white/10 font-['JetBrains_Mono'] text-[10px] text-gray-300 text-right">
+              {disguiseDisplay ? (
+                <>
+                  <div className="text-cyan-400 font-bold">DISGUISED: {disguiseDisplay.toUpperCase()}</div>
+                  <div className="text-gray-400 mt-1">Press [Q] / [E] to rotate • Click to revert</div>
+                </>
+              ) : 'Click a glowing prop to disguise'}
             </div>
           )}
 
