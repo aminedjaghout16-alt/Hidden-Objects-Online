@@ -474,8 +474,11 @@
       // via transaction, but we let only the host attempt it to avoid spam).
       useEffect(() => {
         if (!room || phase !== 'hiding' || !room.hideEndsAt) return;
-        const isHost = room.hostId === player.id;
-        if (!isHost) return;
+        // NOTE: intentionally NOT restricted to the host. transitionToHunting()
+        // uses a Firebase transaction guarded by `phase !== 'hiding'`, so it's
+        // safe for every connected client to race to call it — only one
+        // commits. This avoids a stuck "Comms Locked" black screen forever if
+        // the host's tab disconnects, refreshes, or is backgrounded.
 
         const remaining = room.hideEndsAt - Date.now();
         if (remaining <= 0) {
@@ -485,7 +488,7 @@
         const t = setTimeout(transitionToHunting, remaining + 50);
         return () => clearTimeout(t);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [room?.hideEndsAt, phase, room?.hostId, player.id]);
+      }, [room?.hideEndsAt, phase]);
 
       async function transitionToHunting() {
         const code = roomCodeRef.current;
@@ -503,8 +506,7 @@
       // Hunting → Ended, when timer expires (hiders win) — host-driven.
       useEffect(() => {
         if (!room || phase !== 'hunting' || !room.huntEndsAt) return;
-        const isHost = room.hostId === player.id;
-        if (!isHost) return;
+        // Same reasoning as above: any client can attempt this safely.
 
         const remaining = room.huntEndsAt - Date.now();
         if (remaining <= 0) {
@@ -514,13 +516,12 @@
         const t = setTimeout(() => endGame('hiders'), remaining + 50);
         return () => clearTimeout(t);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [room?.huntEndsAt, phase, room?.hostId, player.id]);
+      }, [room?.huntEndsAt, phase]);
 
       // Check win condition whenever players change (all hiders eliminated → hunters win)
       useEffect(() => {
         if (!room || phase !== 'hunting') return;
-        const isHost = room.hostId === player.id;
-        if (!isHost) return;
+        // Any client can attempt this safely (endGame is idempotent via transaction).
 
         const playersArr = room.players || [];
         const hiders = playersArr.filter(p => p.role === 'hider');
@@ -528,7 +529,7 @@
           endGame('hunters');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [room?.players, phase, room?.hostId, player.id]);
+      }, [room?.players, phase]);
 
       async function endGame(winnerSide) {
         const code = roomCodeRef.current;
